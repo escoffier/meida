@@ -1,0 +1,5 @@
+Log file created at: 2017/05/04 13:52:13
+Running on machine: ROBBIE-PC
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+E0504 13:52:13.249109  9780 operationserver.cpp:28] Network.cpp:2065: Ice::SocketException:
+socket exception: unknown error

@@ -1,0 +1,4 @@
+Log file created at: 2017/05/02 14:35:15
+Running on machine: ROBBIE-PC
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0502 14:35:15.098146  9196 nvs3000.cpp:99] 15100000001310000001 : -1

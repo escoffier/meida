@@ -1,0 +1,370 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{B07D6EA6-F772-3FB5-B11B-8D710CF12815}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>jrtplib-static</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">jrtplib-static.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">jrtplib_d</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">jrtplib-static.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">jrtplib</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">jrtplib-static.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">jrtplib</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">jrtplib-static.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">jrtplib</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JRTPLIB_COMPILING;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/src/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpapppacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpbyepacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpcompoundpacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpcompoundpacketbuilder.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcppacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcppacketbuilder.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcprrpacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpscheduler.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsdesinfo.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsdespacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsrpacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpunknownpacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpaddress.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpcollisionlist.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\rtpconfig.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpdebug.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpdefines.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtperrors.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtphashtable.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpinternalsourcedata.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv4address.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv4destination.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv6address.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv6destination.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpkeyhashtable.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversion.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpmemorymanager.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpmemoryobject.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppacketbuilder.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppollthread.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandom.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomrand48.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomrands.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomurandom.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprawpacket.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsession.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsessionparams.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsessionsources.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsourcedata.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsources.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpstructs.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptimeutilities.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptransmitter.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes_win.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\rtptypes.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpudpv4transmitter.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpudpv6transmitter.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpbyteaddress.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpexternaltransmitter.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsecuresession.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsocketutil.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpabortdescriptors.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpselect.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptcpaddress.h" />
+    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptcptransmitter.h" />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpapppacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpbyepacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpcompoundpacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpcompoundpacketbuilder.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcppacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcppacketbuilder.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcprrpacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpscheduler.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsdesinfo.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsdespacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtcpsrpacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpcollisionlist.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpdebug.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtperrors.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpinternalsourcedata.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv4address.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv6address.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv4destination.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpipv6destination.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversion.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppacket.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppacketbuilder.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtppollthread.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandom.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomrand48.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomrands.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtprandomurandom.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsession.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsessionparams.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsessionsources.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsourcedata.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsources.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptimeutilities.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpudpv4transmitter.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpudpv6transmitter.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpbyteaddress.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpexternaltransmitter.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpsecuresession.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpabortdescriptors.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptcpaddress.cpp"  />
+    <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptcptransmitter.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/ZERO_CHECK.vcxproj">
+      <Project>238ECEF4-7F07-3A9E-8155-13DC53AB9715</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

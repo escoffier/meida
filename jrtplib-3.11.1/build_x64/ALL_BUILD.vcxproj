@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{B4CDBB46-9567-3EA8-80D9-83F99AAC7C61}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInitialize.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCCompiler.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCXXCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeGenericSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\WindowsPaths.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeRCCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeRCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCXXInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXCompilerFlag.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFile.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFileCXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\TestBigEndian.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\Macros.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindJThread.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindLIBSRTP.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPkgConfig.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpconfig.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversioninternal.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\JRTPLIBConfig.cmake.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInitialize.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCCompiler.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCXXCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeGenericSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\WindowsPaths.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeRCCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeRCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCXXInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXCompilerFlag.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFile.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFileCXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\TestBigEndian.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\Macros.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindJThread.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindLIBSRTP.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPkgConfig.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpconfig.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversioninternal.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\JRTPLIBConfig.cmake.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInitialize.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCCompiler.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCXXCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeGenericSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\WindowsPaths.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeRCCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeRCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCXXInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXCompilerFlag.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFile.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFileCXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\TestBigEndian.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\Macros.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindJThread.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindLIBSRTP.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPkgConfig.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpconfig.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversioninternal.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\JRTPLIBConfig.cmake.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInitialize.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCCompiler.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeCXXCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeGenericSystem.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\WindowsPaths.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\3.4.1\CMakeRCCompiler.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeRCInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCXXInformation.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXCompilerFlag.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFile.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckIncludeFileCXX.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CheckCXXSourceCompiles.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\TestBigEndian.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\Macros.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindJThread.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\FindLIBSRTP.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPkgConfig.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\FindPackageMessage.cmake;D:\Program Files (x86)\CMake\share\cmake-3.4\Modules\CMakeParseArguments.cmake;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpconfig.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtplibraryversioninternal.h.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\cmake\JRTPLIBConfig.cmake.in;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/ZERO_CHECK.vcxproj">
+      <Project>238ECEF4-7F07-3A9E-8155-13DC53AB9715</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/abortdescipv6.vcxproj">
+      <Project>F02CD54D-D4F7-34C5-A9A9-E7D446124EFC</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/abortdesctest.vcxproj">
+      <Project>CF092FF2-C498-3A41-BC18-C642AA901F51</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example1.vcxproj">
+      <Project>21D97017-7376-3CB4-BA1C-7362121A6C81</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example2.vcxproj">
+      <Project>1AB6D6B5-DA55-3AEF-8CB5-04BFA83E9E28</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example3.vcxproj">
+      <Project>3C087F5B-4E7B-35F9-8AA5-514D1DB18538</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example4.vcxproj">
+      <Project>03CDF1D0-9489-393C-A0E2-6F67FA903DA8</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example5.vcxproj">
+      <Project>A265AD03-6942-317E-899D-4410753EF043</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example6.vcxproj">
+      <Project>09CFF95F-0089-3A6D-830D-A3594CDD66B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example7.vcxproj">
+      <Project>229BC7A5-66B7-31AB-9614-3F655C865CD8</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/example8.vcxproj">
+      <Project>D5BED753-641F-3977-9000-20D4B09BEF6A</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/src/jrtplib-static.vcxproj">
+      <Project>B07D6EA6-F772-3FB5-B11B-8D710CF12815</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/readlogfile.vcxproj">
+      <Project>DA3C0CBD-B8BC-3F4F-A4DA-8B41C36660BC</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/rtcpdump.vcxproj">
+      <Project>887360DC-528E-3DDB-A38F-72302EDEED46</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/srtptest.vcxproj">
+      <Project>73A145F1-FE9E-37EA-8DED-A6219909A0EA</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/tcptest.vcxproj">
+      <Project>2E4A38E5-FDF4-39FD-880D-FF614D4AFA6E</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/testautoportbase.vcxproj">
+      <Project>A6132FCF-CA08-35E8-B61B-BD993E066CDE</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/testexistingsockets.vcxproj">
+      <Project>769E757A-3C95-3E49-B19F-CA5F49BA17B2</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/testmultiplex.vcxproj">
+      <Project>989B7449-C8EC-3F61-85D3-B8B8CA78241C</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/timeinittest.vcxproj">
+      <Project>3F6FDCD1-AF72-3C2F-B67D-05988FB8CF61</Project>
+    </ProjectReference>
+    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/timetest.vcxproj">
+      <Project>7CA2B91B-814F-36D3-944C-F5E577DF219B</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
