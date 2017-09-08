@@ -18,8 +18,8 @@
 // </auto-generated>
 //
 
-#ifndef __E__workspace_DTNVS3000_nvs3000_media_generated_stream_h__
-#define __E__workspace_DTNVS3000_nvs3000_media_generated_stream_h__
+#ifndef __E__workspace_DTNVS3000_meida_media_generated_stream_h__
+#define __E__workspace_DTNVS3000_meida_media_generated_stream_h__
 
 #include <IceUtil/PushDisableWarnings.h>
 #include <Ice/ProxyF.h>
@@ -189,16 +189,18 @@ struct StreamInfo
     }
 };
 
-struct Catalog
+struct RealStream
 {
     ::std::string id;
     ::std::string ip;
     ::Ice::Int port;
     ::std::string name;
     ::std::string pwd;
+    ::std::string destip;
+    ::Ice::Int destport;
     ::std::string sdk;
 
-    bool operator==(const Catalog& __rhs) const
+    bool operator==(const RealStream& __rhs) const
     {
         if(this == &__rhs)
         {
@@ -224,6 +226,14 @@ struct Catalog
         {
             return false;
         }
+        if(destip != __rhs.destip)
+        {
+            return false;
+        }
+        if(destport != __rhs.destport)
+        {
+            return false;
+        }
         if(sdk != __rhs.sdk)
         {
             return false;
@@ -231,7 +241,7 @@ struct Catalog
         return true;
     }
 
-    bool operator<(const Catalog& __rhs) const
+    bool operator<(const RealStream& __rhs) const
     {
         if(this == &__rhs)
         {
@@ -277,6 +287,22 @@ struct Catalog
         {
             return false;
         }
+        if(destip < __rhs.destip)
+        {
+            return true;
+        }
+        else if(__rhs.destip < destip)
+        {
+            return false;
+        }
+        if(destport < __rhs.destport)
+        {
+            return true;
+        }
+        else if(__rhs.destport < destport)
+        {
+            return false;
+        }
         if(sdk < __rhs.sdk)
         {
             return true;
@@ -288,19 +314,19 @@ struct Catalog
         return false;
     }
 
-    bool operator!=(const Catalog& __rhs) const
+    bool operator!=(const RealStream& __rhs) const
     {
         return !operator==(__rhs);
     }
-    bool operator<=(const Catalog& __rhs) const
+    bool operator<=(const RealStream& __rhs) const
     {
         return operator<(__rhs) || operator==(__rhs);
     }
-    bool operator>(const Catalog& __rhs) const
+    bool operator>(const RealStream& __rhs) const
     {
         return !operator<(__rhs) && !operator==(__rhs);
     }
-    bool operator>=(const Catalog& __rhs) const
+    bool operator>=(const RealStream& __rhs) const
     {
         return !operator<(__rhs);
     }
@@ -349,37 +375,41 @@ struct StreamReader< ::Media::StreamInfo, S>
 };
 
 template<>
-struct StreamableTraits< ::Media::Catalog>
+struct StreamableTraits< ::Media::RealStream>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 9;
+    static const int minWireSize = 14;
     static const bool fixedLength = false;
 };
 
 template<class S>
-struct StreamWriter< ::Media::Catalog, S>
+struct StreamWriter< ::Media::RealStream, S>
 {
-    static void write(S* __os, const ::Media::Catalog& v)
+    static void write(S* __os, const ::Media::RealStream& v)
     {
         __os->write(v.id);
         __os->write(v.ip);
         __os->write(v.port);
         __os->write(v.name);
         __os->write(v.pwd);
+        __os->write(v.destip);
+        __os->write(v.destport);
         __os->write(v.sdk);
     }
 };
 
 template<class S>
-struct StreamReader< ::Media::Catalog, S>
+struct StreamReader< ::Media::RealStream, S>
 {
-    static void read(S* __is, ::Media::Catalog& v)
+    static void read(S* __is, ::Media::RealStream& v)
     {
         __is->read(v.id);
         __is->read(v.ip);
         __is->read(v.port);
         __is->read(v.name);
         __is->read(v.pwd);
+        __is->read(v.destip);
+        __is->read(v.destport);
         __is->read(v.sdk);
     }
 };
@@ -440,69 +470,69 @@ class Stream : virtual public ::IceProxy::Ice::Object
 {
 public:
 
-    void openRealStream(const ::Media::Catalog& __p_ctg, ::Media::StreamInfo& __p_stm)
+    void openRealStream(const ::Media::RealStream& __p_ctg, ::Media::StreamInfo& __p_stm)
     {
         openRealStream(__p_ctg, __p_stm, 0);
     }
-    void openRealStream(const ::Media::Catalog& __p_ctg, ::Media::StreamInfo& __p_stm, const ::Ice::Context& __ctx)
+    void openRealStream(const ::Media::RealStream& __p_ctg, ::Media::StreamInfo& __p_stm, const ::Ice::Context& __ctx)
     {
         openRealStream(__p_ctg, __p_stm, &__ctx);
     }
 #ifdef ICE_CPP11
     ::Ice::AsyncResultPtr
-    begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
+    begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
     {
         return __begin_openRealStream(__p_ctg, 0, __response, __exception, __sent);
     }
     ::Ice::AsyncResultPtr
-    begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
+    begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
     {
         return begin_openRealStream(__p_ctg, 0, ::Ice::newCallback(__completed, __sent), 0);
     }
     ::Ice::AsyncResultPtr
-    begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
+    begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
     {
         return __begin_openRealStream(__p_ctg, &__ctx, __response, __exception, __sent);
     }
     ::Ice::AsyncResultPtr
-    begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
+    begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
     {
         return begin_openRealStream(__p_ctg, &__ctx, ::Ice::newCallback(__completed, __sent));
     }
     
 private:
 
-    ::Ice::AsyncResultPtr __begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception, const ::IceInternal::Function<void (bool)>& __sent);
+    ::Ice::AsyncResultPtr __begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception, const ::IceInternal::Function<void (bool)>& __sent);
     
 public:
 #endif
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg)
     {
         return begin_openRealStream(__p_ctg, 0, ::IceInternal::__dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context& __ctx)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context& __ctx)
     {
         return begin_openRealStream(__p_ctg, &__ctx, ::IceInternal::__dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
         return begin_openRealStream(__p_ctg, 0, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context& __ctx, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context& __ctx, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
         return begin_openRealStream(__p_ctg, &__ctx, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Media::Callback_Stream_openRealStreamPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Media::Callback_Stream_openRealStreamPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
         return begin_openRealStream(__p_ctg, 0, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context& __ctx, const ::Media::Callback_Stream_openRealStreamPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context& __ctx, const ::Media::Callback_Stream_openRealStreamPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
         return begin_openRealStream(__p_ctg, &__ctx, __del, __cookie);
     }
@@ -511,8 +541,8 @@ public:
     
 private:
 
-    void openRealStream(const ::Media::Catalog&, ::Media::StreamInfo&, const ::Ice::Context*);
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::Catalog&, const ::Ice::Context*, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& __cookie = 0);
+    void openRealStream(const ::Media::RealStream&, ::Media::StreamInfo&, const ::Ice::Context*);
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStream&, const ::Ice::Context*, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& __cookie = 0);
     
 public:
     
@@ -646,7 +676,7 @@ public:
     virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::Current()) const;
     static const ::std::string& ice_staticId();
 
-    virtual void openRealStream_async(const ::Media::AMD_Stream_openRealStreamPtr&, const ::Media::Catalog&, const ::Ice::Current& = ::Ice::Current()) = 0;
+    virtual void openRealStream_async(const ::Media::AMD_Stream_openRealStreamPtr&, const ::Media::RealStream&, const ::Ice::Current& = ::Ice::Current()) = 0;
     ::Ice::DispatchStatus ___openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual ::Ice::DispatchStatus __dispatch(::IceInternal::Incoming&, const ::Ice::Current&);

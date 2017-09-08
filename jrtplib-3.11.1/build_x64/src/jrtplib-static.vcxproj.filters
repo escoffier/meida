@@ -168,7 +168,7 @@
     <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpcollisionlist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\rtpconfig.h">
+    <ClInclude Include="E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src\rtpconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpdebug.h">
@@ -261,7 +261,7 @@
     <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtptypes_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src\rtptypes.h">
+    <ClInclude Include="E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src\rtptypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src\rtpudpv4transmitter.h">
@@ -300,10 +300,10 @@
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{3BE84D07-3767-37F5-8A25-B8EC9F4E2CBC}</UniqueIdentifier>
+      <UniqueIdentifier>{284B718F-FF60-3D43-B31C-E7F365389EC9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{D8B53F91-BBB0-3D04-A141-12B50BCD223E}</UniqueIdentifier>
+      <UniqueIdentifier>{C096434D-9A80-3E61-AA16-679CA671E360}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

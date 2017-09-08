@@ -1,0 +1,6 @@
+D:/Program Files/jthread/include/jthread/jmutex.h
+D:/Program Files/jthread/include/jthread/jthread.h
+D:/Program Files/jthread/include/jthread/jmutexautolock.h
+D:/Program Files/jthread/include/jthread/jthreadconfig.h
+D:/Program Files/jthread/lib/jthread_d.lib
+D:/Program Files/jthread/lib/cmake/JThread/JThreadConfig.cmake

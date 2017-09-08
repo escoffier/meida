@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\bf8098749cb4ff39f2db8431f8d94981\INSTALL_force.rule">
+    <CustomBuild Include="E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\3ffb4b760406b32b4ffd73a166444b98\INSTALL_force.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{8EFE1A10-4824-3497-8E09-1B0A5FE01A98}</UniqueIdentifier>
+      <UniqueIdentifier>{8ED946E0-A776-3ACB-8B53-956731AD7FEF}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

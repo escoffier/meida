@@ -17,7 +17,7 @@ public:
 int main(int argc, char *argv[])
 {
 	MeidaClient app;
-	return app.main(argc, argv, "config.mediaclient");
+	return app.main(argc, argv, "config.client");
 }
 
 int MeidaClient::run(int argc, char *argv[] )
@@ -32,7 +32,7 @@ int MeidaClient::run(int argc, char *argv[] )
 	// Create a proxy to the well-known object with the `pricing'
 	// identity.
 	//
-	Media::StreamPrx stream = Media::StreamPrx::uncheckedCast(communicator()->stringToProxy("stream"));
+	Media::StreamPrx stream = Media::StreamPrx::uncheckedCast(communicator()->propertyToProxy("Stream.Proxy"));
 	if (!stream)
 	{
 		std::cerr << argv[0] << ": couldn't find a `::Demo::PricingEngine' object." << std::endl;
@@ -67,11 +67,19 @@ int MeidaClient::run(int argc, char *argv[] )
 	//
 	// Get the preferred currencies of the server
 	//
-	Media::Catalog ctg;
+	Media::RealStream ctg;
 	Media::StreamInfo stminfo;
+
+	ctg.id = "60100000001310000001";
+	
+	ctg.name = "admin";
+	ctg.pwd = "dtnvs3000";
+	ctg.destip = "192.168.254.233";
+	ctg.destport = 10099;
+
 	stream->openRealStream(ctg, stminfo);
 	//Ice::StringSeq currencies = pricing->getPreferredCurrencies();
-	std::cout << "StreamInfo of the server: "<< stminfo.ip<<std::endl;
+	std::cout << "StreamInfo of the server: "<< stminfo.ip<<"--"<< stminfo.callid<<std::endl;
 	//for (Ice::StringSeq::const_iterator p = currencies.begin(); p != currencies.end(); ++p)
 	//{
 	//	cout << *p;

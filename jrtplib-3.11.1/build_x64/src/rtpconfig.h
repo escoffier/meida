@@ -61,7 +61,7 @@
 
 #define RTP_SUPPORT_IPV4MULTICAST
 
-// No support for JThread was enabled
+#define RTP_SUPPORT_THREAD
 
 #define RTP_SUPPORT_SDESPRIV
 

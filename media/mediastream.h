@@ -1,11 +1,13 @@
 #pragma once
-
+//#include <winsock2.h>
 #include <string>
 #include <memory>
 #include "stream.h"
 //#include "WorkorQueue.h"
 #include "msgthread.h"
+#include "jrtplib3\rtpsession.h"
 
+//class RTPSession;
 class MediaStream
 {
 public:
@@ -13,7 +15,7 @@ public:
 		        const std::string &ip, int port, const std::string &destIp_, int destPort,
 		        const Media::AMD_Stream_openRealStreamPtr &iceCB);
 	MediaStream(const std::string &id);
-	~MediaStream()
+	virtual ~MediaStream()
 	{
 
 	}
@@ -34,18 +36,19 @@ protected:
 	Media::AMD_Stream_openRealStreamPtr iceCB_;
 	struct subStream
 	{
-		subStream(const std::string& destIp, int destPort) :
-			destIp_(destIp), destPort_(destPort)
+		subStream(const std::string& destIp, int destPort, const std::string& ip,int port) :
+			destIp_(destIp), ip_(),destPort_(destPort), port_(port)
 		{
 		}
-		subStream(const subStream &ss)
+		subStream(const subStream &ss):
+			destIp_(ss.destIp_), ip_(ss.ip_), destPort_(ss.destPort_), port_(ss.port_)
 		{
 			destIp_ = ss.destIp_;
 			destPort_ = ss.destPort_;
 		}
 
 		subStream(subStream&& ss):
-			destIp_(std::move(ss.destIp_)), destPort_(ss.destPort_)
+			destIp_(std::move(ss.destIp_)), ip_(std::move(ss.ip_)),destPort_(ss.destPort_), port_(ss.port_)
 		{
 
 		}
@@ -54,13 +57,16 @@ protected:
 		{}
 
 		std::string destIp_;
+		std::string ip_;
 		int destPort_;
+		int port_;
 	};
 
 	//std::vector<subStream> subStreams_;
 	std::map<std::string, subStream> subStreams_;
 	bool isOpen_;
 	bool isLogin_;
+	std::unique_ptr<jrtplib::RTPSession> rtpss_;
 };
 
 
@@ -109,9 +115,9 @@ public:
 	//using Process = std::function<bool(const std::string &)>;
 	using Process = std::function<bool()>;
 
-	StreamManager():
-		streams_(), msgthread_()//, queue_()
-	{};
+	StreamManager();
+	//	streams_(), msgthread_()//, queue_()
+	//{};
 	~StreamManager()
 	{
 
@@ -122,7 +128,8 @@ public:
 		const std::string &ip, int port, const std::string &destIp_, int destPort,
 		const Media::AMD_Stream_openRealStreamPtr &iceCB);
 
-	bool openStream(const std::string &id, const std::string &callid);
+	//bool openStream(const std::string &id, const std::string &callid);
+	bool openStream( std::string id,  std::string callid);
 private:
 	std::map<std::string, std::shared_ptr<MediaStream>> streams_;
 

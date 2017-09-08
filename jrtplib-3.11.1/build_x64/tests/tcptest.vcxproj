@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{2E4A38E5-FDF4-39FD-880D-FF614D4AFA6E}</ProjectGUID>
+    <ProjectGUID>{51FE517D-C9BE-3C0A-9B7B-F71081AA2599}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
     <ProjectName>tcptest</ProjectName>
@@ -58,25 +58,25 @@
   <PropertyGroup Label="UserMacros" />
     <PropertyGroup>
       <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\Debug\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\Debug\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tcptest.dir\Debug\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tcptest</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\Release\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\Release\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tcptest.dir\Release\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tcptest</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\MinSizeRel\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\MinSizeRel\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tcptest.dir\MinSizeRel\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tcptest</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\RelWithDebInfo\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\RelWithDebInfo\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tcptest.dir\RelWithDebInfo\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tcptest</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -85,7 +85,7 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -102,10 +102,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -114,12 +114,12 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:x64 /debug %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\Debug\jrtplib_d.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\Debug\jrtplib_d.lib;D:\Program Files\jthread\lib\jthread_d.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/Debug/tcptest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/Debug/tcptest.pdb</ProgramDataBaseFile>
+      <ImportLibrary>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/Debug/tcptest.lib</ImportLibrary>
+      <ProgramDataBaseFile>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/Debug/tcptest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -129,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -145,10 +145,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -157,12 +157,12 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\Release\jrtplib.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\Release\jrtplib.lib;D:\Program Files\jthread\lib\jthread.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/Release/tcptest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/Release/tcptest.pdb</ProgramDataBaseFile>
+      <ImportLibrary>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/Release/tcptest.lib</ImportLibrary>
+      <ProgramDataBaseFile>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/Release/tcptest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -172,7 +172,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -188,10 +188,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -200,12 +200,12 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\MinSizeRel\jrtplib.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\MinSizeRel\jrtplib.lib;D:\Program Files\jthread\lib\jthread.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/MinSizeRel/tcptest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/MinSizeRel/tcptest.pdb</ProgramDataBaseFile>
+      <ImportLibrary>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/MinSizeRel/tcptest.lib</ImportLibrary>
+      <ProgramDataBaseFile>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/MinSizeRel/tcptest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -215,7 +215,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -231,10 +231,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\src;E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\src;D:\Program Files\jthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -243,12 +243,12 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:x64 /debug %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\RelWithDebInfo\jrtplib.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\src\RelWithDebInfo\jrtplib.lib;D:\Program Files\jthread\lib\jthread.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/RelWithDebInfo/tcptest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/RelWithDebInfo/tcptest.pdb</ProgramDataBaseFile>
+      <ImportLibrary>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/RelWithDebInfo/tcptest.lib</ImportLibrary>
+      <ProgramDataBaseFile>E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/RelWithDebInfo/tcptest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -260,7 +260,7 @@
     <CustomBuild Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -269,11 +269,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -282,11 +282,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -295,11 +295,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
+"D:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1 -BE:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64 --check-stamp-file E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -308,7 +308,7 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/tests/CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\tests\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
@@ -316,11 +316,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\tests\tcptest.cpp"  />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/ZERO_CHECK.vcxproj">
-      <Project>238ECEF4-7F07-3A9E-8155-13DC53AB9715</Project>
+    <ProjectReference Include="E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/ZERO_CHECK.vcxproj">
+      <Project>F14B08A5-B1D2-3FCA-87D0-F31222529F3B</Project>
     </ProjectReference>
-    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/src/jrtplib-static.vcxproj">
-      <Project>B07D6EA6-F772-3FB5-B11B-8D710CF12815</Project>
+    <ProjectReference Include="E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/src/jrtplib-static.vcxproj">
+      <Project>742EFC41-AD15-3BB9-A377-8843CB411E42</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

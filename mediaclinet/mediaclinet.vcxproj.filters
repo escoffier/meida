@@ -55,6 +55,6 @@
     </IceBuilder>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\media\config.client" />
+    <None Include="config.client" />
   </ItemGroup>
 </Project>

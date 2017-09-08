@@ -55,4 +55,4 @@ D:/Program Files/jrtplib/include/jrtplib3/rtpabortdescriptors.h
 D:/Program Files/jrtplib/include/jrtplib3/rtpselect.h
 D:/Program Files/jrtplib/include/jrtplib3/rtptcpaddress.h
 D:/Program Files/jrtplib/include/jrtplib3/rtptcptransmitter.h
-D:/Program Files/jrtplib/lib/jrtplib.lib
+D:/Program Files/jrtplib/lib/jrtplib_d.lib

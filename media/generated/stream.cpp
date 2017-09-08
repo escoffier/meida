@@ -154,7 +154,7 @@ void
 }
 
 void
-IceProxy::Media::Stream::openRealStream(const ::Media::Catalog& __p_ctg, ::Media::StreamInfo& __p_stm, const ::Ice::Context* __ctx)
+IceProxy::Media::Stream::openRealStream(const ::Media::RealStream& __p_ctg, ::Media::StreamInfo& __p_stm, const ::Ice::Context* __ctx)
 {
     __checkTwowayOnly(__Media__Stream__openRealStream_name);
     ::IceInternal::Outgoing __og(this, __Media__Stream__openRealStream_name, ::Ice::Normal, __ctx);
@@ -190,7 +190,7 @@ IceProxy::Media::Stream::openRealStream(const ::Media::Catalog& __p_ctg, ::Media
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Media::Stream::begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::CallbackBasePtr& __del, const ::Ice::LocalObjectPtr& __cookie)
+IceProxy::Media::Stream::begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::CallbackBasePtr& __del, const ::Ice::LocalObjectPtr& __cookie)
 {
     __checkAsyncTwowayOnly(__Media__Stream__openRealStream_name);
     ::IceInternal::OutgoingAsyncPtr __result = new ::IceInternal::OutgoingAsync(this, __Media__Stream__openRealStream_name, __del, __cookie);
@@ -212,7 +212,7 @@ IceProxy::Media::Stream::begin_openRealStream(const ::Media::Catalog& __p_ctg, c
 #ifdef ICE_CPP11
 
 ::Ice::AsyncResultPtr
-IceProxy::Media::Stream::__begin_openRealStream(const ::Media::Catalog& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception, const ::IceInternal::Function<void (bool)>& __sent)
+IceProxy::Media::Stream::__begin_openRealStream(const ::Media::RealStream& __p_ctg, const ::Ice::Context* __ctx, const ::IceInternal::Function<void (const ::Media::StreamInfo&)>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception, const ::IceInternal::Function<void (bool)>& __sent)
 {
     class Cpp11CB : public ::IceInternal::Cpp11FnCallbackNC
     {
@@ -334,7 +334,7 @@ Media::Stream::___openRealStream(::IceInternal::Incoming& __inS, const ::Ice::Cu
 {
     __checkMode(::Ice::Normal, __current.mode);
     ::IceInternal::BasicStream* __is = __inS.startReadParams();
-    ::Media::Catalog __p_ctg;
+    ::Media::RealStream __p_ctg;
     __is->read(__p_ctg);
     __inS.endReadParams();
     ::Media::AMD_Stream_openRealStreamPtr __cb = new IceAsync::Media::AMD_Stream_openRealStream(__inS);

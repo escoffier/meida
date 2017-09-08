@@ -80,5 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="config.grid" />
+    <None Include="config.server" />
   </ItemGroup>
 </Project>

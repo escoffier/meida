@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{B9D832AB-FEDF-3BC8-BB17-6ABD6F9C4F6E}</ProjectGUID>
+    <ProjectGUID>{42EFC4F9-E983-3CA7-8B76-24357E62FD4A}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
     <ProjectName>INSTALL</ProjectName>
@@ -152,7 +152,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\b1fcef43d5066520a87220910109ff9a\INSTALL_force.rule">
+    <CustomBuild Include="E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\e6a665ad5233e8168dfbfe98c62956af\INSTALL_force.rule">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> </Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
 cd .
@@ -163,8 +163,8 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/CMakeFiles/b1fcef43d5066520a87220910109ff9a/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/CMakeFiles/e6a665ad5233e8168dfbfe98c62956af/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> </Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
@@ -176,8 +176,8 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/CMakeFiles/b1fcef43d5066520a87220910109ff9a/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/CMakeFiles/e6a665ad5233e8168dfbfe98c62956af/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"> </Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
@@ -189,8 +189,8 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/CMakeFiles/b1fcef43d5066520a87220910109ff9a/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/CMakeFiles/e6a665ad5233e8168dfbfe98c62956af/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"> </Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
@@ -202,14 +202,14 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/CMakeFiles/b1fcef43d5066520a87220910109ff9a/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\nvs3000\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/CMakeFiles/e6a665ad5233e8168dfbfe98c62956af/INSTALL_force.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\DTNVS3000\meida\jrtplib-3.11.1\build_x64\CMakeFiles\INSTALL_force</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/ALL_BUILD.vcxproj">
-      <Project>B4CDBB46-9567-3EA8-80D9-83F99AAC7C61</Project>
+    <ProjectReference Include="E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/ALL_BUILD.vcxproj">
+      <Project>B501B3F2-111E-3ACF-A0A7-F63891D6E85A</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

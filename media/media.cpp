@@ -31,10 +31,17 @@ int MediaServer::run(int argc, char *[])
 		std::cerr << appName() << ": too many arguments" << std::endl;
 		return EXIT_FAILURE;
 	}
-
+#ifdef STANDALONE
+	Ice::Identity id = communicator()->stringToIdentity("stream");
+#else
 	Ice::PropertiesPtr properties = communicator()->getProperties();
-	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
 	Ice::Identity id = communicator()->stringToIdentity(properties->getProperty("Identity"));
+#endif // !STANDALONE
+
+
+	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
+	
+
 	//Demo::PricingEnginePtr pricing = new PricingI(properties->getPropertyAsList("Currencies"));
 	Media::StreamPtr stream = new StreamI;
 	adapter->add(stream, id);
@@ -54,7 +61,13 @@ int main(int argc, char* argv[])
 	FLAGS_stderrthreshold = 0;
 
 	MediaServer app;
+#ifdef STANDALONE
+	int status = app.main(argc, argv, "config.server");
+#else
 	int status = app.main(argc, argv);
+#endif // STANDALONE
+
+	
 	return status;
     //return 0;
 }

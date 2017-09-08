@@ -15,20 +15,22 @@ struct StreamInfo
 	int pt;
 	string callid;
 };
-struct Catalog
+struct RealStream
 {
     string id;
 	string ip;
 	int port;
 	string name;
 	string pwd;
+	string destip;
+	int destport;
 	string sdk;
 	//DEVICETYPE type = HAIKANG;
 };
 
 interface Stream
 {
-	["amd"] void openRealStream(Catalog ctg, out StreamInfo stm)
+	["amd"] void openRealStream(RealStream ctg, out StreamInfo stm)
 	throws RequestCanceledException;
 };
 

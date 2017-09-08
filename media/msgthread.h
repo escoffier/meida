@@ -44,9 +44,13 @@ private:
 class MessageThread
 {
 public:
-	MessageThread()
+	MessageThread():
+		done(false),
+		thread_(std::thread(&MessageThread::worker_thread, this))
 	{
-		std::thread(&MessageThread::worker_thread, this);
+		//done = false;
+		//std::thread(&MessageThread::worker_thread, this);
+		 //std::async(std::launch::async, &MessageThread::worker_thread, this);
 	};
 	~MessageThread()
 	{
@@ -64,10 +68,12 @@ public:
 			function_wrapper task;
 			if (queue_.try_pop(task))
 			{
+				std::cout << "worker_thread run task" << std::endl;
 				task();
 			}
 			else
 			{
+				//std::cout << "worker_thread yield" << std::endl;
 				std::this_thread::yield();
 			}
 		}
@@ -77,6 +83,7 @@ public:
 	std::future<typename std::result_of<FunctionType()>::type>
 		submit(FunctionType f)
 	{
+		std::cout << "submit task" << std::endl;
 		typedef typename std::result_of<FunctionType()>::type
 			result_type;
 		std::packaged_task<result_type()> task(std::move(f));
@@ -88,4 +95,5 @@ private:
 	//WorkorQueue<function_wrapper> queue_;
 	threadsafe_queue<function_wrapper> queue_;
 	std::atomic_bool done;
+	std::thread thread_;
 };

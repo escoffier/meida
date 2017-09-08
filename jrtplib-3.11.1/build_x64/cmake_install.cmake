@@ -36,14 +36,14 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "D:/Program Files/jrtplib/lib/cmake/JRTPLIB" TYPE FILE FILES "E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/cmake/JRTPLIBConfig.cmake")
+file(INSTALL DESTINATION "D:/Program Files/jrtplib/lib/cmake/JRTPLIB" TYPE FILE FILES "E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/cmake/JRTPLIBConfig.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/src/cmake_install.cmake")
-  include("E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/examples/cmake_install.cmake")
-  include("E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/tests/cmake_install.cmake")
+  include("E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/src/cmake_install.cmake")
+  include("E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/examples/cmake_install.cmake")
+  include("E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/tests/cmake_install.cmake")
 
 endif()
 
@@ -55,5 +55,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "E:/workspace/DTNVS3000/nvs3000/jrtplib-3.11.1/build_x64/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "E:/workspace/DTNVS3000/meida/jrtplib-3.11.1/build_x64/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
