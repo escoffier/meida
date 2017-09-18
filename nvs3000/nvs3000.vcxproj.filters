@@ -70,6 +70,15 @@
     <ClInclude Include="generated\server\Operation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="threadsafequeue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mediaclient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -111,15 +120,19 @@
     <ClCompile Include="generated\server\Operation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MediaClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="config.server" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <IceBuilder Include="Operation.ice">
       <Filter>Slice Files</Filter>
     </IceBuilder>
-    <IceBuilder Include="stream.ice">
+    <IceBuilder Include="..\media\stream.ice">
       <Filter>Slice Files</Filter>
     </IceBuilder>
   </ItemGroup>

@@ -219,8 +219,9 @@ int AsyncServer::run(int argc, char*[])
 
 	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Operation");
 	_workQueue = new WorkQueue();
-	Datang::OperationPtr hello = new HelloI(_workQueue);
-	adapter->add(hello, communicator()->stringToIdentity("operation"));
+
+	//Datang::OperationPtr hello = new HelloI(_workQueue);
+	adapter->add(std::make_shared<CamaraOperation>(_workQueue), Ice::stringToIdentity("operation"));
 
 	_workQueue->start();
 	adapter->activate();

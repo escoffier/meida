@@ -10,31 +10,31 @@
 #include <Operation.h>
 #include "WorkQueue.h"
 
-class HelloI : public Datang::Operation
+class CamaraOperation : public Datang::Operation
 {
 public:
 
-    HelloI(const WorkQueuePtr&);
-	HelloI();
-    virtual void sayHello_async(const Datang::AMD_Operation_sayHelloPtr&, int, const Ice::Current&);
-	virtual void getName_async(const ::Datang::AMD_Operation_getNamePtr&, int, const ::Ice::Current& );
-	virtual void getDeviceInfo_async(const ::Datang::AMD_Operation_getDeviceInfoPtr&, int, const ::Ice::Current&);
-	virtual void requsetCatalog_async(const ::Datang::AMD_Operation_requsetCatalogPtr&, const std::string&, const ::Ice::Current&);
-	void  openRealStream_async(const Datang::AMD_Operation_openRealStreamPtr &, const Datang::Catalog &, const Ice::Current &);
-	void  ptzControl_async(const Datang::AMD_Operation_ptzControlPtr &, const Datang::Catalog &, const std::string &, const Ice::Current &);
-    virtual void shutdown(const Ice::Current&);
-	virtual bool login(const std::string& user, const std::string& password, const ::Ice::Current& );
+	CamaraOperation(const WorkQueuePtr&);
+	CamaraOperation();
+
+	virtual void requsetCatalogAsync(::std::string id, ::std::function<void(const ::Datang::CatalogList&)> cb, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&);
+	virtual void openRealStreamAsync(::Datang::RealStreamReqParam param, ::std::function<void(const ::Datang::RealStreamRespParam&)> cb, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) ;
+	virtual void ptzControlAsync(std::string id, ::std::string, ::std::function<void()> cb, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&);
+	virtual void getDeviceInfoAsync(int, ::std::function<void(const ::Datang::DeviceInfo&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&);
+	virtual bool login(::std::string , ::std::string, const ::Ice::Current&);
+	virtual void shutdown(const ::Ice::Current&);
 
 private:
 
     WorkQueuePtr _workQueue;
 };
 
-class ConnCallback :public Ice::ConnectionCallback
+class ConnCallback
 {
-	virtual void heartbeat(const ::Ice::ConnectionPtr&);
+public:
+	virtual void heartbeat(const ::std::shared_ptr<::Ice::Connection>& con);
 
-	virtual void closed(const ::Ice::ConnectionPtr&);
+	virtual void closed(const ::std::shared_ptr<::Ice::Connection>& con);
 };
 
 #endif

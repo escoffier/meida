@@ -16,8 +16,8 @@ int NvsServer::run(int argc, char *[])
 		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Hello");
 		//_workQueue = new WorkQueue();
 		
-		Datang::OperationPtr hello = new HelloI;
-		adapter->add(hello, communicator()->stringToIdentity("hello"));
+		//Datang::OperationPtr hello = new HelloI;
+		//adapter->add(hello, communicator()->stringToIdentity("hello"));
 
 		//_workQueue->start();
 		adapter->activate();

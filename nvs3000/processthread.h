@@ -1,16 +1,7 @@
 #pragma once
-#include <map>
-#include "threadsafequeue.h"
-#include <Operation.h>
-#include "mediaclient.h"
-
-class DeviceProcesser;
-class RealStreamReqParam;
-
 #include <functional>
 #include "WorkorQueue.h"
 #include <future>
-#include <memory>
 
 class function_wrapper
 {
@@ -53,13 +44,13 @@ private:
 class MessageThread
 {
 public:
-	MessageThread() :
+	MessageThread():
 		done(false),
 		thread_(std::thread(&MessageThread::worker_thread, this))
 	{
 		//done = false;
 		//std::thread(&MessageThread::worker_thread, this);
-		//std::async(std::launch::async, &MessageThread::worker_thread, this);
+		 //std::async(std::launch::async, &MessageThread::worker_thread, this);
 	};
 	~MessageThread()
 	{
@@ -106,28 +97,3 @@ private:
 	std::atomic_bool done;
 	std::thread thread_;
 };
-
-class ProcesserManager
-{
-
-	ProcesserManager();
-public:
-	static ProcesserManager * getInstance();
-	~ProcesserManager();
-
-	DeviceProcesser* get(const std::string & name);
-	void add(const std::string & name, DeviceProcesser* p);
-	//for ICE call, ice请求使用异步调用
-	void openRealStream(const Datang::RealStreamReqParam & params, std::function<void(const::Datang::RealStreamRespParam&)> cb);
-
-	//for GB28181 call 
-	void openRealStream(const RealStreamReqParam & params);
-
-private:
-	std::map<std::string, DeviceProcesser* > processers_;
-	MessageThread msgThread_;
-	std::unique_ptr<MediaClient> mediaClient_;
-	static ProcesserManager* instance_;
-};
-
-

@@ -47,7 +47,7 @@ WorkQueue::run()
                 //
                 _callbacks.pop_front();
                 cout << "Belated Hello World!" << endl;
-                entry.cb->ice_response();
+                //entry.cb->ice_response();
             }
         }
     }
@@ -58,9 +58,12 @@ WorkQueue::run()
     list<CallbackEntry>::const_iterator p;
     for(p = _callbacks.begin(); p != _callbacks.end(); ++p)
     {
-        (*p).cb->ice_exception(Datang::RequestCanceledException());
+        //(*p).cb->ice_exception(Datang::RequestCanceledException());
     }
 }
+#if 0
+
+
 
 void 
 WorkQueue::add(const Datang::AMD_Operation_sayHelloPtr& cb, int delay)
@@ -119,7 +122,7 @@ void WorkQueue::add(const Datang::AMD_Operation_getNamePtr& cb, int)
 	//}
 }
 
-
+#endif // 0
 void
 WorkQueue::destroy()
 {

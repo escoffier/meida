@@ -14,7 +14,7 @@
 
 struct CallbackEntry
 {
-	Datang::AMD_Operation_sayHelloPtr cb;
+	//Datang::AMD_Operation_sayHelloPtr cb;
 	int delay;
 };
 
@@ -30,15 +30,15 @@ public:
 
     virtual void run();
 
-    void add(const Datang::AMD_Operation_sayHelloPtr&, int);
-	void add(const Datang::AMD_Operation_getNamePtr&, int);
+    //void add(const Datang::AMD_Operation_sayHelloPtr&, int);
+	//void add(const Datang::AMD_Operation_getNamePtr&, int);
     void destroy();
 
 private:
 
     struct CallbackEntry
     {
-		Datang::AMD_Operation_sayHelloPtr cb;
+		//Datang::AMD_Operation_sayHelloPtr cb;
         int delay;
     };
 

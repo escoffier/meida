@@ -34,30 +34,34 @@ struct Catalog
 	string sdk;
 	DEVICETYPE type = HAIKANG;
 };
-struct Stream
+
+struct RealStreamReqParam
 {
-    string ip;
-	string port;
+    string id;
+    string destip;
+	int destport;
 	int pt;
+	int ssrc;
+};
+
+struct RealStreamRespParam
+{
+    string id;
+	string sourceip;
+	string sourceport;
 };
 
 sequence<Catalog> CatalogList;
 
 interface Operation
 {
-    ["amd"] idempotent void sayHello(int delay)
-        throws RequestCanceledException;
-
-    ["amd"] void getName(int id, out string name)
-	    throws RequestCanceledException;
-
     ["amd"] void requsetCatalog(string id, out CatalogList catalogs)
 	throws RequestCanceledException;
 
-	["amd"] void openRealStream(Catalog ctg, out Stream stm)
+	["amd"] void openRealStream(RealStreamReqParam req, out RealStreamRespParam resp)
 	throws RequestCanceledException;
 
-    ["amd"] void ptzControl(Catalog ctg, string cmd)
+    ["amd"] void ptzControl(string id, string cmd)
 	throws RequestCanceledException;
 
 	["amd"] void getDeviceInfo(int id, out DeviceInfo info)
