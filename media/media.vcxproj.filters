@@ -49,6 +49,12 @@
     <ClInclude Include="msgthread.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="psheader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PSBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,5 +87,6 @@
   <ItemGroup>
     <None Include="config.grid" />
     <None Include="config.server" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

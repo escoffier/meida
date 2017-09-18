@@ -11,17 +11,49 @@
 #include "jrtplib3\rtpudpv4transmitter.h"
 #include "jrtplib3\rtpipv4address.h"
 #include "jrtplib3\rtpsessionparams.h"
+#include "jrtplib3\rtperrors.h"
 
-#define RTP_MAX_PACKET_LEN 1450
+
+FILE * streamfile = fopen("stream106", "wb");
+
+void checkerror(int rtperr)
+{
+	if (rtperr < 0)
+	{
+		std::cout << "ERROR: " << jrtplib::RTPGetErrorString(rtperr) << std::endl;
+		exit(-1);
+	}
+}
 
 static void __stdcall RealDataCallBack(LONG lPlayHandle, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize, void* pUser)
 {
 	// qDebug()<<tr(u8"receive data");
-	std::cout<<"receive data: "<< dwBufSize <<std::endl;
+	//std::cout<<"receive data: "<< dwBufSize <<"   type: "<< dwDataType <<std::endl;
 	if (pUser == nullptr)
 	{
 		return;
 	}
+	unsigned int div = 0xffffffff;
+	MediaStream * stream = (MediaStream*)pUser;
+	switch (dwDataType)
+	{
+	case NET_DVR_SYSHEAD:
+		break;
+
+	case NET_DVR_STREAMDATA:
+		
+		stream->sendPacket(pBuffer, dwBufSize);
+		//fwrite(pBuffer, 1, dwBufSize, streamfile);
+		
+		//fwrite((void *)&div, 1, sizeof(unsigned int), streamfile);
+
+		break;
+	default:
+		break;
+	}
+
+
+
 	//Widget * w = (Widget *) pUser;
 	//StreamPlayer *player = (StreamPlayer *)pUser;
 	//w->hkstream_->write((const char *)pBuffer, dwBufSize);
@@ -33,9 +65,9 @@ static void __stdcall RealDataCallBack(LONG lPlayHandle, DWORD dwDataType, BYTE 
 
 MediaStream::MediaStream(const std::string & id, const std::string & name, const std::string & pwd, 
 	                     const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                     const Media::AMD_Stream_openRealStreamPtr & iceCB):
+	                     std::function<void(const::Media::RealStreamRespParam&)> iceCB):
 	id_(id),name_(name), pwd_(pwd),ip_(ip),port_(port),destIp_(destIp), 
-	destPort_(destPort), iceCB_(iceCB), isOpen_(false), isLogin_(false), rtpss_(new jrtplib::RTPSession)
+	destPort_(destPort), iceCB_(iceCB), isOpen_(false), isLogin_(false)//, rtpss_(new jrtplib::RTPSession)
 {
 }
 
@@ -49,7 +81,7 @@ void MediaStream::addDestHost(const std::string & destIp, int destPort)
 
 }
 
-std::string MediaStream::addsubStream(const std::string & destIp, int destPort)
+std::string MediaStream::addsubStream(const std::string & destIp, int destPort, int ssrc, RTPTransmitterPtr transmitter)
 {
 	
 	unsigned char buff[128] = { 0 };
@@ -79,22 +111,45 @@ std::string MediaStream::addsubStream(const std::string & destIp, int destPort)
 	if (search == subStreams_.end())
 	{
 		//subStreams_.emplace(std::pair<std::string, subStream>(md5str, ss));
-		subStream ss(destIp, destPort, "192.168.254.233", 1999);
+		subStream ss(destIp, destPort, "192.168.254.233", 1999, ssrc, transmitter);
+		ss.createRTPSession();
 		subStreams_.emplace(md5str, std::move(ss));
+		
 
-		uint16_t portbase, destport;
-		uint32_t destip;
-		destip = inet_addr(destIp.c_str());
-
-
-		jrtplib::RTPIPv4Address addr(destip, destPort);
-		rtpss_->AddDestination(addr);
 
 	}
 	return md5str;
 }
 
-RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, const std::string & ip, int port, const std::string & destIp, int destPort, const Media::AMD_Stream_openRealStreamPtr & iceCB):
+void MediaStream::sendPacket(unsigned char * data, unsigned int len)
+{
+	auto it = subStreams_.begin();
+	while (it != subStreams_.end())
+	{
+		it->second.sendRtpPack(data, len);
+		++it;
+	}
+
+	//rtpss_->SendPacket(data, len);
+
+	//while (len > 1400)
+	//{
+	//	int rtpret  = rtpss_->SendPacket(data, 1400, 96, false, 0);
+	//	fwrite(data, 1, 1400, streamfile);
+	//	checkerror(rtpret);
+	//	data += 1400;
+	//	len -= 1400;
+	//}
+
+	//if (len > 0)
+	//{
+	//	rtpss_->SendPacket(data, len, 96, false, 3600);
+	//	fwrite(data, 1, len, streamfile);
+	//}
+	
+}
+
+RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, const std::string & ip, int port, const std::string & destIp, int destPort, std::function<void(const::Media::RealStreamRespParam&)> iceCB):
 	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB)
 {
 }
@@ -111,6 +166,15 @@ bool RealSteam::openStream()
 
 bool RealSteam::openStream(const std::string & callid)
 {
+	/*auto search = subStreams_.find(callid);
+	if (search != subStreams_.end())
+	{
+		search->second.createRTPSession();
+	}
+	else
+	{
+		return false;
+	}*/
 
     //从摄像机获取视频流
 	if (!isOpen_)
@@ -159,27 +223,68 @@ bool RealSteam::openStream(const std::string & callid)
 									 //LONG lPlayHandle = 0;
 		//lPlayHandle = NET_DVR_RealPlay_V40( lUserID, &struPlayInfo, RealDataCallBack, (void *)w);
 		long playHandle_ = NET_DVR_RealPlay_V40(userID_, &struPlayInfo, RealDataCallBack, (void *)this);
+		if (playHandle_ < 0)
+		{
+			//qDebug() << tr(u8"注册设备失败");
+			std::cout << "Open stream failed" << std::endl;
+			return false;
+		}
+
+#if 0
+
+
 
 		jrtplib::RTPUDPv4TransmissionParams transParams;
 		jrtplib::RTPSessionParams sessionParams;
 
 		transParams.SetRTPSendBuffer(65535); // default: 32768
-		transParams.SetPortbase(20000);
-
+		transParams.SetPortbase(15000);
+		//transParams.SetBindIP(inet_addr("192.168.254.233"));
 		sessionParams.SetOwnTimestampUnit(1.0 / 90000.0);//RTP_TIMESTAMP_UNIT);
 		sessionParams.SetAcceptOwnPackets(true);
 		sessionParams.SetMaximumPacketSize(RTP_MAX_PACKET_LEN);
+		
+		auto search = subStreams_.find(callid);
+		if (search == subStreams_.end())
+		{
+			return false;
+		}
+		else
+		{
+			sessionParams.SetPredefinedSSRC(search->second.ssrc_);
+		}
+		
+		int rtpret = rtpss_->Create(sessionParams, &transParams);
+		checkerror(rtpret);
 
-		rtpss_->Create(sessionParams, &transParams);
+		rtpret = rtpss_->SetDefaultPayloadType(96);
+		checkerror(rtpret);
+		rtpret= rtpss_->SetDefaultMark(false);
+		checkerror(rtpret);
+		rtpret = rtpss_->SetDefaultTimestampIncrement(3600);
+		checkerror(rtpret);
 
-		Media::StreamInfo respinfo;
-		respinfo.callid = callid;
-		uint32_t ip = transParams.GetBindIP();
-		char strIp[16] = {0};
-		inet_ntop(AF_INET, (void*)&ip, strIp, 15);
-		respinfo.ip = strIp;
+		uint32_t destip;
+		destip = inet_addr(search->second.destIp_.c_str());
+		destip = ntohl(destip);
 
-		iceCB_->ice_response(resinfo);
+		std::cout << "addsubStream---" << search->second.destIp_ << " : " << search->second.destPort_ << std::endl;
+
+		jrtplib::RTPIPv4Address addr(destip, search->second.destPort_);
+		rtpret = rtpss_->AddDestination(addr);
+		checkerror(rtpret);
+#endif // 0
+
+
+		Media::RealStreamRespParam respinfo;
+		//respinfo.callid = callid;
+		//uint32_t ip = transParams.GetBindIP();
+		//char strIp[16] = {0};
+		//inet_ntop(AF_INET, (void*)&ip, strIp, 15);
+		std::string strIp("192.168.254.233");
+		respinfo.sourceip = strIp;
+
+		iceCB_(respinfo);
 	}
 
 	//std::map<std::string, subStream>::const_iterator it = subStreams_.find(callid);
@@ -200,9 +305,17 @@ bool RealSteam::openStream(const std::string & callid)
 
 void RealSteam::closeStream(const std::string & callid)
 {
+	auto search = subStreams_.find(callid);
+	if (search != subStreams_.end())
+	{
+		subStreams_.erase(search);
+	}
 }
 
-VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, const std::string & ip, int port, const std::string & destIp, int destPort, const Media::AMD_Stream_openRealStreamPtr & iceCB, const std::string & startTime, const std::string & endTime):
+VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, 
+	               const std::string & ip, int port, const std::string & destIp, int destPort, 
+	               std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+	               const std::string & startTime, const std::string & endTime):
 	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB), startTime_(startTime), endTime_(endTime)
 {
 }
@@ -231,11 +344,24 @@ StreamManager::StreamManager() :
 	streams_(), msgthread_()//, queue_()
 {
 	NET_DVR_Init();
+
+#ifdef RTP_SOCKETTYPE_WINSOCK
+	WSADATA dat;
+	WSAStartup(MAKEWORD(2, 2), &dat);
+#endif // RTP_SOCKETTYPE_WINSOCK
+	transParams_ = new jrtplib::RTPUDPv4TransmissionParams;
+	transParams_->SetRTPSendBuffer(65535); // default: 32768
+	transParams_->SetPortbase(15000);
+
+	transmitter_ = std::make_shared<jrtplib::RTPUDPv4Transmitter>(nullptr);
+	transmitter_->Init(true);
+	transmitter_->Create(1400, transParams_);
+
 };
 
 void StreamManager::addStream(const std::string & id, const std::string & name, const std::string & pwd, 
 	                          const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                          const Media::AMD_Stream_openRealStreamPtr & iceCB)
+	                          int ssrc, const std::function<void(const::Media::RealStreamRespParam&)> iceCB)
 {
 	//std::shared_ptr<MediaStream> stream = getStream(id);
 	auto search = streams_.find(id);
@@ -243,7 +369,7 @@ void StreamManager::addStream(const std::string & id, const std::string & name, 
 	{
 		std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(id, name, pwd, ip, port, destIp, destPort, iceCB);
 
-		std::string callid = ms->addsubStream(destIp, destPort);
+		std::string callid = ms->addsubStream(destIp, destPort, ssrc, transmitter_);
 		streams_.emplace(id, ms);
 		//auto f = std::bind( &StreamManager::openStream, this, std::cref(id),std::cref(callid) );
 		auto f = std::bind(&StreamManager::openStream, this, id, callid);
@@ -252,10 +378,8 @@ void StreamManager::addStream(const std::string & id, const std::string & name, 
 	else
 	{
 		//search->second->addDestHost(destIp, destPort);
-		search->second->addsubStream(destIp, destPort);
+		search->second->addsubStream(destIp, destPort, ssrc, transmitter_);
 	}
-
-	
 }
 
 //bool StreamManager::openStream(const std::string &id, const std::string & callid)
@@ -274,4 +398,28 @@ bool StreamManager::openStream( std::string id,  std::string  callid)
 	}
 	
 	
+}
+
+int MediaStream::subStream::sendRtpPack(uint8_t * data, uint32_t len)
+{
+	rtpss_->ClearDestinations();
+	jrtplib::RTPIPv4Address addr(destipn_, destPort_);
+	int rtpret = rtpss_->AddDestination(addr);
+
+	while (len > 1400)
+	{
+		int rtpret  = rtpss_->SendPacket(data, 1400, 96, false, 0);
+		fwrite(data, 1, 1400, streamfile);
+		checkerror(rtpret);
+		data += 1400;
+		len -= 1400;
+	}
+
+	if (len > 0)
+	{
+		rtpss_->SendPacket(data, len, 96, false, 3600);
+		fwrite(data, 1, len, streamfile);
+	}
+
+	return rtpret;
 }

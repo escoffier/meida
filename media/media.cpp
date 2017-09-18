@@ -32,7 +32,7 @@ int MediaServer::run(int argc, char *[])
 		return EXIT_FAILURE;
 	}
 #ifdef STANDALONE
-	Ice::Identity id = communicator()->stringToIdentity("stream");
+	Ice::Identity id = Ice::stringToIdentity("stream");
 #else
 	Ice::PropertiesPtr properties = communicator()->getProperties();
 	Ice::Identity id = communicator()->stringToIdentity(properties->getProperty("Identity"));
@@ -41,10 +41,8 @@ int MediaServer::run(int argc, char *[])
 
 	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
 	
-
-	//Demo::PricingEnginePtr pricing = new PricingI(properties->getPropertyAsList("Currencies"));
-	Media::StreamPtr stream = new StreamI;
-	adapter->add(stream, id);
+	//auto stream = std::make_shared<StreamI>;
+	adapter->add(std::make_shared<StreamI>(), id);
 	adapter->activate();
 	communicator()->waitForShutdown();
 	return EXIT_SUCCESS;

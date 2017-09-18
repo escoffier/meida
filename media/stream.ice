@@ -8,29 +8,31 @@ exception RequestCanceledException
 {
 };
 
-struct StreamInfo
-{
-    string ip;
-	string port;
-	int pt;
-	string callid;
-};
-struct RealStream
+struct RealStreamRespParam
 {
     string id;
-	string ip;
-	int port;
-	string name;
+	string callid;
+	string sourceip;
+	string sourceport;
+};
+struct RealStreamReqParam
+{
+    string id;
+	string callid;
+	string ip;  //camara ip
+	int port;    //camara control port number
+	string name;  //camara login username
 	string pwd;
-	string destip;
-	int destport;
+	string destip;  // ip
+	int destport;    //port number
+	int ssrc;
 	string sdk;
 	//DEVICETYPE type = HAIKANG;
 };
 
 interface Stream
 {
-	["amd"] void openRealStream(RealStream ctg, out StreamInfo stm)
+	["amd"] void openRealStream(RealStreamReqParam ctg, out RealStreamRespParam stm)
 	throws RequestCanceledException;
 };
 
