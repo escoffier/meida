@@ -6,15 +6,16 @@
 #include "HelloI.h"
 #include "WorkQueue.h"
 #include "glog\logging.h"
-#include "HikDeviceProcesser.h"
+//#include "HikDeviceProcesser.h"
 #include "LoginOperatoin.h"
 #include "CallInfo.h"
 #include "OperationServer.h"
 #include <future>
+#include "ProcesserManager.h"
 using namespace std;
 
 
-typedef DeviceProcesser* (*CREATE_PTR)();
+typedef CamaraController* (*CREATE_PTR)();
 
 class CLoadPlugins
 {
@@ -91,10 +92,6 @@ public:
 
 	virtual int run(int, char*[]);
 	virtual void interruptCallback(int);
-
-private:
-
-	WorkQueuePtr _workQueue;
 };
 
 void printresponse(std::string id, int error)
@@ -109,15 +106,15 @@ void dataProcess(std::string id, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSiz
 
 int main(int argc, char* argv[])
 {
-	//AsyncServer app;
-    //return app.main(argc, argv, "config.server");
-
 	google::InitGoogleLogging(argv[0]);
 	FLAGS_log_dir = "./log";
 	FLAGS_stderrthreshold = 0;
 	int status = 0;
 	std::multimap<std::string, CallInfo> callinfos_;
 	//std::shared_ptr<DeviceProcesser> processor = std::make_shared<HikDeviceProcesser>();
+#if 0
+
+
 
 	CLoadPlugins plugins;
 	if (!plugins.Load("./", "hkdevice"))
@@ -126,7 +123,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	CREATE_PTR func = (CREATE_PTR)plugins.GetFuncAddr("GetProcesser");
+	CREATE_PTR func = (CREATE_PTR)plugins.GetFuncAddr("GetController");
 	if (func == nullptr)
 	{
 		LOG(ERROR) << "GetFuncAddr failed!";
@@ -135,15 +132,32 @@ int main(int argc, char* argv[])
 
 	
 
-	DeviceProcesser * processor = func();
-	if (processor == nullptr)
+	//CamaraController * Controller = func();
+	std::shared_ptr<CamaraController> Controller(func);
+	if (Controller == nullptr)
 	{
 		LOG(ERROR) << "processor is null!";
 		return 0;
 	}
+
+	ControllerManager::getInstance()->add("hik", Controller);
+#endif // 0
+
+
+
 	//std::shared_ptr<DeviceProcesser> processor = std::make_shared<HKde>func();
 	//std::thread processthread(&DeviceProcesser::run, processor);
-	auto process = std::async(std::launch::async, &DeviceProcesser::run, processor);
+	//auto process = std::async(std::launch::async, &DeviceProcesser::run, processor);
+
+	std::shared_ptr<CCatalog> ctg = std::make_shared<CCatalog>();
+	ctg->SetID("60000000001310001430");
+	ctg->SetIp("192.168.254.106");
+	ctg->Setport("8000");
+	ctg->SetPassword("dtnvs3000");
+	ctg->SetName("admin");
+	CatalogManager::getInstance()->insert(ctg);
+
+#if 0
 	std::shared_ptr<Device> dev = std::make_shared<Device>();
 	dev->userId_ = "15100000001310000001";
 	dev->userIp_ = "192.168.254.106";
@@ -159,11 +173,15 @@ int main(int argc, char* argv[])
 	dev1->userName_ = "admin";
 	dev1->loginName_ = "admin";
 	dev1->loginPassword_ = "dtnvs3000";
-	//std::shared_ptr<AbstractOperation> op = std::make_shared<LoginOperatoin>(dev);
-	processor->addLogin(dev);
-	processor->addStreamOperation(dev, printresponse, std::bind(dataProcess, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+#endif // 0
 
-	processor->addStreamOperation(dev1, printresponse, std::bind(dataProcess, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+
+
+	//std::shared_ptr<AbstractOperation> op = std::make_shared<LoginOperatoin>(dev);
+	//processor->addLogin(dev);
+	//processor->addStreamOperation(dev, printresponse, std::bind(dataProcess, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+
+	//processor->addStreamOperation(dev1, printresponse, std::bind(dataProcess, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 	//std::function<void(std::string, int)> response = printresponse;
 	//processor->addPtzControl(dev, "A50F0108001F00DC", response);
 	//processthread.join();
@@ -203,7 +221,7 @@ int main(int argc, char* argv[])
 	//}
 	//return status;
 
-	NvsServer app;
+	AsyncServer app;
 	return app.main(argc, argv, "config.server");
 }
 
@@ -217,23 +235,29 @@ int AsyncServer::run(int argc, char*[])
 
 	callbackOnInterrupt();
 
-	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Operation");
-	_workQueue = new WorkQueue();
+	try
+	{
+		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("DeviceControl");
 
-	//Datang::OperationPtr hello = new HelloI(_workQueue);
-	adapter->add(std::make_shared<CamaraOperation>(_workQueue), Ice::stringToIdentity("operation"));
+		adapter->add(std::make_shared<CamaraOperation>(), Ice::stringToIdentity("DeviceControl"));
 
-	_workQueue->start();
-	adapter->activate();
+		adapter->activate();
 
-	communicator()->waitForShutdown();
-	_workQueue->getThreadControl().join();
+		communicator()->waitForShutdown();
+	}
+	catch (const Ice::Exception& e) {
+		LOG(INFO) << e.what();
+	}
+	catch (const std::exception& e)
+	{
+		LOG(INFO) << e.what();
+	}
+
 	return EXIT_SUCCESS;
 }
 
 void
 AsyncServer::interruptCallback(int)
 {
-	_workQueue->destroy();
 	communicator()->shutdown();
 }

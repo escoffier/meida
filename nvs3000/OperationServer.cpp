@@ -13,16 +13,16 @@ int NvsServer::run(int argc, char *[])
 	callbackOnInterrupt();
 	try
 	{
-		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Hello");
-		//_workQueue = new WorkQueue();
-		
-		//Datang::OperationPtr hello = new HelloI;
-		//adapter->add(hello, communicator()->stringToIdentity("hello"));
+		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Operation");
 
-		//_workQueue->start();
 		adapter->activate();
 
 		communicator()->waitForShutdown();
+	}
+	catch (const Ice::Exception& e)
+	{
+		LOG(ERROR) << e.what();
+		//	status = 1;
 	}
 	catch (const std::exception& e)
 	{

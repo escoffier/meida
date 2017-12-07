@@ -2,7 +2,7 @@
 #include "glog\logging.h"
 
 
-WorkorQueue::WorkorQueue()
+/*WorkorQueue::WorkorQueue()
 {
 }
 
@@ -26,4 +26,4 @@ std::shared_ptr<AbstractOperation> WorkorQueue::Pop()
 	auto op = queue_.front();
 	queue_.pop();
 	return op;
-}
+}*/

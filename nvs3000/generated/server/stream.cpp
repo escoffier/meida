@@ -55,6 +55,8 @@ namespace
 
 const ::IceInternal::DefaultUserExceptionFactoryInit<::Media::RequestCanceledException> iceC_Media_RequestCanceledException_init("::Media::RequestCanceledException");
 
+const ::IceInternal::DefaultUserExceptionFactoryInit<::Media::OpenStreamException> iceC_Media_OpenStreamException_init("::Media::OpenStreamException");
+
 const ::std::string iceC_Media_Stream_ids[2] =
 {
     "::Ice::Object",
@@ -62,6 +64,7 @@ const ::std::string iceC_Media_Stream_ids[2] =
 };
 const ::std::string iceC_Media_Stream_ops[] =
 {
+    "closeStream",
     "ice_id",
     "ice_ids",
     "ice_isA",
@@ -69,6 +72,7 @@ const ::std::string iceC_Media_Stream_ops[] =
     "openRealStream"
 };
 const ::std::string iceC_Media_Stream_openRealStream_name = "openRealStream";
+const ::std::string iceC_Media_Stream_closeStream_name = "closeStream";
 
 }
 
@@ -80,6 +84,17 @@ const ::std::string&
 Media::RequestCanceledException::ice_staticId()
 {
     static const ::std::string typeId = "::Media::RequestCanceledException";
+    return typeId;
+}
+
+Media::OpenStreamException::~OpenStreamException()
+{
+}
+
+const ::std::string&
+Media::OpenStreamException::ice_staticId()
+{
+    static const ::std::string typeId = "::Media::OpenStreamException";
     return typeId;
 }
 
@@ -129,9 +144,23 @@ Media::Stream::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::C
 }
 
 bool
+Media::Stream::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->readAll(iceP_callid, iceP_id);
+    inS.endReadParams();
+    auto inA = ::IceInternal::IncomingAsync::create(inS);
+    this->closeStreamAsync(::std::move(iceP_callid), ::std::move(iceP_id), inA->response(), inA->exception(), current);
+    return false;
+}
+
+bool
 Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_ops, iceC_Media_Stream_ops + 5, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_ops, iceC_Media_Stream_ops + 6, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -141,21 +170,25 @@ Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& c
     {
         case 0:
         {
-            return _iceD_ice_id(in, current);
+            return _iceD_closeStream(in, current);
         }
         case 1:
         {
-            return _iceD_ice_ids(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 2:
         {
-            return _iceD_ice_isA(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 3:
         {
-            return _iceD_ice_ping(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 4:
+        {
+            return _iceD_ice_ping(in, current);
+        }
+        case 5:
         {
             return _iceD_openRealStream(in, current);
         }
@@ -182,7 +215,7 @@ Media::StreamPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInternal::Ou
             {
                 ex.ice_throw();
             }
-            catch(const ::Media::RequestCanceledException&)
+            catch(const ::Media::OpenStreamException&)
             {
                 throw;
             }
@@ -190,6 +223,17 @@ Media::StreamPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInternal::Ou
             {
             }
         });
+}
+
+void
+Media::StreamPrx::_iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_Media_Stream_closeStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_callid, iceP_id);
+        },
+        nullptr);
 }
 
 ::std::shared_ptr<::Ice::ObjectPrx>
@@ -214,6 +258,8 @@ namespace
 {
 
 const ::std::string iceC_Media_Stream_openRealStream_name = "openRealStream";
+
+const ::std::string iceC_Media_Stream_closeStream_name = "closeStream";
 
 }
 
@@ -262,7 +308,63 @@ Media::RequestCanceledException::_readImpl(::Ice::InputStream* istr)
     istr->endSlice();
 }
 
+namespace
+{
+
+const ::IceInternal::DefaultUserExceptionFactoryInit< ::Media::OpenStreamException> iceC_Media_OpenStreamException_init("::Media::OpenStreamException");
+
+}
+
+Media::OpenStreamException::OpenStreamException(const ::std::string& iceP_callid, const ::std::string& iceP_reason) :
+    ::Ice::UserException(),
+    callid(iceP_callid),
+    reason(iceP_reason)
+{
+}
+
+Media::OpenStreamException::~OpenStreamException() throw()
+{
+}
+
+::std::string
+Media::OpenStreamException::ice_id() const
+{
+    return "::Media::OpenStreamException";
+}
+
+Media::OpenStreamException*
+Media::OpenStreamException::ice_clone() const
+{
+    return new OpenStreamException(*this);
+}
+
+void
+Media::OpenStreamException::ice_throw() const
+{
+    throw *this;
+}
+
+void
+Media::OpenStreamException::_writeImpl(::Ice::OutputStream* ostr) const
+{
+    ostr->startSlice("::Media::OpenStreamException", -1, true);
+    Ice::StreamWriter< ::Media::OpenStreamException, ::Ice::OutputStream>::write(ostr, *this);
+    ostr->endSlice();
+}
+
+void
+Media::OpenStreamException::_readImpl(::Ice::InputStream* istr)
+{
+    istr->startSlice();
+    Ice::StreamReader< ::Media::OpenStreamException, ::Ice::InputStream>::read(istr, *this);
+    istr->endSlice();
+}
+
 Media::AMD_Stream_openRealStream::~AMD_Stream_openRealStream()
+{
+}
+
+Media::AMD_Stream_closeStream::~AMD_Stream_closeStream()
 {
 }
 
@@ -277,6 +379,18 @@ IceAsync::Media::AMD_Stream_openRealStream::ice_response(const ::Media::RealStre
     ::Ice::OutputStream* ostr = startWriteParams();
     ostr->write(stm);
     endWriteParams();
+    completed();
+}
+
+IceAsync::Media::AMD_Stream_closeStream::AMD_Stream_closeStream(::IceInternal::Incoming& in) :
+    ::IceInternal::IncomingAsync(in)
+{
+}
+
+void
+IceAsync::Media::AMD_Stream_closeStream::ice_response()
+{
+    writeEmptyParams();
     completed();
 }
 ::IceProxy::Ice::Object* ::IceProxy::Media::upCast(::IceProxy::Media::Stream* p) { return p; }
@@ -327,7 +441,7 @@ IceProxy::Media::Stream::end_openRealStream(::Media::RealStreamRespParam& iceP_s
         {
             result->_throwUserException();
         }
-        catch(const ::Media::RequestCanceledException&)
+        catch(const ::Media::OpenStreamException&)
         {
             throw;
         }
@@ -339,6 +453,32 @@ IceProxy::Media::Stream::end_openRealStream(::Media::RealStreamRespParam& iceP_s
     ::Ice::InputStream* istr = result->_startReadParams();
     istr->read(iceP_stm);
     result->_endReadParams();
+}
+
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_closeStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_closeStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_callid);
+        ostr->write(iceP_id);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_closeStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
+}
+
+void
+IceProxy::Media::Stream::end_closeStream(const ::Ice::AsyncResultPtr& result)
+{
+    _end(result, iceC_Media_Stream_closeStream_name);
 }
 
 ::IceProxy::Ice::Object*
@@ -411,10 +551,25 @@ Media::Stream::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::C
     return false;
 }
 
+bool
+Media::Stream::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->read(iceP_callid);
+    istr->read(iceP_id);
+    inS.endReadParams();
+    this->closeStream_async(new IceAsync::Media::AMD_Stream_closeStream(inS), iceP_callid, iceP_id, current);
+    return false;
+}
+
 namespace
 {
 const ::std::string iceC_Media_Stream_all[] =
 {
+    "closeStream",
     "ice_id",
     "ice_ids",
     "ice_isA",
@@ -427,7 +582,7 @@ const ::std::string iceC_Media_Stream_all[] =
 bool
 Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_all, iceC_Media_Stream_all + 5, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_all, iceC_Media_Stream_all + 6, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -437,21 +592,25 @@ Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& c
     {
         case 0:
         {
-            return _iceD_ice_id(in, current);
+            return _iceD_closeStream(in, current);
         }
         case 1:
         {
-            return _iceD_ice_ids(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 2:
         {
-            return _iceD_ice_isA(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 3:
         {
-            return _iceD_ice_ping(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 4:
+        {
+            return _iceD_ice_ping(in, current);
+        }
+        case 5:
         {
             return _iceD_openRealStream(in, current);
         }
