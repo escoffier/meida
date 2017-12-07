@@ -3,9 +3,11 @@
 #include "streamI.h"
 //#define WIN32_LEAN_AND_MEAN
 #include "mediastream.h"
+#include "utility.h"
+#include "glog\logging.h"
 
 StreamI::StreamI()
-	:sm_(new StreamManager())
+	//:sm_(new StreamManager())
 {
 	
 }
@@ -14,9 +16,18 @@ StreamI::~StreamI()
 {
 }
 
-void StreamI::openRealStreamAsync(::Media::RealStreamReqParam param, ::std::function<void(const::Media::RealStreamRespParam&)> cb, ::std::function<void(::std::exception_ptr)>, const::Ice::Current &)
+void StreamI::openRealStreamAsync(::Media::RealStreamReqParam param, ::std::function<void(const::Media::RealStreamRespParam&)> cb, ::std::function<void(::std::exception_ptr)> ecb, const::Ice::Current &)
 {
-	sm_->addStream(param.id, param.name, param.pwd, param.ip, param.port, param.destip,  param.destport, param.ssrc, cb);
+	LOG(INFO) << param.callid;
+	StreamManager::getInstance()->addStream(param, cb, ecb);
+	//sm_->addStream(param.id, param.callid,param.name, param.pwd, param.ip, param.port, param.destip,  param.destport, param.ssrc, cb, ecb);
+}
+
+void StreamI::closeStreamAsync(::std::string callid, ::std::string id, ::std::function<void()> cb, ::std::function<void(::std::exception_ptr)> excb, const::Ice::Current &)
+{
+	
+	StreamManager::getInstance()->closeStream(id, callid);
+	cb();
 }
 
 //void StreamI::openRealStream_async(const Media::AMD_Stream_openRealStreamPtr &cb, const Media::RealStream & ctg, const Ice::Current &)

@@ -8,11 +8,11 @@
 //#include <windows.h>    
 #include "HCNetSDK.h"
 //#include "jrtplib3\rtpsession.h"
-#include "jrtplib3\rtpudpv4transmitter.h"
-#include "jrtplib3\rtpipv4address.h"
-#include "jrtplib3\rtpsessionparams.h"
-#include "jrtplib3\rtperrors.h"
-
+//#include "jrtplib3\rtpudpv4transmitter.h"
+//#include "jrtplib3\rtpipv4address.h"
+//#include "jrtplib3\rtpsessionparams.h"
+//#include "jrtplib3\rtperrors.h"
+#include "glog\logging.h"
 
 FILE * streamfile = fopen("stream106", "wb");
 
@@ -21,53 +21,16 @@ void checkerror(int rtperr)
 	if (rtperr < 0)
 	{
 		std::cout << "ERROR: " << jrtplib::RTPGetErrorString(rtperr) << std::endl;
-		exit(-1);
+		//exit(-1);
 	}
-}
-
-static void __stdcall RealDataCallBack(LONG lPlayHandle, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize, void* pUser)
-{
-	// qDebug()<<tr(u8"receive data");
-	//std::cout<<"receive data: "<< dwBufSize <<"   type: "<< dwDataType <<std::endl;
-	if (pUser == nullptr)
-	{
-		return;
-	}
-	unsigned int div = 0xffffffff;
-	MediaStream * stream = (MediaStream*)pUser;
-	switch (dwDataType)
-	{
-	case NET_DVR_SYSHEAD:
-		break;
-
-	case NET_DVR_STREAMDATA:
-		
-		stream->sendPacket(pBuffer, dwBufSize);
-		//fwrite(pBuffer, 1, dwBufSize, streamfile);
-		
-		//fwrite((void *)&div, 1, sizeof(unsigned int), streamfile);
-
-		break;
-	default:
-		break;
-	}
-
-
-
-	//Widget * w = (Widget *) pUser;
-	//StreamPlayer *player = (StreamPlayer *)pUser;
-	//w->hkstream_->write((const char *)pBuffer, dwBufSize);
-	//player->getStreamBuf()->write((const char *)pBuffer, dwBufSize);
-	// qDebug()<<"buf size: "<<w->hkstream_->buffer().size()<<" : " <<dwBufSize;
-	// w->startPlay();
-
 }
 
 MediaStream::MediaStream(const std::string & id, const std::string & name, const std::string & pwd, 
 	                     const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                     std::function<void(const::Media::RealStreamRespParam&)> iceCB):
+	                     std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+	                     std::shared_ptr<CamaraController> con):
 	id_(id),name_(name), pwd_(pwd),ip_(ip),port_(port),destIp_(destIp), 
-	destPort_(destPort), iceCB_(iceCB), isOpen_(false), isLogin_(false)//, rtpss_(new jrtplib::RTPSession)
+	destPort_(destPort), iceCB_(iceCB), ecb_(ecb),isOpen_(false), isLogin_(false), buffer_(std::make_shared<PSBuffer>()), controller_(con)
 {
 }
 
@@ -81,14 +44,405 @@ void MediaStream::addDestHost(const std::string & destIp, int destPort)
 
 }
 
-std::string MediaStream::addsubStream(const std::string & destIp, int destPort, int ssrc, RTPTransmitterPtr transmitter)
+std::string MediaStream::addsubStream(const std::string &callid, const std::string & destIp, int destPort, int ssrc, int pt, jrtplib::RTPTransmitter* transmitter)
 {
-	
+	std::lock_guard<std::mutex> lockGuard(mutex_);
+	auto search = subStreams_.find(callid);
+	if (search == subStreams_.end())
+	{
+		//subStreams_.emplace(std::pair<std::string, subStream>(md5str, ss));
+		LOG(INFO) << "add substream : " << destIp << " - " << destPort << std::endl;
+		subStream ss(destIp, destPort, "192.168.254.233", 1999, ssrc, transmitter);
+
+	/*	PSBuffer::Destination dest;
+		dest.destip_ = ss.destipn_;
+		dest.destport_ = ss.destPort_;
+		dest.ssrc_ = ss.ssrc_;
+		dest.pt_ = ss.pt_;
+		dest.createRTPSession(dest.ssrc_, transmitter);*/
+		buffer_->addDestination(callid, ss.destipn_, destPort, ssrc, pt, transmitter);
+
+		subStreams_.emplace(callid, std::move(ss));
+	}
+	return callid;
+}
+
+void MediaStream::removesubStream(const std::string & callid)
+{
+	{
+		std::lock_guard<std::mutex> lockGuard(mutex_);
+		subStreams_.erase(callid);
+	}
+	buffer_->removeDestination(callid);
+}
+
+size_t MediaStream::subStreamCount() const
+{
+	//std::lock_guard<std::mutex> lockGuard(mutex_);
+	return subStreams_.size();
+}
+
+bool MediaStream::needClose()
+{
+	std::lock_guard<std::mutex> lockGuard(mutex_);
+	return subStreams_.empty();
+}
+
+void MediaStream::processData(char * data, uint32_t len)
+{
+	std::shared_ptr<PSBuffer::BufferNode> node = buffer_->getFreeNode();
+	if (!node)
+	{
+		LOG(WARNING) << "discard data";
+		return;
+	}
+	memcpy(node->data_, data, len);
+	node->length_ = len;
+	buffer_->push(node);
+}
+
+RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, 
+	                 const std::string & ip, int port, const std::string & destIp, int destPort, 
+	                 std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+	                 std::shared_ptr<CamaraController> con):
+	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb, con)
+{
+}
+
+RealSteam::~RealSteam()
+{
+}
+
+
+bool RealSteam::openStream(const std::string & callid)
+{
+    //从摄像机获取视频流
+	dt::OpenRealStream param;
+	param.id = id_;
+	param.ip = ip_;
+	param.port = port_;
+	param.name = name_;
+	param.pwd = pwd_;
+
+	if (controller_->openRealStream(param))
+	{
+		controller_->setDataCallback([=](char *data, uint32_t len) { processData(data, len); });
+		Media::RealStreamRespParam resp;
+		//respinfo.callid = callid;
+		//uint32_t ip = transParams.GetBindIP();
+		//char strIp[16] = {0};
+		//inet_ntop(AF_INET, (void*)&ip, strIp, 15);
+		std::string strIp("192.168.254.233");
+		resp.sourceip = strIp;
+		resp.callid = callid;
+		resp.id = id_;
+
+		iceCB_(resp);
+		return true;
+	}
+	else
+	{
+		//ecb_();
+		return false;
+	}	
+}
+
+void RealSteam::closeStream(const std::string & callid)
+{
+	//std::lock_guard<std::mutex> lockGuard(mutex_);
+	//auto search = subStreams_.find(callid);
+	//if (search != subStreams_.end())
+	//{
+	//	size_t n =  subStreams_.count(callid);
+	//	if (n == 0)
+	//	{
+	//		if (controller_->closeRealStream(search->second.id_))
+	//		{
+	//			LOG(ERROR) << "Hik sdk close stream failed, error code: " << NET_DVR_GetLastError();
+	//		}
+	//		else
+	//		{
+	//			LOG(INFO) << "Close stream: " << callid;
+	//		}
+	//		
+	//	}
+	//	subStreams_.erase(search);
+	//}
+
+	return;
+
+}
+
+void RealSteam::closeStream()
+{
+	if (!controller_->closeRealStream(id_))
+	{
+		LOG(ERROR) << "Hik sdk close stream failed, error code: " << NET_DVR_GetLastError();
+	}
+	else
+	{
+		LOG(INFO) << "Close stream: " << id_;
+	}
+}
+
+VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, 
+	               const std::string & ip, int port, const std::string & destIp, int destPort, 
+	               std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+	               const std::string & startTime, const std::string & endTime, std::shared_ptr<CamaraController> con):
+	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb, con), startTime_(startTime), endTime_(endTime)
+{
+}
+
+VodSteam::~VodSteam()
+{
+}
+
+bool VodSteam::openStream(const std::string &callid)
+{
+	return false;
+}
+
+void VodSteam::closeStream(const std::string & callid)
+{
+}
+
+void VodSteam::closeStream()
+{
+}
+
+StreamManager * StreamManager::instance_ = nullptr;
+
+StreamManager * StreamManager::getInstance()
+{
+	if (instance_ == nullptr)
+	{
+		instance_ = new StreamManager;
+	}
+
+	return instance_;
+}
+
+StreamManager::StreamManager() :
+	streams_(), msgthread_(), locker_(),rtpSender_(new RTPSender), plugins_( new SDKPlugins)
+{
+	NET_DVR_Init();
+};
+
+std::shared_ptr<MediaStream> StreamManager::getStream(const std::string & id)
+{
+	auto search = streams_.find(id);
+	if (search != streams_.end())
+	{
+		return search->second;
+	}
+	return nullptr;
+}
+
+void StreamManager::addStream(const std::string & id, const std::string &callid, const std::string & name, const std::string & pwd,
+	                          const std::string & ip, int port, const std::string & destIp, int destPort, 
+	                          int ssrc, const std::function<void(const::Media::RealStreamRespParam&)> iceCB,
+	                          std::function<void(::std::exception_ptr)> ecb)
+{
+	//std::lock_guard<std::mutex> lockGuard(locker_);
+
+	//auto search = streams_.find(id);
+	//if (search == streams_.end())
+	//{
+	//	std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb);
+
+	//    ms->addsubStream(destIp, destPort, ssrc, transmitter_);
+	//	streams_.emplace(id, ms);
+	//	
+	//	msgthread_.submit([=]() {
+	//		openStream(id, callid);
+	//	});
+	//}
+	//else
+	//{
+	//	//search->second->addDestHost(destIp, destPort);
+	//	search->second->addsubStream(destIp, destPort, ssrc, transmitter_);
+	//}
+}
+
+void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> excb)
+{
+	std::lock_guard<std::mutex> lockGuard(locker_);
+
+	std::shared_ptr<CamaraController> controller;
+	auto search = streams_.find(param.id);
+	if (search == streams_.end())
+	{
+		auto search = controllers_.find("hkdevice");	
+
+		if (search == controllers_.end())
+		{
+			controller = loadPlugin("hkdevice");
+			if (!controller)
+			{
+				LOG(ERROR) << "load plugin failed";
+				Media::OpenStreamException ex;
+				ex.reason = "load plugin failed";
+				ex.callid = param.callid;
+				excb(make_exception_ptr(ex));
+				return;
+			}
+		}
+		else
+		{
+			controller = search->second;
+		}
+
+		std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(param.id, param.name, param.pwd, param.ip, param.port, param.destip, param.destport, iceCB, excb, controller);
+
+		ms->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt, rtpSender_->getRTPTransmitter());
+		rtpSender_->addBuffer(param.id, ms->getBuffer());
+		streams_.emplace(param.id, ms);
+
+		msgthread_.submit([=]() {
+			openStream(param.id, param.callid, iceCB, excb);
+		});
+	}
+	else
+	{
+		search->second->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt, rtpSender_->getRTPTransmitter());
+
+		Media::RealStreamRespParam resp;
+		resp.id = param.id;
+		resp.callid = param.callid;
+		resp.sourceip = "192.168.254.233";
+		resp.sourceport = "18000";
+		iceCB(resp);
+	}
+}
+
+bool StreamManager::openStream( std::string id,  std::string  callid, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> excb)
+{
+	std::lock_guard<std::mutex> lockGuard(locker_);
+	auto search = streams_.find(id);
+	if (search == streams_.end())
+	{
+		LOG(ERROR) << "Cann't find stream: " << id << std::endl;
+		Media::OpenStreamException ex;
+		ex.reason = "Cann't find stream";
+		excb(std::make_exception_ptr(ex));
+		return false;
+	}
+	else
+	{
+		if (!search->second->openStream(callid))
+		{
+			LOG(ERROR) << "Cann't open stream: " << id << std::endl;
+			rtpSender_->removeBuffer(id);
+			streams_.erase(id);
+
+			Media::OpenStreamException ex;
+			ex.reason = "Cann't open stream";
+			excb(std::make_exception_ptr(ex));
+
+			return false;
+		}
+	}
+	Media::RealStreamRespParam resp;
+	resp.id = id;
+	resp.callid = callid;
+	resp.sourceip = "192.168.254.233";
+	resp.sourceport = "18000";
+	iceCB(resp);
+	return true;
+}
+
+void StreamManager::closeStream(std::string id, std::string callid)
+{
+	std::lock_guard<std::mutex> lockGuard(locker_);
+	auto search = streams_.find(id);
+	if (search == streams_.end())
+	{
+		LOG(ERROR) << "Cann't find stream: " << id << std::endl;
+		return;
+	}
+	else
+	{	
+		search->second->removesubStream(callid);
+
+		if (search->second->needClose())
+		{
+			//如果当前的摄像机只有一路视频流，将此摄像机从streams_摘除
+			//std::shared_ptr<MediaStream> stream(search->second);
+			search->second->closeStream();
+
+			rtpSender_->removeBuffer(id);
+			streams_.erase(search);
+		}
+		//else
+		//{
+		//	search->second->removesubStream(callid);
+		//}	
+	}
+	return;
+}
+
+typedef CamaraController* (*CREATE_PTR)();
+
+std::shared_ptr<CamaraController> StreamManager::loadPlugin(const std::string & name)
+{
+	if (!plugins_->Load("./", name.c_str()))
+	{
+		LOG(ERROR) << "Load " << name << ".dll failed!";
+		return std::shared_ptr<CamaraController>();
+	}
+
+	CREATE_PTR func = (CREATE_PTR)plugins_->GetFuncAddr("GetController");
+	if (func == nullptr)
+	{
+		LOG(ERROR) << "GetFuncAddr failed!";
+		return std::shared_ptr<CamaraController>();
+	}
+
+	std::shared_ptr<CamaraController> controller = std::shared_ptr<CamaraController>(func());
+	if (controller == nullptr)
+	{
+		LOG(ERROR) << "CamaraController is null!";
+		return std::shared_ptr<CamaraController>();
+	}
+
+	controllers_.emplace(std::make_pair(name, controller));
+	LOG(INFO) << "load plugin : " << name << ".dll";
+
+	return controller;
+}
+
+std::shared_ptr<CamaraController> StreamManager::getController(const std::string & name)
+{
+	auto search = controllers_.find(name);
+	std::shared_ptr<CamaraController> controller;
+
+	if (search == controllers_.end())
+	{
+		controller = loadPlugin("hkdevice");
+		if (!controller)
+		{
+			LOG(ERROR) << "load plugin failed";
+			//Gateway::DeviceControlException ex;
+			//ex.reason = "load plugin failed";
+			//excb(make_exception_ptr(ex));
+			return std::shared_ptr<CamaraController>();;
+		}
+	}
+	else
+	{
+		controller = search->second;
+	}
+
+	return controller;
+}
+
+std::string StreamManager::buildCallId(const std::string & ip, int port)
+{
 	unsigned char buff[128] = { 0 };
 	md5_state_t mdctx;
 	md5_byte_t md_value[16];
 
-	snprintf((char*)buff, 127, "%s%d", destIp.c_str(), destPort);
+	snprintf((char*)buff, 127, "%s%d", ip.c_str(), port);
 	md5_init(&mdctx);
 	md5_append(&mdctx, (const unsigned char*)(buff), strlen((const char*)buff));
 	md5_finish(&mdctx, md_value);
@@ -107,319 +461,5 @@ std::string MediaStream::addsubStream(const std::string & destIp, int destPort, 
 	md5sum[32] = '\0';
 
 	std::string md5str(md5sum);
-	auto search = subStreams_.find(md5str);
-	if (search == subStreams_.end())
-	{
-		//subStreams_.emplace(std::pair<std::string, subStream>(md5str, ss));
-		subStream ss(destIp, destPort, "192.168.254.233", 1999, ssrc, transmitter);
-		ss.createRTPSession();
-		subStreams_.emplace(md5str, std::move(ss));
-		
-
-
-	}
 	return md5str;
-}
-
-void MediaStream::sendPacket(unsigned char * data, unsigned int len)
-{
-	auto it = subStreams_.begin();
-	while (it != subStreams_.end())
-	{
-		it->second.sendRtpPack(data, len);
-		++it;
-	}
-
-	//rtpss_->SendPacket(data, len);
-
-	//while (len > 1400)
-	//{
-	//	int rtpret  = rtpss_->SendPacket(data, 1400, 96, false, 0);
-	//	fwrite(data, 1, 1400, streamfile);
-	//	checkerror(rtpret);
-	//	data += 1400;
-	//	len -= 1400;
-	//}
-
-	//if (len > 0)
-	//{
-	//	rtpss_->SendPacket(data, len, 96, false, 3600);
-	//	fwrite(data, 1, len, streamfile);
-	//}
-	
-}
-
-RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, const std::string & ip, int port, const std::string & destIp, int destPort, std::function<void(const::Media::RealStreamRespParam&)> iceCB):
-	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB)
-{
-}
-
-RealSteam::~RealSteam()
-{
-}
-
-bool RealSteam::openStream()
-{
-	
-	return false;
-}
-
-bool RealSteam::openStream(const std::string & callid)
-{
-	/*auto search = subStreams_.find(callid);
-	if (search != subStreams_.end())
-	{
-		search->second.createRTPSession();
-	}
-	else
-	{
-		return false;
-	}*/
-
-    //从摄像机获取视频流
-	if (!isOpen_)
-	{
-		NET_DVR_USER_LOGIN_INFO struLoginInfo = { 0 };
-		struLoginInfo.bUseAsynLogin = false;
-		//    memcpy(struLoginInfo.sDeviceAddress, "192.168.254.106", NET_DVR_DEV_ADDRESS_MAX_LEN);
-		//    memcpy(struLoginInfo.sUserName, "admin", NAME_LEN);
-		//    memcpy(struLoginInfo.sPassword, "dtnvs3000", PASSWD_LEN);
-		//    struLoginInfo.wPort = 8000;
-
-		memcpy(struLoginInfo.sDeviceAddress, ip_.c_str(), NET_DVR_DEV_ADDRESS_MAX_LEN);
-		memcpy(struLoginInfo.sUserName, name_.c_str(), NAME_LEN);
-		memcpy(struLoginInfo.sPassword, pwd_.c_str(), PASSWD_LEN);
-		struLoginInfo.wPort = port_;
-
-
-		NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
-
-		//LONG lUserID = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
-		long userID_ = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
-		if (userID_ < 0)
-		{
-			//qDebug() << tr(u8"注册设备失败");
-			return false;
-		}
-		else
-		{
-
-			//qDebug() << tr(u8"注册设备向成功");
-
-		}
-
-		HWND hWnd = NULL;
-		//= GetConsoleWindow();
-		NET_DVR_PREVIEWINFO struPlayInfo = { 0 };
-		struPlayInfo.hPlayWnd = hWnd;
-		struPlayInfo.lChannel = 1;//request.ulChannelID;//iChanIndex+g_struDeviceInfo[iDeviceIndex].iStartChan;
-		struPlayInfo.dwLinkMode = 0;//Tcp
-		struPlayInfo.dwStreamType = 0;//主码流
-									  //	struPlayInfo.sMultiCastIP = g_struDeviceInfo[iDeviceIndex].chDeviceMultiIP;
-		struPlayInfo.byPreviewMode = 0;//正常预览
-		struPlayInfo.bBlocked = 1;//阻塞取流
-		struPlayInfo.bPassbackRecord = 0;//不启用录像回传;
-		struPlayInfo.byProtoType = 0;//私有协议
-									 //LONG lPlayHandle = 0;
-		//lPlayHandle = NET_DVR_RealPlay_V40( lUserID, &struPlayInfo, RealDataCallBack, (void *)w);
-		long playHandle_ = NET_DVR_RealPlay_V40(userID_, &struPlayInfo, RealDataCallBack, (void *)this);
-		if (playHandle_ < 0)
-		{
-			//qDebug() << tr(u8"注册设备失败");
-			std::cout << "Open stream failed" << std::endl;
-			return false;
-		}
-
-#if 0
-
-
-
-		jrtplib::RTPUDPv4TransmissionParams transParams;
-		jrtplib::RTPSessionParams sessionParams;
-
-		transParams.SetRTPSendBuffer(65535); // default: 32768
-		transParams.SetPortbase(15000);
-		//transParams.SetBindIP(inet_addr("192.168.254.233"));
-		sessionParams.SetOwnTimestampUnit(1.0 / 90000.0);//RTP_TIMESTAMP_UNIT);
-		sessionParams.SetAcceptOwnPackets(true);
-		sessionParams.SetMaximumPacketSize(RTP_MAX_PACKET_LEN);
-		
-		auto search = subStreams_.find(callid);
-		if (search == subStreams_.end())
-		{
-			return false;
-		}
-		else
-		{
-			sessionParams.SetPredefinedSSRC(search->second.ssrc_);
-		}
-		
-		int rtpret = rtpss_->Create(sessionParams, &transParams);
-		checkerror(rtpret);
-
-		rtpret = rtpss_->SetDefaultPayloadType(96);
-		checkerror(rtpret);
-		rtpret= rtpss_->SetDefaultMark(false);
-		checkerror(rtpret);
-		rtpret = rtpss_->SetDefaultTimestampIncrement(3600);
-		checkerror(rtpret);
-
-		uint32_t destip;
-		destip = inet_addr(search->second.destIp_.c_str());
-		destip = ntohl(destip);
-
-		std::cout << "addsubStream---" << search->second.destIp_ << " : " << search->second.destPort_ << std::endl;
-
-		jrtplib::RTPIPv4Address addr(destip, search->second.destPort_);
-		rtpret = rtpss_->AddDestination(addr);
-		checkerror(rtpret);
-#endif // 0
-
-
-		Media::RealStreamRespParam respinfo;
-		//respinfo.callid = callid;
-		//uint32_t ip = transParams.GetBindIP();
-		//char strIp[16] = {0};
-		//inet_ntop(AF_INET, (void*)&ip, strIp, 15);
-		std::string strIp("192.168.254.233");
-		respinfo.sourceip = strIp;
-
-		iceCB_(respinfo);
-	}
-
-	//std::map<std::string, subStream>::const_iterator it = subStreams_.find(callid);
-	//if (it != subStreams_.end())
-	//{
-	//	uint16_t portbase, destport;
-	//	uint32_t destip;
-	//	destip = inet_addr(it->second.destIp_.c_str());
-
-	//	jrtplib::RTPIPv4Address addr(destip, destport);
-	//	rtpss_->AddDestination(addr);
-	//}
-
-	return true;
-}
-
-
-
-void RealSteam::closeStream(const std::string & callid)
-{
-	auto search = subStreams_.find(callid);
-	if (search != subStreams_.end())
-	{
-		subStreams_.erase(search);
-	}
-}
-
-VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, 
-	               const std::string & ip, int port, const std::string & destIp, int destPort, 
-	               std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
-	               const std::string & startTime, const std::string & endTime):
-	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB), startTime_(startTime), endTime_(endTime)
-{
-}
-
-VodSteam::~VodSteam()
-{
-}
-
-bool VodSteam::openStream()
-{
-	return false;
-}
-
-std::shared_ptr<MediaStream> StreamManager::getStream(const std::string & id)
-{
-	auto search  = streams_.find(id);
-	if (search != streams_.end())
-	{
-		return search->second;
-	}
-	return nullptr;
-}
-
-
-StreamManager::StreamManager() :
-	streams_(), msgthread_()//, queue_()
-{
-	NET_DVR_Init();
-
-#ifdef RTP_SOCKETTYPE_WINSOCK
-	WSADATA dat;
-	WSAStartup(MAKEWORD(2, 2), &dat);
-#endif // RTP_SOCKETTYPE_WINSOCK
-	transParams_ = new jrtplib::RTPUDPv4TransmissionParams;
-	transParams_->SetRTPSendBuffer(65535); // default: 32768
-	transParams_->SetPortbase(15000);
-
-	transmitter_ = std::make_shared<jrtplib::RTPUDPv4Transmitter>(nullptr);
-	transmitter_->Init(true);
-	transmitter_->Create(1400, transParams_);
-
-};
-
-void StreamManager::addStream(const std::string & id, const std::string & name, const std::string & pwd, 
-	                          const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                          int ssrc, const std::function<void(const::Media::RealStreamRespParam&)> iceCB)
-{
-	//std::shared_ptr<MediaStream> stream = getStream(id);
-	auto search = streams_.find(id);
-	if (search == streams_.end())
-	{
-		std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(id, name, pwd, ip, port, destIp, destPort, iceCB);
-
-		std::string callid = ms->addsubStream(destIp, destPort, ssrc, transmitter_);
-		streams_.emplace(id, ms);
-		//auto f = std::bind( &StreamManager::openStream, this, std::cref(id),std::cref(callid) );
-		auto f = std::bind(&StreamManager::openStream, this, id, callid);
-		msgthread_.submit(std::move(f));
-	}
-	else
-	{
-		//search->second->addDestHost(destIp, destPort);
-		search->second->addsubStream(destIp, destPort, ssrc, transmitter_);
-	}
-}
-
-//bool StreamManager::openStream(const std::string &id, const std::string & callid)
-bool StreamManager::openStream( std::string id,  std::string  callid)
-{
-	auto search = streams_.find(id);
-	if (search == streams_.end())
-	{
-		std::cout << "Cann't find stream: " << id << std::endl;
-		return false;
-	}
-	else
-	{
-		search->second->openStream(callid);
-		return true;
-	}
-	
-	
-}
-
-int MediaStream::subStream::sendRtpPack(uint8_t * data, uint32_t len)
-{
-	rtpss_->ClearDestinations();
-	jrtplib::RTPIPv4Address addr(destipn_, destPort_);
-	int rtpret = rtpss_->AddDestination(addr);
-
-	while (len > 1400)
-	{
-		int rtpret  = rtpss_->SendPacket(data, 1400, 96, false, 0);
-		fwrite(data, 1, 1400, streamfile);
-		checkerror(rtpret);
-		data += 1400;
-		len -= 1400;
-	}
-
-	if (len > 0)
-	{
-		rtpss_->SendPacket(data, len, 96, false, 3600);
-		fwrite(data, 1, len, streamfile);
-	}
-
-	return rtpret;
 }

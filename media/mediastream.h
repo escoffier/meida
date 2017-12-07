@@ -10,41 +10,54 @@
 #include "jrtplib3\rtpudpv4transmitter.h"
 #include "jrtplib3\rtpipv4address.h"
 #include "jrtplib3\rtpsessionparams.h"
-//class RTPSession;
+#include "PSBuffer.h"
+#include "RTPSender.h"
+#include "DeviceProcesser.h"
+#include "Plugins.h"
 class MediaStream
 {
 public:
-	using RTPTransmitterPtr = std::shared_ptr<jrtplib::RTPTransmitter> ;
+	//using RTPTransmitterPtr = std::shared_ptr<jrtplib::RTPTransmitter> ;
 
 	MediaStream(const std::string &id, const std::string &name, const std::string &pwd, 
 		        const std::string &ip, int port, const std::string &destIp, int destPort,
-		        std::function<void(const::Media::RealStreamRespParam&)> iceCB);
+		        std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+		        std::function<void(::std::exception_ptr)> ecb, std::shared_ptr<CamaraController> con);
 	MediaStream(const std::string &id);
 	virtual ~MediaStream()
 	{
-
+		std::cout<< "MediaStream destroy";
 	}
 
 	void addDestHost(const std::string& destIp, int destPort);
-	std::string addsubStream(const std::string& destIp, int destPort, int ssrc, RTPTransmitterPtr transmitter);
-	virtual bool openStream() = 0;
+	std::string addsubStream(const std::string &callid, const std::string& destIp, int destPort, 
+		                     int ssrc, int pt, jrtplib::RTPTransmitter* transmitter);
+
+	void removesubStream(const std::string &callid);
 	virtual bool openStream(const std::string &callid) = 0;
 	virtual void closeStream(const std::string &callid) = 0;
-	void sendPacket(unsigned char* data, unsigned int len );
+	virtual void closeStream() = 0;
+	size_t subStreamCount() const;
+	bool needClose();
+	std::shared_ptr<PSBuffer> getBuffer() { return buffer_; };
+	void processData(char *data, uint32_t len);
+
 protected:
 	std::string id_;
-	std::string name_;
-	std::string pwd_;
-	std::string ip_;
-	int port_;
+	std::string name_;   //camara login name
+	std::string pwd_;    //camara login password
+	std::string ip_;    //camcara ip
+	int port_;          //camara port
 	std::string destIp_;
 	int destPort_;
 	std::function<void(const::Media::RealStreamRespParam&)> iceCB_;
+	std::function<void(::std::exception_ptr)> ecb_;
 	struct subStream
 	{
 #define RTP_MAX_PACKET_LEN 1450
-		subStream(const std::string& destIp, int destPort, const std::string& ip,int port, int ssrc, RTPTransmitterPtr transmitter) :
-			destIp_(destIp), ip_(),destPort_(destPort), port_(port), ssrc_(ssrc),rtpss_(new jrtplib::RTPSession), transmitter_(transmitter)
+		subStream(const std::string& destIp, int destPort, const std::string& ip,int port, int ssrc, jrtplib::RTPTransmitter* transmitter) :
+			destIp_(destIp), ip_(),destPort_(destPort), port_(port), ssrc_(ssrc),rtpss_(new jrtplib::RTPSession), transmitter_(transmitter),
+			respcb_(), excb_()
 		{
 			destipn_ = inet_addr(destIp_.c_str());
 			destipn_ = ntohl(destipn_);
@@ -60,7 +73,7 @@ protected:
 
 		subStream(subStream&& ss):
 			destIp_(std::move(ss.destIp_)), ip_(std::move(ss.ip_)),destPort_(ss.destPort_), 
-			port_(ss.port_), ssrc_(ss.ssrc_), rtpss_(std::move(ss.rtpss_))
+			port_(ss.port_), ssrc_(ss.ssrc_), rtpss_(std::move(ss.rtpss_)), respcb_(std::move(ss.respcb_)), excb_(std::move(ss.excb_))
 		{
 			destipn_ = inet_addr(destIp_.c_str());
 			destipn_ = ntohl(destipn_);
@@ -74,63 +87,33 @@ protected:
 				//exit(-1);
 			}
 		}
-
-		int createRTPSession()
-		{
-			//jrtplib::RTPUDPv4TransmissionParams transParams;
-			jrtplib::RTPSessionParams sessionParams;
-			sessionParams.SetOwnTimestampUnit(1.0 / 90000.0);//RTP_TIMESTAMP_UNIT);
-			sessionParams.SetAcceptOwnPackets(true);
-			sessionParams.SetMaximumPacketSize(RTP_MAX_PACKET_LEN);
-			sessionParams.SetPredefinedSSRC(ssrc_);
-
-			//int rtpret = rtpss_->Create(sessionParams, &transParams);
-			int rtpret = rtpss_->Create(sessionParams, transmitter_.get() );
-			checkerror(rtpret);
-
-			rtpret = rtpss_->SetDefaultPayloadType(96);
-			//checkerror(rtpret);
-			rtpret = rtpss_->SetDefaultMark(false);
-			//checkerror(rtpret);
-			rtpret = rtpss_->SetDefaultTimestampIncrement(3600);
-			//checkerror(rtpret);
-
-			uint32_t destip;
-			destip = inet_addr(destIp_.c_str());
-			destip = ntohl(destip);
-
-			std::cout << "addsubStream---" << destIp_ << " : " << destPort_ << std::endl;
-
-			jrtplib::RTPIPv4Address addr(destip, destPort_);
-			rtpret = rtpss_->AddDestination(addr);
-			//checkerror(rtpret);
-			return rtpret;
-		}
-		
-		int sendRtpPack(uint8_t * data, uint32_t len);
-
 		
 		~subStream()
 		{
 			//rtpss_->Destroy();
 		}
 
+		std::string id_;
 		std::string destIp_;
 		std::string ip_;
 		int destPort_;
 		int port_;
 		int ssrc_;
+		int pt_;
 		std::unique_ptr<jrtplib::RTPSession> rtpss_;
-		RTPTransmitterPtr transmitter_;
+		jrtplib::RTPTransmitter* transmitter_;
 		uint32_t destipn_;
-		
+		std::function<void(const::Media::RealStreamRespParam&)> respcb_;
+		std::function<void(::std::exception_ptr)> excb_;
+		std::shared_ptr<CamaraController> controller_;
 	};
 
-	//std::vector<subStream> subStreams_;
 	std::map<std::string, subStream> subStreams_;
 	bool isOpen_;
 	bool isLogin_;
-	//std::unique_ptr<jrtplib::RTPSession> rtpss_;
+	std::mutex mutex_;
+	std::shared_ptr<PSBuffer> buffer_;
+	std::shared_ptr<CamaraController> controller_;
 };
 
 
@@ -139,13 +122,14 @@ class RealSteam : public MediaStream
 public:
 	RealSteam(const std::string &id, const std::string &name, const std::string &pwd,
 		      const std::string &ip, int port, const std::string &destIp_, int destPort,
-		      std::function<void(const::Media::RealStreamRespParam&)> iceCB);
+		      std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+		      std::shared_ptr<CamaraController> con);
 	//RealSteam();
 	~RealSteam();
 
-	virtual bool openStream();
 	virtual bool openStream(const std::string &callid);
 	virtual void closeStream(const std::string &callid);
+	virtual void closeStream();
 private:
 
 
@@ -157,11 +141,14 @@ class VodSteam : public MediaStream
 public:
 	VodSteam(const std::string &id, const std::string &name, const std::string &pwd,
 		     const std::string &ip, int port, const std::string &destIp, int destPort,
-		     std::function<void(const::Media::RealStreamRespParam&)> iceCB ,const std::string &startTime,
-		     const std::string &endTime);
+		     std::function<void(const::Media::RealStreamRespParam&)> iceCB,
+		     std::function<void(::std::exception_ptr)> ecb,const std::string &startTime,
+		     const std::string &endTime, std::shared_ptr<CamaraController> con);
 	~VodSteam();
 
-	virtual bool openStream();
+	virtual bool openStream(const std::string &callid);
+	virtual void closeStream(const std::string &callid);
+	virtual void closeStream();
 
 private:
 	std::string startTime_;
@@ -178,7 +165,7 @@ class StreamManager
 public:
 	using RTPTransmitterPtr = std::shared_ptr<jrtplib::RTPTransmitter>;
 	using Process = std::function<bool()>;
-
+	static StreamManager* getInstance();
 	StreamManager();
 	//	streams_(), msgthread_()//, queue_()
 	//{};
@@ -191,17 +178,31 @@ public:
 	}
 	std::shared_ptr<MediaStream> getStream(const std::string &id);
 
-	void addStream(const std::string &id, const std::string &name, const std::string &pwd,
+	void addStream(const std::string &id, const std::string &callid, const std::string &name, const std::string &pwd,
 		const std::string &ip, int port, const std::string &destIp_, int destPort, int ssrc,
-		std::function<void(const::Media::RealStreamRespParam&)> iceCB);
+		std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+		std::function<void(::std::exception_ptr)> ecb);
+	void addStream(::Media::RealStreamReqParam param, 
+		           std::function<void(const::Media::RealStreamRespParam&)> iceCB,
+		            std::function<void(::std::exception_ptr)> ecb);
 
-	//bool openStream(const std::string &id, const std::string &callid);
-	bool openStream( std::string id,  std::string callid);
+	bool openStream( std::string id,  std::string callid, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb);
+	void closeStream(std::string callid, std::string id);
+	std::shared_ptr<CamaraController> loadPlugin(const std::string& name);
+	std::shared_ptr<CamaraController> getController(const std::string & name);
+
+
+private:
+	std::string buildCallId(const std::string &ip, int port);
 private:
 	std::map<std::string, std::shared_ptr<MediaStream>> streams_;
 	RTPTransmitterPtr transmitter_;
 	jrtplib::RTPUDPv4TransmissionParams * transParams_;
 	MessageThread msgthread_;
-	//WorkorQueue<std::function<bool()>> queue_;
-	//WorkorQueue<function_wrapper> queue_;
+	std::mutex locker_;
+	std::unique_ptr<RTPSender> rtpSender_;
+	std::map<std::string, std::shared_ptr<CamaraController> > controllers_;
+	std::unique_ptr<SDKPlugins> plugins_;
+
+	static StreamManager * instance_;
 };

@@ -31,6 +31,10 @@ int MediaServer::run(int argc, char *[])
 		std::cerr << appName() << ": too many arguments" << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	try
+	{
+
 #ifdef STANDALONE
 	Ice::Identity id = Ice::stringToIdentity("stream");
 #else
@@ -38,12 +42,24 @@ int MediaServer::run(int argc, char *[])
 	Ice::Identity id = communicator()->stringToIdentity(properties->getProperty("Identity"));
 #endif // !STANDALONE
 
-
-	Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
+		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
 	
-	//auto stream = std::make_shared<StreamI>;
-	adapter->add(std::make_shared<StreamI>(), id);
-	adapter->activate();
+		//auto stream = std::make_shared<StreamI>;
+		adapter->add(std::make_shared<StreamI>(), id);
+		adapter->activate();
+	}
+	catch (const Ice::Exception& e)
+	{
+		//initiated_ = false;
+		LOG(ERROR) << e.what();
+		return EXIT_SUCCESS;
+	}
+	catch (const std::exception& e)
+	{
+		LOG(ERROR) << e.what();
+		return EXIT_SUCCESS;
+	}
+
 	communicator()->waitForShutdown();
 	return EXIT_SUCCESS;
 }
@@ -60,7 +76,7 @@ int main(int argc, char* argv[])
 
 	MediaServer app;
 #ifdef STANDALONE
-	int status = app.main(argc, argv, "config.server");
+	int status = app.main(argc, argv, "config.mediaserver");
 #else
 	int status = app.main(argc, argv);
 #endif // STANDALONE

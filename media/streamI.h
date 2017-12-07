@@ -11,7 +11,7 @@ public:
 	StreamI();
 	~StreamI();
 	 virtual void openRealStreamAsync(::Media::RealStreamReqParam, ::std::function<void(const ::Media::RealStreamRespParam&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&);
-
+	 virtual void closeStreamAsync(::std::string, ::std::string, ::std::function<void()>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&);
 private:
-	std::unique_ptr<StreamManager> sm_;
+	//std::unique_ptr<StreamManager> sm_;
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-#include "WorkorQueue.h"
+#include "threadsafequeue.h"
 #include <future>
 
 class function_wrapper
@@ -66,16 +66,19 @@ public:
 		while (!done)
 		{
 			function_wrapper task;
-			if (queue_.try_pop(task))
-			{
-				std::cout << "worker_thread run task" << std::endl;
-				task();
-			}
-			else
-			{
-				//std::cout << "worker_thread yield" << std::endl;
-				std::this_thread::yield();
-			}
+			queue_.wait_and_pop(task);
+			task();
+			//function_wrapper task;
+			//if (queue_.try_pop(task))
+			//{
+			//	std::cout << "worker_thread run task" << std::endl;
+			//	task();
+			//}
+			//else
+			//{
+			//	//std::cout << "worker_thread yield" << std::endl;
+			//	std::this_thread::yield();
+			//}
 		}
 	}
 
