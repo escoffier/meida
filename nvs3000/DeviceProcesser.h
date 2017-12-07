@@ -1,28 +1,41 @@
 #pragma once
-#include "WorkorQueue.h"
-#include "AbstractOperation.h"
-#include "Device.h"
-#include "ControlParam.h"
-class DeviceProcesser
+//#include "WorkorQueue.h"
+//#include "AbstractOperation.h"
+#include "Catalog.h"
+//#include "ControlParam.h"
+#include "utility.h"
+#include <functional>
+
+class CamaraController
 {
 public:
-	DeviceProcesser() : queue_() {};
-	virtual ~DeviceProcesser() {};
-	using DataProcFunc = std::function<void(/*std::shared_ptr<Device> device,*/std::string id, unsigned long dwDataType, unsigned char *pBuffer, unsigned long dwBufSize)>;
-	using ResponseFunc = std::function<void(std::string, int)>;
+	CamaraController()  /*queue_()*/ {};
+	virtual ~CamaraController() {};
+	//using DataProcFunc = std::function<void(/*std::shared_ptr<Device> device,*/std::string id, unsigned long dwDataType, unsigned char *pBuffer, unsigned long dwBufSize)>;
+	//using ResponseFunc = std::function<void(std::string, int)>;
 
-	virtual bool Login(std::shared_ptr<Device> device) { return false; };
-	virtual void run() {};
-	virtual void addOperation(std::shared_ptr<AbstractOperation> op) {};
-	virtual void addLogin(std::shared_ptr<Device> device) {};
-	virtual void addPtzControl(std::shared_ptr<Device> device, std::string ptzcmd, std::function<void(std::string, int )> func) {};
-	//virtual void addStreamOperation(std::shared_ptr<Device> device, std::function<void(std::string, int)> response, std::function<void(/*std::shared_ptr<Device> device,*/std::string id, unsigned long dwDataType, unsigned char *pBuffer, unsigned long dwBufSize)> ) {};
-	virtual void addStreamOperation(std::shared_ptr<Device> device, ResponseFunc response, DataProcFunc dataProc) {}
-	virtual void addStreamOperation(std::shared_ptr<Device> device ) {}
-	//virtual void addStreamOperation();
-	//virtual void addStreamOperation(const RealStreamReqParam& params) {};
+	//virtual bool Login(std::shared_ptr<Device> device) { return false; };
+	//virtual void run() {};
+	//virtual void addOperation(std::shared_ptr<AbstractOperation> op) {};
+	//virtual void addLogin(std::shared_ptr<Device> device) {};
+	//virtual void addPtzControl(std::shared_ptr<Device> device, std::string ptzcmd, std::function<void(std::string, int )> func) {};
+	//virtual void addStreamOperation(std::shared_ptr<Device> device, ResponseFunc response, DataProcFunc dataProc) {}
+	//virtual void addStreamOperation(std::shared_ptr<Device> device ) {}
+
+
+	virtual bool Login(std::shared_ptr<CCatalog> ctg) { return false; };
+	//virtual void Login(std::shared_ptr<CCatalog> ctg, std::function<void(bool)> cb) {  };
+	virtual bool isLogin() const { return false; } 
+	virtual void ptzControl(std::shared_ptr<CCatalog> ctg, std::string cmd) {  };
+	//virtual void getDeviceStatusAsync(std::shared_ptr<CCatalog> ctg, std::function<void(int)> cb) {  };
+	virtual void getDeviceStatus(std::shared_ptr<CCatalog> ctg, dt::DeviceStatus &st) {};
+	virtual bool openRealStream(const dt::OpenRealStream& param) = 0;
+	virtual bool closeRealStream(const std::string& id) = 0;
+	virtual void setDataCallback(std::function<void(char *, uint32_t)> cb) = 0;
+	//virtual void getDeviceStatus(QueryStatusReq req, dt::DeviceStatus &st)
+
 protected:
-	WorkorQueue queue_;
+	//ThreadsafeQueue queue_;
 
 };
 

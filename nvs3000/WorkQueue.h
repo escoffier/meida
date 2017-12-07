@@ -7,7 +7,7 @@
 #ifndef WORK_QUEUE_H
 #define WORK_QUEUE_H
 
-#include <Operation.h>
+#include <Gateway.h>
 #include <IceUtil/IceUtil.h>
 
 #include <list>

@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 
+#if 0
 class Device
 {
 public:
@@ -23,6 +24,7 @@ public:
 	std::string loginPassword_;
 	bool needInitSdk;
 };
+#endif // 0
 
 class CCatalog
 {
@@ -38,12 +40,14 @@ public:
 public:
 	const std::string& GetID() const;
 	void SetID(const std::string &id);
+	void SetID(std::string &&id);
 
 	const std::string& GetChannel() const;
 	void SetChannel(const std::string& channel);
 
 	const std::string& GetName() const;
 	void SetName(const std::string &name);
+	void SetName( std::string &&name);
 
 	const std::string& GetManufacturer() const;
 	void SetManufacturer(const std::string &manufacturer);
@@ -92,12 +96,14 @@ public:
 
 	const std::string& GetIp() const;
 	void SetIp(const std::string &ip);
+	void SetIp( std::string &&ip);
 
 	const std::string& GetPort() const;
 	void Setport(const std::string &port);
 
 	const std::string& GetPassword() const;
 	void SetPassword(const std::string &password);
+	void SetPassword( std::string &&password);
 
 	const std::string& GetStatus() const;
 	void SetStatus(const std::string &status);
@@ -138,6 +144,9 @@ public:
 
 	const std::string& GetPlatformID() const;
 	void SetPlatformID(const std::string &platformid);
+
+	const std::string& GetSdkName() const;
+	void SetSdkName(const std::string &sdkname);
 private:
 	std::string m_id;				// 设备/区域/系统编码（必选）
 	std::string m_channel;			// PVG对应的AV通道(PVG通道专用)
@@ -173,6 +182,7 @@ private:
 	std::string m_businessgroup;	// 虚拟组织所属的业务分组ID，业务分组根据特定的业务需求制定，一个业务分组包含一组特定的虚拟组织
 	bool        m_config;
 	std::string m_platfromid;       //设备所属的平台id
+	std::string m_sdkname_;
 };
 
 class CatalogManager

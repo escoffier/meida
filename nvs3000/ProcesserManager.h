@@ -1,8 +1,11 @@
 #pragma once
 #include <map>
 #include "threadsafequeue.h"
-#include <Operation.h>
+#include <Gateway.h>
 #include "mediaclient.h"
+#include "DeviceProcesser.h"
+#include "Plugins.h"
+#include "GBMessage.h"
 
 class DeviceProcesser;
 class RealStreamReqParam;
@@ -50,20 +53,25 @@ private:
 	std::unique_ptr<impl_base> impl;
 };
 
-class MessageThread
+class MessageThreadPool
 {
 public:
-	MessageThread() :
-		done(false),
-		thread_(std::thread(&MessageThread::worker_thread, this))
+	MessageThreadPool() :
+		done(false)
+		//thread_(std::thread(&MessageThread::worker_thread, this))
 	{
+		unsigned int n = std::thread::hardware_concurrency();
+		for (size_t i = 0; i < (n - 2); i++)
+		{
+			threads_.push_back( std::thread(&MessageThreadPool::worker_thread, this) );
+		}
 		//done = false;
 		//std::thread(&MessageThread::worker_thread, this);
 		//std::async(std::launch::async, &MessageThread::worker_thread, this);
 	};
-	~MessageThread()
+	~MessageThreadPool()
 	{
-
+		done = true;
 	}
 
 	//void start()
@@ -75,16 +83,18 @@ public:
 		while (!done)
 		{
 			function_wrapper task;
-			if (queue_.try_pop(task))
-			{
-				std::cout << "worker_thread run task" << std::endl;
-				task();
-			}
-			else
-			{
-				//std::cout << "worker_thread yield" << std::endl;
-				std::this_thread::yield();
-			}
+			queue_.wait_and_pop(task);
+			task();
+			//if (queue_.try_pop(task))
+			//{
+			//	std::cout << "worker_thread run task" << std::endl;
+			//	task();
+			//}
+			//else
+			//{
+			//	//std::cout << "worker_thread yield" << std::endl;
+			//	std::this_thread::yield();
+			//}
 		}
 	}
 
@@ -105,29 +115,51 @@ private:
 	threadsafe_queue<function_wrapper> queue_;
 	std::atomic_bool done;
 	std::thread thread_;
+	std::vector<std::thread> threads_;
 };
 
-class ProcesserManager
+class ControllerManager
 {
 
-	ProcesserManager();
+	ControllerManager();
 public:
-	static ProcesserManager * getInstance();
-	~ProcesserManager();
+	static ControllerManager * getInstance();
+	~ControllerManager();
 
-	DeviceProcesser* get(const std::string & name);
-	void add(const std::string & name, DeviceProcesser* p);
+	std::shared_ptr<CamaraController> get(const std::string & name);
+	void add(const std::string & name, std::shared_ptr<CamaraController> p);
 	//for ICE call, ice请求使用异步调用
-	void openRealStream(const Datang::RealStreamReqParam & params, std::function<void(const::Datang::RealStreamRespParam&)> cb);
+	void openRealStream(const dt::OpenRealStream & params, std::function<void(const::Gateway::RealStreamRespParam&)> cb, std::function<void(::std::exception_ptr)> e);
+	void closeStream(std::string callid, string id);
+	void ptzControl(const std::string &id, const string &cmd, std::function<void()> cb, std::function<void(::std::exception_ptr)> excb);
+
+	/// \brief RPC获取camara状态  
+	/// \param req 参数1说明  
+	/// \param cb 参数2说明  
+	/// \param excb 参数2说明  
+	/// \return void  
+	void getDeviceStatusAsync(std::string id, ::std::function<void(const ::Gateway::DeviceStatus&)> cb, ::std::function<void(::std::exception_ptr)> excb);
 
 	//for GB28181 call 
 	void openRealStream(const RealStreamReqParam & params);
 
+	/// \brief 国标协议获取camara状态  
+	/// \param req 参数1说明  
+	/// \param cb 参数2说明  
+	/// \return void  
+	void getDeviceStatusAsync(QueryStatusReq req, std::function<void(const QueryStatusResp&)> cb);
+
 private:
-	std::map<std::string, DeviceProcesser* > processers_;
-	MessageThread msgThread_;
+	std::shared_ptr<CamaraController> loadPlugin(const std::string& name);
+	//
+	std::shared_ptr<CamaraController> getController(const std::string& name);
+	void logincb(bool login);
+private:
+	std::map<std::string, std::shared_ptr<CamaraController> > controllers_;
+	MessageThreadPool msgThread_;
 	std::unique_ptr<MediaClient> mediaClient_;
-	static ProcesserManager* instance_;
+	std::unique_ptr<SDKPlugins> plugins_;
+	static ControllerManager* instance_;
 };
 
 
