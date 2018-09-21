@@ -55,6 +55,14 @@
 
 #ifdef ICE_CPP11_MAPPING // C++11 mapping
 
+namespace Media
+{
+
+class Stream;
+class StreamPrx;
+
+}
+
 namespace Gateway
 {
 
@@ -63,7 +71,7 @@ class DeviceControlPrx;
 
 }
 
-namespace Gateway
+namespace Media
 {
 
 class RequestCanceledException : public ::Ice::UserExceptionHelper<RequestCanceledException, ::Ice::UserException>
@@ -96,19 +104,95 @@ public:
 
     OpenStreamException() = default;
 
-    OpenStreamException(const ::std::string& iceP_reason) :
+    OpenStreamException(const ::std::string& iceP_callid, const ::std::string& iceP_reason) :
+        callid(::std::move(iceP_callid)),
         reason(::std::move(iceP_reason))
     {
     }
 
-    std::tuple<const ::std::string&> ice_tuple() const
+    std::tuple<const ::std::string&, const ::std::string&> ice_tuple() const
     {
-        return std::tie(reason);
+        return std::tie(callid, reason);
     }
 
     static const ::std::string& ice_staticId();
 
+    ::std::string callid;
     ::std::string reason;
+};
+
+struct RealStreamRespParam
+{
+    ::std::string id;
+    ::std::string callid;
+    ::std::string sourceip;
+    ::std::string sourceport;
+
+    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&> ice_tuple() const
+    {
+        return std::tie(id, callid, sourceip, sourceport);
+    }
+};
+
+struct RealStreamReqParam
+{
+    ::std::string id;
+    ::std::string callid;
+    ::std::string ip;
+    int port;
+    ::std::string name;
+    ::std::string pwd;
+    ::std::string destip;
+    int destport;
+    int ssrc;
+    int pt;
+    ::std::string sdk;
+
+    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const int&, const ::std::string&, const ::std::string&, const ::std::string&, const int&, const int&, const int&, const ::std::string&> ice_tuple() const
+    {
+        return std::tie(id, callid, ip, port, name, pwd, destip, destport, ssrc, pt, sdk);
+    }
+};
+
+struct StreamStatic
+{
+    int freenode;
+    int busynode;
+
+    std::tuple<const int&, const int&> ice_tuple() const
+    {
+        return std::tie(freenode, busynode);
+    }
+};
+
+using Ice::operator<;
+using Ice::operator<=;
+using Ice::operator>;
+using Ice::operator>=;
+using Ice::operator==;
+using Ice::operator!=;
+
+}
+
+namespace Gateway
+{
+
+class RequestCanceledException : public ::Ice::UserExceptionHelper<RequestCanceledException, ::Ice::UserException>
+{
+public:
+
+    virtual ~RequestCanceledException();
+
+    RequestCanceledException(const RequestCanceledException&) = default;
+
+    RequestCanceledException() = default;
+
+    std::tuple<> ice_tuple() const
+    {
+        return std::tie();
+    }
+
+    static const ::std::string& ice_staticId();
 };
 
 class DeviceControlException : public ::Ice::UserExceptionHelper<DeviceControlException, ::Ice::UserException>
@@ -134,34 +218,6 @@ public:
     static const ::std::string& ice_staticId();
 
     ::std::string reason;
-};
-
-struct RealStreamReqParam
-{
-    ::std::string id;
-    ::std::string callid;
-    ::std::string destip;
-    int destport;
-    int pt;
-    int ssrc;
-
-    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const int&, const int&, const int&> ice_tuple() const
-    {
-        return std::tie(id, callid, destip, destport, pt, ssrc);
-    }
-};
-
-struct RealStreamRespParam
-{
-    ::std::string id;
-    ::std::string callid;
-    ::std::string sourceip;
-    ::std::string sourceport;
-
-    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const ::std::string&> ice_tuple() const
-    {
-        return std::tie(id, callid, sourceip, sourceport);
-    }
 };
 
 struct DeviceInfo
@@ -194,6 +250,47 @@ using Ice::operator!=;
 
 }
 
+namespace Media
+{
+
+class Stream : public virtual ::Ice::Object
+{
+public:
+
+    using ProxyType = StreamPrx;
+
+    virtual bool ice_isA(::std::string, const ::Ice::Current&) const override;
+    virtual ::std::vector<::std::string> ice_ids(const ::Ice::Current&) const override;
+    virtual ::std::string ice_id(const ::Ice::Current&) const override;
+
+    static const ::std::string& ice_staticId();
+
+    virtual void openRealStreamAsync(::Media::RealStreamReqParam, ::std::function<void(const ::Media::RealStreamRespParam&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
+    bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeStreamAsync(::std::string, ::std::string, ::std::function<void()>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
+    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getStreamStatic(::std::string, ::Media::StreamStatic&, const ::Ice::Current&) = 0;
+    bool _iceD_getStreamStatic(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getRecordFiles(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_getRecordFiles(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void openVodStream(::Media::RealStreamReqParam, ::Media::RealStreamRespParam&, const ::Ice::Current&) = 0;
+    bool _iceD_openVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeVodStream(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_closeVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void controlVodStream(::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_controlVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
+};
+
+}
+
 namespace Gateway
 {
 
@@ -208,12 +305,6 @@ public:
     virtual ::std::string ice_id(const ::Ice::Current&) const override;
 
     static const ::std::string& ice_staticId();
-
-    virtual void openRealStreamAsync(::Gateway::RealStreamReqParam, ::std::function<void(const ::Gateway::RealStreamRespParam&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void closeStreamAsync(::std::string, ::std::string, ::std::function<void()>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual void ptzControlAsync(::std::string, ::std::string, ::std::function<void()>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
     bool _iceD_ptzControl(::IceInternal::Incoming&, const ::Ice::Current&);
@@ -230,226 +321,209 @@ public:
     virtual void shutdown(const ::Ice::Current&) = 0;
     bool _iceD_shutdown(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void beatHeartAsync(::std::string, ::std::function<void(const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_beatHeart(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void Timing(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_Timing(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    struct CallSipUserReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
+    virtual void setGuard(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_setGuard(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void CallSipUserReqAsync(::std::string, int, ::std::string, int, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_CallSipUserReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void resetGuard(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_resetGuard(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    struct CalibrationTimeReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
+    virtual void subscribe(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_subscribe(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void CalibrationTimeReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_CalibrationTimeReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct HolderOperReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void HolderOperReqAsync(::std::string, ::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_HolderOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct RecordingOperReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void RecordingOperReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_RecordingOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct StopRecordingOperReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void StopRecordingOperReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_StopRecordingOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct StartVoideRecoingFileResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void StartVoideRecoingFileAsync(::std::string, int, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_StartVoideRecoingFile(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct RecordingFileReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void RecordingFileReqAsync(::std::string, ::std::string, ::std::string, int, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_RecordingFileReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct LoadRecordingFileResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void LoadRecordingFileAsync(::std::string, ::std::string, ::std::string, int, ::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_LoadRecordingFile(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct FindRecordingFileReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void FindRecordingFileReqAsync(::std::string, ::std::string, ::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_FindRecordingFileReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct DataPlayStopOrStartReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void DataPlayStopOrStartReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_DataPlayStopOrStartReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct SetupAlarmReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void SetupAlarmReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_SetupAlarmReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct CloseAlarmReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void CloseAlarmReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_CloseAlarmReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct RestorConfigReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void RestorConfigReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_RestorConfigReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct RebootReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void RebootReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_RebootReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct RemoteControlReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void RemoteControlReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_RemoteControlReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgStartVioceReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgStartVioceReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgStartVioceReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgStopVioceReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgStopVioceReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgStopVioceReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgQueryDeviceIpcStatusReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgQueryDeviceIpcStatusReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgQueryDeviceIpcInfoReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgQueryDeviceIpcInfoReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgStartPropertyServerReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgStartPropertyServerReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgStartPropertyServerReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct MsgStopPropertyServerReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void MsgStopPropertyServerReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_MsgStopPropertyServerReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct DeviceRefreshReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void DeviceRefreshReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_DeviceRefreshReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct DeviceShareNotifyResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void DeviceShareNotifyAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_DeviceShareNotify(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    struct GatewayRerootReqResult
-    {
-        int iResMsglen;
-        ::std::string sResMsgbuf;
-    };
-
-    virtual void GatewayRerootReqAsync(::std::string, ::std::function<void(int,const ::std::string&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
-    bool _iceD_GatewayRerootReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void reboot(::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_reboot(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
+};
+
+}
+
+namespace Media
+{
+
+class StreamPrx : public virtual ::Ice::Proxy<StreamPrx, ::Ice::ObjectPrx>
+{
+public:
+
+    void openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, ::Media::RealStreamRespParam& iceP_stm, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        iceP_stm = _makePromiseOutgoing<::Media::RealStreamRespParam>(true, this, &Media::StreamPrx::_iceI_openRealStream, iceP_ctg, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto openRealStreamAsync(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::Media::RealStreamRespParam>>().get_future())
+    {
+        return _makePromiseOutgoing<::Media::RealStreamRespParam, P>(false, this, &Media::StreamPrx::_iceI_openRealStream, iceP_ctg, context);
+    }
+
+    ::std::function<void()>
+    openRealStreamAsync(const ::Media::RealStreamReqParam& iceP_ctg,
+                        ::std::function<void(::Media::RealStreamRespParam)> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::Media::RealStreamRespParam>(response, ex, sent, this, &Media::StreamPrx::_iceI_openRealStream, iceP_ctg, context);
+    }
+
+    void _iceI_openRealStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>&, const ::Media::RealStreamReqParam&, const ::Ice::Context&);
+
+    void closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                     ::std::function<void()> response,
+                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                     ::std::function<void(bool)> sent = nullptr,
+                     const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void getStreamStatic(const ::std::string& iceP_id, ::Media::StreamStatic& iceP_static, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        iceP_static = _makePromiseOutgoing<::Media::StreamStatic>(true, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getStreamStaticAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::Media::StreamStatic>>().get_future())
+    {
+        return _makePromiseOutgoing<::Media::StreamStatic, P>(false, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    getStreamStaticAsync(const ::std::string& iceP_id,
+                         ::std::function<void(::Media::StreamStatic)> response,
+                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                         ::std::function<void(bool)> sent = nullptr,
+                         const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::Media::StreamStatic>(response, ex, sent, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context);
+    }
+
+    void _iceI_getStreamStatic(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::StreamStatic>>&, const ::std::string&, const ::Ice::Context&);
+
+    void getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getRecordFilesAsync(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context);
+    }
+
+    ::std::function<void()>
+    getRecordFilesAsync(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime,
+                        ::std::function<void()> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context);
+    }
+
+    void _iceI_getRecordFiles(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void openVodStream(const ::Media::RealStreamReqParam& iceP_req, ::Media::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        iceP_resp = _makePromiseOutgoing<::Media::RealStreamRespParam>(true, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto openVodStreamAsync(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::Media::RealStreamRespParam>>().get_future())
+    {
+        return _makePromiseOutgoing<::Media::RealStreamRespParam, P>(false, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context);
+    }
+
+    ::std::function<void()>
+    openVodStreamAsync(const ::Media::RealStreamReqParam& iceP_req,
+                       ::std::function<void(::Media::RealStreamRespParam)> response,
+                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                       ::std::function<void(bool)> sent = nullptr,
+                       const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::Media::RealStreamRespParam>(response, ex, sent, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context);
+    }
+
+    void _iceI_openVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>&, const ::Media::RealStreamReqParam&, const ::Ice::Context&);
+
+    void closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto closeVodStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    closeVodStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                        ::std::function<void()> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_closeVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto controlVodStreamAsync(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    controlVodStreamAsync(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                          ::std::function<void()> response,
+                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                          ::std::function<void(bool)> sent = nullptr,
+                          const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_controlVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    static const ::std::string& ice_staticId();
+
+protected:
+
+    StreamPrx() = default;
+    friend ::std::shared_ptr<StreamPrx> IceInternal::createProxy<StreamPrx>();
+
+    virtual ::std::shared_ptr<::Ice::ObjectPrx> _newInstance() const override;
 };
 
 }
@@ -460,54 +534,6 @@ namespace Gateway
 class DeviceControlPrx : public virtual ::Ice::Proxy<DeviceControlPrx, ::Ice::ObjectPrx>
 {
 public:
-
-    void openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, ::Gateway::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        iceP_resp = _makePromiseOutgoing<::Gateway::RealStreamRespParam>(true, this, &Gateway::DeviceControlPrx::_iceI_openRealStream, iceP_req, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto openRealStreamAsync(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::RealStreamRespParam>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::RealStreamRespParam, P>(false, this, &Gateway::DeviceControlPrx::_iceI_openRealStream, iceP_req, context);
-    }
-
-    ::std::function<void()>
-    openRealStreamAsync(const ::Gateway::RealStreamReqParam& iceP_req,
-                        ::std::function<void(::Gateway::RealStreamRespParam)> response,
-                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                        ::std::function<void(bool)> sent = nullptr,
-                        const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<::Gateway::RealStreamRespParam>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_openRealStream, iceP_req, context);
-    }
-
-    void _iceI_openRealStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::RealStreamRespParam>>&, const ::Gateway::RealStreamReqParam&, const ::Ice::Context&);
-
-    void closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_closeStream, iceP_callid, iceP_id, context).get();
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<void>>().get_future())
-    {
-        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
-    }
-
-    ::std::function<void()>
-    closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id,
-                     ::std::function<void()> response,
-                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                     ::std::function<void(bool)> sent = nullptr,
-                     const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
-    }
-
-    void _iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
 
     void ptzControl(const ::std::string& iceP_id, const ::std::string& iceP_cmd, const ::Ice::Context& context = Ice::noExplicitContext)
     {
@@ -628,749 +654,125 @@ public:
 
     void _iceI_shutdown(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::Ice::Context&);
 
-    void beatHeart(const ::std::string& iceP_info, ::std::string& iceP_rinfo, const ::Ice::Context& context = Ice::noExplicitContext)
+    void Timing(const ::std::string& iceP_time, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        iceP_rinfo = _makePromiseOutgoing<::std::string>(true, this, &Gateway::DeviceControlPrx::_iceI_beatHeart, iceP_info, context).get();
+        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_Timing, iceP_time, context).get();
     }
 
     template<template<typename> class P = ::std::promise>
-    auto beatHeartAsync(const ::std::string& iceP_info, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::std::string>>().get_future())
+    auto TimingAsync(const ::std::string& iceP_time, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
     {
-        return _makePromiseOutgoing<::std::string, P>(false, this, &Gateway::DeviceControlPrx::_iceI_beatHeart, iceP_info, context);
+        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_Timing, iceP_time, context);
     }
 
     ::std::function<void()>
-    beatHeartAsync(const ::std::string& iceP_info,
-                   ::std::function<void(::std::string)> response,
+    TimingAsync(const ::std::string& iceP_time,
+                ::std::function<void()> response,
+                ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                ::std::function<void(bool)> sent = nullptr,
+                const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_Timing, iceP_time, context);
+    }
+
+    void _iceI_Timing(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::Ice::Context&);
+
+    void setGuard(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_setGuard, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto setGuardAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_setGuard, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    setGuardAsync(const ::std::string& iceP_id,
+                  ::std::function<void()> response,
+                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                  ::std::function<void(bool)> sent = nullptr,
+                  const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_setGuard, iceP_id, context);
+    }
+
+    void _iceI_setGuard(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::Ice::Context&);
+
+    void resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_resetGuard, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto resetGuardAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_resetGuard, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    resetGuardAsync(const ::std::string& iceP_id,
+                    ::std::function<void()> response,
+                    ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                    ::std::function<void(bool)> sent = nullptr,
+                    const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_resetGuard, iceP_id, context);
+    }
+
+    void _iceI_resetGuard(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::Ice::Context&);
+
+    void subscribe(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_subscribe, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto subscribeAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_subscribe, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    subscribeAsync(const ::std::string& iceP_id,
+                   ::std::function<void()> response,
                    ::std::function<void(::std::exception_ptr)> ex = nullptr,
                    ::std::function<void(bool)> sent = nullptr,
                    const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<::std::string>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_beatHeart, iceP_info, context);
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_subscribe, iceP_id, context);
     }
 
-    void _iceI_beatHeart(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::std::string>>&, const ::std::string&, const ::Ice::Context&);
+    void _iceI_subscribe(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::Ice::Context&);
 
-    void CallSipUserReq(const ::std::string& iceP_pSzSipData, int iceP_iType, const ::std::string& iceP_pSzIp, int iceP_iport, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
+    void reboot(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::CallSipUserReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_CallSipUserReq, iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto CallSipUserReqAsync(const ::std::string& iceP_pSzSipData, int iceP_iType, const ::std::string& iceP_pSzIp, int iceP_iport, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::CallSipUserReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::CallSipUserReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_CallSipUserReq, iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context);
-    }
-
-    ::std::function<void()>
-    CallSipUserReqAsync(const ::std::string& iceP_pSzSipData, int iceP_iType, const ::std::string& iceP_pSzIp, int iceP_iport,
-                        ::std::function<void(int, ::std::string)> response,
-                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                        ::std::function<void(bool)> sent = nullptr,
-                        const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::CallSipUserReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::CallSipUserReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_CallSipUserReq, iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context);
-    }
-
-    void _iceI_CallSipUserReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CallSipUserReqResult>>&, const ::std::string&, int, const ::std::string&, int, const ::Ice::Context&);
-
-    void CalibrationTimeReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::CalibrationTimeReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_CalibrationTimeReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
+        _makePromiseOutgoing<void>(true, this, &Gateway::DeviceControlPrx::_iceI_reboot, iceP_id, context).get();
     }
 
     template<template<typename> class P = ::std::promise>
-    auto CalibrationTimeReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::CalibrationTimeReqResult>>().get_future())
+    auto rebootAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
     {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::CalibrationTimeReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_CalibrationTimeReq, iceP_pSzSipData, context);
+        return _makePromiseOutgoing<void, P>(false, this, &Gateway::DeviceControlPrx::_iceI_reboot, iceP_id, context);
     }
 
     ::std::function<void()>
-    CalibrationTimeReqAsync(const ::std::string& iceP_pSzSipData,
-                            ::std::function<void(int, ::std::string)> response,
-                            ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                            ::std::function<void(bool)> sent = nullptr,
-                            const ::Ice::Context& context = Ice::noExplicitContext)
+    rebootAsync(const ::std::string& iceP_id,
+                ::std::function<void()> response,
+                ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                ::std::function<void(bool)> sent = nullptr,
+                const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        auto responseCb = [response](::Gateway::DeviceControl::CalibrationTimeReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::CalibrationTimeReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_CalibrationTimeReq, iceP_pSzSipData, context);
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_reboot, iceP_id, context);
     }
 
-    void _iceI_CalibrationTimeReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CalibrationTimeReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::HolderOperReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_HolderOperReq, iceP_pSzSipData, iceP_pSzTypeOper, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto HolderOperReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::HolderOperReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::HolderOperReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_HolderOperReq, iceP_pSzSipData, iceP_pSzTypeOper, context);
-    }
-
-    ::std::function<void()>
-    HolderOperReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper,
-                       ::std::function<void(int, ::std::string)> response,
-                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                       ::std::function<void(bool)> sent = nullptr,
-                       const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::HolderOperReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::HolderOperReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_HolderOperReq, iceP_pSzSipData, iceP_pSzTypeOper, context);
-    }
-
-    void _iceI_HolderOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::HolderOperReqResult>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    void RecordingOperReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::RecordingOperReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_RecordingOperReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto RecordingOperReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::RecordingOperReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::RecordingOperReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_RecordingOperReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    RecordingOperReqAsync(const ::std::string& iceP_pSzSipData,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::RecordingOperReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::RecordingOperReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_RecordingOperReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_RecordingOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RecordingOperReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void StopRecordingOperReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::StopRecordingOperReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_StopRecordingOperReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto StopRecordingOperReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::StopRecordingOperReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::StopRecordingOperReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_StopRecordingOperReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    StopRecordingOperReqAsync(const ::std::string& iceP_pSzSipData,
-                              ::std::function<void(int, ::std::string)> response,
-                              ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                              ::std::function<void(bool)> sent = nullptr,
-                              const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::StopRecordingOperReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::StopRecordingOperReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_StopRecordingOperReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_StopRecordingOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::StopRecordingOperReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void StartVoideRecoingFile(const ::std::string& iceP_pSzIp, int iceP_iport, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::StartVoideRecoingFileResult>(true, this, &Gateway::DeviceControlPrx::_iceI_StartVoideRecoingFile, iceP_pSzIp, iceP_iport, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto StartVoideRecoingFileAsync(const ::std::string& iceP_pSzIp, int iceP_iport, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::StartVoideRecoingFileResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::StartVoideRecoingFileResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_StartVoideRecoingFile, iceP_pSzIp, iceP_iport, context);
-    }
-
-    ::std::function<void()>
-    StartVoideRecoingFileAsync(const ::std::string& iceP_pSzIp, int iceP_iport,
-                               ::std::function<void(int, ::std::string)> response,
-                               ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                               ::std::function<void(bool)> sent = nullptr,
-                               const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::StartVoideRecoingFileResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::StartVoideRecoingFileResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_StartVoideRecoingFile, iceP_pSzIp, iceP_iport, context);
-    }
-
-    void _iceI_StartVoideRecoingFile(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::StartVoideRecoingFileResult>>&, const ::std::string&, int, const ::Ice::Context&);
-
-    void RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, int iceP_iType, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::RecordingFileReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_RecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto RecordingFileReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, int iceP_iType, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::RecordingFileReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::RecordingFileReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_RecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context);
-    }
-
-    ::std::function<void()>
-    RecordingFileReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, int iceP_iType,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::RecordingFileReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::RecordingFileReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_RecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context);
-    }
-
-    void _iceI_RecordingFileReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RecordingFileReqResult>>&, const ::std::string&, const ::std::string&, const ::std::string&, int, const ::Ice::Context&);
-
-    void LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, int iceP_sbType, const ::std::string& iceP_pSzFilePath, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::LoadRecordingFileResult>(true, this, &Gateway::DeviceControlPrx::_iceI_LoadRecordingFile, iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto LoadRecordingFileAsync(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::LoadRecordingFileResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::LoadRecordingFileResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_LoadRecordingFile, iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context);
-    }
-
-    ::std::function<void()>
-    LoadRecordingFileAsync(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, int iceP_sbType, const ::std::string& iceP_pSzFilePath,
-                           ::std::function<void(int, ::std::string)> response,
-                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                           ::std::function<void(bool)> sent = nullptr,
-                           const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::LoadRecordingFileResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::LoadRecordingFileResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_LoadRecordingFile, iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context);
-    }
-
-    void _iceI_LoadRecordingFile(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::LoadRecordingFileResult>>&, const ::std::string&, const ::std::string&, const ::std::string&, int, const ::std::string&, const ::Ice::Context&);
-
-    void FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::FindRecordingFileReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_FindRecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto FindRecordingFileReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::FindRecordingFileReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::FindRecordingFileReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_FindRecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context);
-    }
-
-    ::std::function<void()>
-    FindRecordingFileReqAsync(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime,
-                              ::std::function<void(int, ::std::string)> response,
-                              ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                              ::std::function<void(bool)> sent = nullptr,
-                              const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::FindRecordingFileReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::FindRecordingFileReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_FindRecordingFileReq, iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context);
-    }
-
-    void _iceI_FindRecordingFileReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::FindRecordingFileReqResult>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
-
-    void DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::DataPlayStopOrStartReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_DataPlayStopOrStartReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto DataPlayStopOrStartReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::DataPlayStopOrStartReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::DataPlayStopOrStartReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_DataPlayStopOrStartReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    DataPlayStopOrStartReqAsync(const ::std::string& iceP_pSzSipData,
-                                ::std::function<void(int, ::std::string)> response,
-                                ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                ::std::function<void(bool)> sent = nullptr,
-                                const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::DataPlayStopOrStartReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::DataPlayStopOrStartReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_DataPlayStopOrStartReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_DataPlayStopOrStartReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DataPlayStopOrStartReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void SetupAlarmReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::SetupAlarmReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_SetupAlarmReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto SetupAlarmReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::SetupAlarmReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::SetupAlarmReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_SetupAlarmReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    SetupAlarmReqAsync(const ::std::string& iceP_pSzSipData,
-                       ::std::function<void(int, ::std::string)> response,
-                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                       ::std::function<void(bool)> sent = nullptr,
-                       const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::SetupAlarmReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::SetupAlarmReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_SetupAlarmReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_SetupAlarmReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::SetupAlarmReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void CloseAlarmReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::CloseAlarmReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_CloseAlarmReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto CloseAlarmReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::CloseAlarmReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::CloseAlarmReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_CloseAlarmReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    CloseAlarmReqAsync(const ::std::string& iceP_pSzSipData,
-                       ::std::function<void(int, ::std::string)> response,
-                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                       ::std::function<void(bool)> sent = nullptr,
-                       const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::CloseAlarmReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::CloseAlarmReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_CloseAlarmReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_CloseAlarmReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CloseAlarmReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void RestorConfigReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::RestorConfigReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_RestorConfigReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto RestorConfigReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::RestorConfigReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::RestorConfigReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_RestorConfigReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    RestorConfigReqAsync(const ::std::string& iceP_pSzSipData,
-                         ::std::function<void(int, ::std::string)> response,
-                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                         ::std::function<void(bool)> sent = nullptr,
-                         const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::RestorConfigReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::RestorConfigReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_RestorConfigReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_RestorConfigReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RestorConfigReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void RebootReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::RebootReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_RebootReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto RebootReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::RebootReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::RebootReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_RebootReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    RebootReqAsync(const ::std::string& iceP_pSzSipData,
-                   ::std::function<void(int, ::std::string)> response,
-                   ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                   ::std::function<void(bool)> sent = nullptr,
-                   const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::RebootReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::RebootReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_RebootReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_RebootReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RebootReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void RemoteControlReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::RemoteControlReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_RemoteControlReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto RemoteControlReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::RemoteControlReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::RemoteControlReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_RemoteControlReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    RemoteControlReqAsync(const ::std::string& iceP_pSzSipData,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::RemoteControlReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::RemoteControlReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_RemoteControlReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_RemoteControlReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RemoteControlReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgStartVioceReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgStartVioceReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgStartVioceReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgStartVioceReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgStartVioceReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgStartVioceReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgStartVioceReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgStartVioceReqAsync(const ::std::string& iceP_pSzSipData,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgStartVioceReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgStartVioceReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgStartVioceReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgStartVioceReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStartVioceReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgStopVioceReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgStopVioceReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgStopVioceReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgStopVioceReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgStopVioceReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgStopVioceReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgStopVioceReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgStopVioceReqAsync(const ::std::string& iceP_pSzSipData,
-                         ::std::function<void(int, ::std::string)> response,
-                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                         ::std::function<void(bool)> sent = nullptr,
-                         const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgStopVioceReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgStopVioceReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgStopVioceReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgStopVioceReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStopVioceReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcStatusReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgQueryDeviceIpcStatusReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcStatusReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgQueryDeviceIpcStatusReqAsync(const ::std::string& iceP_pSzSipData,
-                                    ::std::function<void(int, ::std::string)> response,
-                                    ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                    ::std::function<void(bool)> sent = nullptr,
-                                    const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcStatusReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgQueryDeviceIpcStatusReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcInfoReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgQueryDeviceIpcInfoReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcInfoReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgQueryDeviceIpcInfoReqAsync(const ::std::string& iceP_pSzSipData,
-                                  ::std::function<void(int, ::std::string)> response,
-                                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                  ::std::function<void(bool)> sent = nullptr,
-                                  const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcInfoReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgQueryDeviceIpcInfoReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgStartPropertyServerReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgStartPropertyServerReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgStartPropertyServerReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgStartPropertyServerReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgStartPropertyServerReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgStartPropertyServerReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgStartPropertyServerReqAsync(const ::std::string& iceP_pSzSipData,
-                                   ::std::function<void(int, ::std::string)> response,
-                                   ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                   ::std::function<void(bool)> sent = nullptr,
-                                   const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgStartPropertyServerReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgStartPropertyServerReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgStartPropertyServerReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgStartPropertyServerReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStartPropertyServerReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::MsgStopPropertyServerReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_MsgStopPropertyServerReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto MsgStopPropertyServerReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::MsgStopPropertyServerReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::MsgStopPropertyServerReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_MsgStopPropertyServerReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    MsgStopPropertyServerReqAsync(const ::std::string& iceP_pSzSipData,
-                                  ::std::function<void(int, ::std::string)> response,
-                                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                                  ::std::function<void(bool)> sent = nullptr,
-                                  const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::MsgStopPropertyServerReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::MsgStopPropertyServerReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_MsgStopPropertyServerReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_MsgStopPropertyServerReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStopPropertyServerReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void DeviceRefreshReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::DeviceRefreshReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_DeviceRefreshReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto DeviceRefreshReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::DeviceRefreshReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::DeviceRefreshReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_DeviceRefreshReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    DeviceRefreshReqAsync(const ::std::string& iceP_pSzSipData,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::DeviceRefreshReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::DeviceRefreshReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_DeviceRefreshReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_DeviceRefreshReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DeviceRefreshReqResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void DeviceShareNotify(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::DeviceShareNotifyResult>(true, this, &Gateway::DeviceControlPrx::_iceI_DeviceShareNotify, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto DeviceShareNotifyAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::DeviceShareNotifyResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::DeviceShareNotifyResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_DeviceShareNotify, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    DeviceShareNotifyAsync(const ::std::string& iceP_pSzSipData,
-                           ::std::function<void(int, ::std::string)> response,
-                           ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                           ::std::function<void(bool)> sent = nullptr,
-                           const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::DeviceShareNotifyResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::DeviceShareNotifyResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_DeviceShareNotify, iceP_pSzSipData, context);
-    }
-
-    void _iceI_DeviceShareNotify(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DeviceShareNotifyResult>>&, const ::std::string&, const ::Ice::Context&);
-
-    void GatewayRerootReq(const ::std::string& iceP_pSzSipData, int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto result = _makePromiseOutgoing<::Gateway::DeviceControl::GatewayRerootReqResult>(true, this, &Gateway::DeviceControlPrx::_iceI_GatewayRerootReq, iceP_pSzSipData, context).get();
-        iceP_iResMsglen = result.iResMsglen;
-        iceP_sResMsgbuf = ::std::move(result.sResMsgbuf);
-    }
-
-    template<template<typename> class P = ::std::promise>
-    auto GatewayRerootReqAsync(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::Gateway::DeviceControl::GatewayRerootReqResult>>().get_future())
-    {
-        return _makePromiseOutgoing<::Gateway::DeviceControl::GatewayRerootReqResult, P>(false, this, &Gateway::DeviceControlPrx::_iceI_GatewayRerootReq, iceP_pSzSipData, context);
-    }
-
-    ::std::function<void()>
-    GatewayRerootReqAsync(const ::std::string& iceP_pSzSipData,
-                          ::std::function<void(int, ::std::string)> response,
-                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
-                          ::std::function<void(bool)> sent = nullptr,
-                          const ::Ice::Context& context = Ice::noExplicitContext)
-    {
-        auto responseCb = [response](::Gateway::DeviceControl::GatewayRerootReqResult&& result)
-        {
-            response(result.iResMsglen, ::std::move(result.sResMsgbuf));
-        };
-        return _makeLamdaOutgoing<::Gateway::DeviceControl::GatewayRerootReqResult>(responseCb, ex, sent, this, &Gateway::DeviceControlPrx::_iceI_GatewayRerootReq, iceP_pSzSipData, context);
-    }
-
-    void _iceI_GatewayRerootReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::GatewayRerootReqResult>>&, const ::std::string&, const ::Ice::Context&);
+    void _iceI_reboot(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -1388,42 +790,16 @@ namespace Ice
 {
 
 template<typename S>
-struct StreamReader<::Gateway::OpenStreamException, S>
+struct StreamReader<::Media::OpenStreamException, S>
 {
-    static void read(S* istr, ::Gateway::OpenStreamException& v)
+    static void read(S* istr, ::Media::OpenStreamException& v)
     {
-        istr->readAll(v.reason);
-    }
-};
-
-template<typename S>
-struct StreamReader<::Gateway::DeviceControlException, S>
-{
-    static void read(S* istr, ::Gateway::DeviceControlException& v)
-    {
-        istr->readAll(v.reason);
+        istr->readAll(v.callid, v.reason);
     }
 };
 
 template<>
-struct StreamableTraits<::Gateway::RealStreamReqParam>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 15;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamReader<::Gateway::RealStreamReqParam, S>
-{
-    static void read(S* istr, ::Gateway::RealStreamReqParam& v)
-    {
-        istr->readAll(v.id, v.callid, v.destip, v.destport, v.pt, v.ssrc);
-    }
-};
-
-template<>
-struct StreamableTraits<::Gateway::RealStreamRespParam>
+struct StreamableTraits<::Media::RealStreamRespParam>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
     static const int minWireSize = 4;
@@ -1431,11 +807,59 @@ struct StreamableTraits<::Gateway::RealStreamRespParam>
 };
 
 template<typename S>
-struct StreamReader<::Gateway::RealStreamRespParam, S>
+struct StreamReader<::Media::RealStreamRespParam, S>
 {
-    static void read(S* istr, ::Gateway::RealStreamRespParam& v)
+    static void read(S* istr, ::Media::RealStreamRespParam& v)
     {
         istr->readAll(v.id, v.callid, v.sourceip, v.sourceport);
+    }
+};
+
+template<>
+struct StreamableTraits<::Media::RealStreamReqParam>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 23;
+    static const bool fixedLength = false;
+};
+
+template<typename S>
+struct StreamReader<::Media::RealStreamReqParam, S>
+{
+    static void read(S* istr, ::Media::RealStreamReqParam& v)
+    {
+        istr->readAll(v.id, v.callid, v.ip, v.port, v.name, v.pwd, v.destip, v.destport, v.ssrc, v.pt, v.sdk);
+    }
+};
+
+template<>
+struct StreamableTraits<::Media::StreamStatic>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 8;
+    static const bool fixedLength = true;
+};
+
+template<typename S>
+struct StreamReader<::Media::StreamStatic, S>
+{
+    static void read(S* istr, ::Media::StreamStatic& v)
+    {
+        istr->readAll(v.freenode, v.busynode);
+    }
+};
+
+}
+
+namespace Ice
+{
+
+template<typename S>
+struct StreamReader<::Gateway::DeviceControlException, S>
+{
+    static void read(S* istr, ::Gateway::DeviceControlException& v)
+    {
+        istr->readAll(v.reason);
     }
 };
 
@@ -1475,6 +899,14 @@ struct StreamReader<::Gateway::DeviceStatus, S>
 
 }
 
+namespace Media
+{
+
+using StreamPtr = ::std::shared_ptr<Stream>;
+using StreamPrxPtr = ::std::shared_ptr<StreamPrx>;
+
+}
+
 namespace Gateway
 {
 
@@ -1488,6 +920,15 @@ using DeviceControlPrxPtr = ::std::shared_ptr<DeviceControlPrx>;
 namespace IceProxy
 {
 
+namespace Media
+{
+
+class Stream;
+void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::Media::Stream>&);
+::IceProxy::Ice::Object* upCast(::IceProxy::Media::Stream*);
+
+}
+
 namespace Gateway
 {
 
@@ -1496,6 +937,18 @@ void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::Gat
 ::IceProxy::Ice::Object* upCast(::IceProxy::Gateway::DeviceControl*);
 
 }
+
+}
+
+namespace Media
+{
+
+class Stream;
+::Ice::Object* upCast(::Media::Stream*);
+typedef ::IceInternal::Handle< ::Media::Stream> StreamPtr;
+typedef ::IceInternal::ProxyHandle< ::IceProxy::Media::Stream> StreamPrx;
+typedef StreamPrx StreamPrxPtr;
+void _icePatchObjectPtr(StreamPtr&, const ::Ice::ObjectPtr&);
 
 }
 
@@ -1511,7 +964,7 @@ void _icePatchObjectPtr(DeviceControlPtr&, const ::Ice::ObjectPtr&);
 
 }
 
-namespace Gateway
+namespace Media
 {
 
 class RequestCanceledException : public ::Ice::UserException
@@ -1538,156 +991,20 @@ class OpenStreamException : public ::Ice::UserException
 public:
 
     OpenStreamException() {}
-    explicit OpenStreamException(const ::std::string&);
+    OpenStreamException(const ::std::string&, const ::std::string&);
     virtual ~OpenStreamException() throw();
 
     virtual ::std::string ice_id() const;
     virtual OpenStreamException* ice_clone() const;
     virtual void ice_throw() const;
 
-    ::std::string reason;
-
-protected:
-
-    virtual void _writeImpl(::Ice::OutputStream*) const;
-    virtual void _readImpl(::Ice::InputStream*);
-};
-
-class DeviceControlException : public ::Ice::UserException
-{
-public:
-
-    DeviceControlException() {}
-    explicit DeviceControlException(const ::std::string&);
-    virtual ~DeviceControlException() throw();
-
-    virtual ::std::string ice_id() const;
-    virtual DeviceControlException* ice_clone() const;
-    virtual void ice_throw() const;
-
-    ::std::string reason;
-
-protected:
-
-    virtual void _writeImpl(::Ice::OutputStream*) const;
-    virtual void _readImpl(::Ice::InputStream*);
-};
-
-struct RealStreamReqParam
-{
-    ::std::string id;
     ::std::string callid;
-    ::std::string destip;
-    ::Ice::Int destport;
-    ::Ice::Int pt;
-    ::Ice::Int ssrc;
+    ::std::string reason;
 
-    bool operator==(const RealStreamReqParam& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(id != rhs_.id)
-        {
-            return false;
-        }
-        if(callid != rhs_.callid)
-        {
-            return false;
-        }
-        if(destip != rhs_.destip)
-        {
-            return false;
-        }
-        if(destport != rhs_.destport)
-        {
-            return false;
-        }
-        if(pt != rhs_.pt)
-        {
-            return false;
-        }
-        if(ssrc != rhs_.ssrc)
-        {
-            return false;
-        }
-        return true;
-    }
+protected:
 
-    bool operator<(const RealStreamReqParam& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(id < rhs_.id)
-        {
-            return true;
-        }
-        else if(rhs_.id < id)
-        {
-            return false;
-        }
-        if(callid < rhs_.callid)
-        {
-            return true;
-        }
-        else if(rhs_.callid < callid)
-        {
-            return false;
-        }
-        if(destip < rhs_.destip)
-        {
-            return true;
-        }
-        else if(rhs_.destip < destip)
-        {
-            return false;
-        }
-        if(destport < rhs_.destport)
-        {
-            return true;
-        }
-        else if(rhs_.destport < destport)
-        {
-            return false;
-        }
-        if(pt < rhs_.pt)
-        {
-            return true;
-        }
-        else if(rhs_.pt < pt)
-        {
-            return false;
-        }
-        if(ssrc < rhs_.ssrc)
-        {
-            return true;
-        }
-        else if(rhs_.ssrc < ssrc)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const RealStreamReqParam& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const RealStreamReqParam& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const RealStreamReqParam& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const RealStreamReqParam& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
+    virtual void _writeImpl(::Ice::OutputStream*) const;
+    virtual void _readImpl(::Ice::InputStream*);
 };
 
 struct RealStreamRespParam
@@ -1779,6 +1096,295 @@ struct RealStreamRespParam
     {
         return !operator<(rhs_);
     }
+};
+
+struct RealStreamReqParam
+{
+    ::std::string id;
+    ::std::string callid;
+    ::std::string ip;
+    ::Ice::Int port;
+    ::std::string name;
+    ::std::string pwd;
+    ::std::string destip;
+    ::Ice::Int destport;
+    ::Ice::Int ssrc;
+    ::Ice::Int pt;
+    ::std::string sdk;
+
+    bool operator==(const RealStreamReqParam& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return true;
+        }
+        if(id != rhs_.id)
+        {
+            return false;
+        }
+        if(callid != rhs_.callid)
+        {
+            return false;
+        }
+        if(ip != rhs_.ip)
+        {
+            return false;
+        }
+        if(port != rhs_.port)
+        {
+            return false;
+        }
+        if(name != rhs_.name)
+        {
+            return false;
+        }
+        if(pwd != rhs_.pwd)
+        {
+            return false;
+        }
+        if(destip != rhs_.destip)
+        {
+            return false;
+        }
+        if(destport != rhs_.destport)
+        {
+            return false;
+        }
+        if(ssrc != rhs_.ssrc)
+        {
+            return false;
+        }
+        if(pt != rhs_.pt)
+        {
+            return false;
+        }
+        if(sdk != rhs_.sdk)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool operator<(const RealStreamReqParam& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return false;
+        }
+        if(id < rhs_.id)
+        {
+            return true;
+        }
+        else if(rhs_.id < id)
+        {
+            return false;
+        }
+        if(callid < rhs_.callid)
+        {
+            return true;
+        }
+        else if(rhs_.callid < callid)
+        {
+            return false;
+        }
+        if(ip < rhs_.ip)
+        {
+            return true;
+        }
+        else if(rhs_.ip < ip)
+        {
+            return false;
+        }
+        if(port < rhs_.port)
+        {
+            return true;
+        }
+        else if(rhs_.port < port)
+        {
+            return false;
+        }
+        if(name < rhs_.name)
+        {
+            return true;
+        }
+        else if(rhs_.name < name)
+        {
+            return false;
+        }
+        if(pwd < rhs_.pwd)
+        {
+            return true;
+        }
+        else if(rhs_.pwd < pwd)
+        {
+            return false;
+        }
+        if(destip < rhs_.destip)
+        {
+            return true;
+        }
+        else if(rhs_.destip < destip)
+        {
+            return false;
+        }
+        if(destport < rhs_.destport)
+        {
+            return true;
+        }
+        else if(rhs_.destport < destport)
+        {
+            return false;
+        }
+        if(ssrc < rhs_.ssrc)
+        {
+            return true;
+        }
+        else if(rhs_.ssrc < ssrc)
+        {
+            return false;
+        }
+        if(pt < rhs_.pt)
+        {
+            return true;
+        }
+        else if(rhs_.pt < pt)
+        {
+            return false;
+        }
+        if(sdk < rhs_.sdk)
+        {
+            return true;
+        }
+        else if(rhs_.sdk < sdk)
+        {
+            return false;
+        }
+        return false;
+    }
+
+    bool operator!=(const RealStreamReqParam& rhs_) const
+    {
+        return !operator==(rhs_);
+    }
+    bool operator<=(const RealStreamReqParam& rhs_) const
+    {
+        return operator<(rhs_) || operator==(rhs_);
+    }
+    bool operator>(const RealStreamReqParam& rhs_) const
+    {
+        return !operator<(rhs_) && !operator==(rhs_);
+    }
+    bool operator>=(const RealStreamReqParam& rhs_) const
+    {
+        return !operator<(rhs_);
+    }
+};
+
+struct StreamStatic
+{
+    ::Ice::Int freenode;
+    ::Ice::Int busynode;
+
+    bool operator==(const StreamStatic& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return true;
+        }
+        if(freenode != rhs_.freenode)
+        {
+            return false;
+        }
+        if(busynode != rhs_.busynode)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool operator<(const StreamStatic& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return false;
+        }
+        if(freenode < rhs_.freenode)
+        {
+            return true;
+        }
+        else if(rhs_.freenode < freenode)
+        {
+            return false;
+        }
+        if(busynode < rhs_.busynode)
+        {
+            return true;
+        }
+        else if(rhs_.busynode < busynode)
+        {
+            return false;
+        }
+        return false;
+    }
+
+    bool operator!=(const StreamStatic& rhs_) const
+    {
+        return !operator==(rhs_);
+    }
+    bool operator<=(const StreamStatic& rhs_) const
+    {
+        return operator<(rhs_) || operator==(rhs_);
+    }
+    bool operator>(const StreamStatic& rhs_) const
+    {
+        return !operator<(rhs_) && !operator==(rhs_);
+    }
+    bool operator>=(const StreamStatic& rhs_) const
+    {
+        return !operator<(rhs_);
+    }
+};
+
+}
+
+namespace Gateway
+{
+
+class RequestCanceledException : public ::Ice::UserException
+{
+public:
+
+    RequestCanceledException() {}
+    virtual ~RequestCanceledException() throw();
+
+    virtual ::std::string ice_id() const;
+    virtual RequestCanceledException* ice_clone() const;
+    virtual void ice_throw() const;
+
+protected:
+
+    virtual void _writeImpl(::Ice::OutputStream*) const;
+    virtual void _readImpl(::Ice::InputStream*);
+};
+
+class DeviceControlException : public ::Ice::UserException
+{
+public:
+
+    DeviceControlException() {}
+    explicit DeviceControlException(const ::std::string&);
+    virtual ~DeviceControlException() throw();
+
+    virtual ::std::string ice_id() const;
+    virtual DeviceControlException* ice_clone() const;
+    virtual void ice_throw() const;
+
+    ::std::string reason;
+
+protected:
+
+    virtual void _writeImpl(::Ice::OutputStream*) const;
+    virtual void _readImpl(::Ice::InputStream*);
 };
 
 struct DeviceInfo
@@ -1900,30 +1506,35 @@ struct DeviceStatus
 
 }
 
-namespace Gateway
+namespace Media
 {
 
-class AMD_DeviceControl_openRealStream : public virtual ::Ice::AMDCallback
+class AMD_Stream_openRealStream : public virtual ::Ice::AMDCallback
 {
 public:
 
-    virtual ~AMD_DeviceControl_openRealStream();
+    virtual ~AMD_Stream_openRealStream();
 
-    virtual void ice_response(const ::Gateway::RealStreamRespParam&) = 0;
+    virtual void ice_response(const ::Media::RealStreamRespParam&) = 0;
 };
 
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_openRealStream> AMD_DeviceControl_openRealStreamPtr;
+typedef ::IceUtil::Handle< ::Media::AMD_Stream_openRealStream> AMD_Stream_openRealStreamPtr;
 
-class AMD_DeviceControl_closeStream : public virtual ::Ice::AMDCallback
+class AMD_Stream_closeStream : public virtual ::Ice::AMDCallback
 {
 public:
 
-    virtual ~AMD_DeviceControl_closeStream();
+    virtual ~AMD_Stream_closeStream();
 
     virtual void ice_response() = 0;
 };
 
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_closeStream> AMD_DeviceControl_closeStreamPtr;
+typedef ::IceUtil::Handle< ::Media::AMD_Stream_closeStream> AMD_Stream_closeStreamPtr;
+
+}
+
+namespace Gateway
+{
 
 class AMD_DeviceControl_ptzControl : public virtual ::Ice::AMDCallback
 {
@@ -1958,306 +1569,36 @@ public:
 
 typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_getDeviceStatus> AMD_DeviceControl_getDeviceStatusPtr;
 
-class AMD_DeviceControl_beatHeart : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_beatHeart();
-
-    virtual void ice_response(const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_beatHeart> AMD_DeviceControl_beatHeartPtr;
-
-class AMD_DeviceControl_CallSipUserReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_CallSipUserReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_CallSipUserReq> AMD_DeviceControl_CallSipUserReqPtr;
-
-class AMD_DeviceControl_CalibrationTimeReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_CalibrationTimeReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_CalibrationTimeReq> AMD_DeviceControl_CalibrationTimeReqPtr;
-
-class AMD_DeviceControl_HolderOperReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_HolderOperReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_HolderOperReq> AMD_DeviceControl_HolderOperReqPtr;
-
-class AMD_DeviceControl_RecordingOperReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_RecordingOperReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_RecordingOperReq> AMD_DeviceControl_RecordingOperReqPtr;
-
-class AMD_DeviceControl_StopRecordingOperReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_StopRecordingOperReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_StopRecordingOperReq> AMD_DeviceControl_StopRecordingOperReqPtr;
-
-class AMD_DeviceControl_StartVoideRecoingFile : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_StartVoideRecoingFile();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_StartVoideRecoingFile> AMD_DeviceControl_StartVoideRecoingFilePtr;
-
-class AMD_DeviceControl_RecordingFileReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_RecordingFileReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_RecordingFileReq> AMD_DeviceControl_RecordingFileReqPtr;
-
-class AMD_DeviceControl_LoadRecordingFile : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_LoadRecordingFile();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_LoadRecordingFile> AMD_DeviceControl_LoadRecordingFilePtr;
-
-class AMD_DeviceControl_FindRecordingFileReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_FindRecordingFileReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_FindRecordingFileReq> AMD_DeviceControl_FindRecordingFileReqPtr;
-
-class AMD_DeviceControl_DataPlayStopOrStartReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_DataPlayStopOrStartReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_DataPlayStopOrStartReq> AMD_DeviceControl_DataPlayStopOrStartReqPtr;
-
-class AMD_DeviceControl_SetupAlarmReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_SetupAlarmReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_SetupAlarmReq> AMD_DeviceControl_SetupAlarmReqPtr;
-
-class AMD_DeviceControl_CloseAlarmReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_CloseAlarmReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_CloseAlarmReq> AMD_DeviceControl_CloseAlarmReqPtr;
-
-class AMD_DeviceControl_RestorConfigReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_RestorConfigReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_RestorConfigReq> AMD_DeviceControl_RestorConfigReqPtr;
-
-class AMD_DeviceControl_RebootReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_RebootReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_RebootReq> AMD_DeviceControl_RebootReqPtr;
-
-class AMD_DeviceControl_RemoteControlReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_RemoteControlReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_RemoteControlReq> AMD_DeviceControl_RemoteControlReqPtr;
-
-class AMD_DeviceControl_MsgStartVioceReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgStartVioceReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgStartVioceReq> AMD_DeviceControl_MsgStartVioceReqPtr;
-
-class AMD_DeviceControl_MsgStopVioceReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgStopVioceReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgStopVioceReq> AMD_DeviceControl_MsgStopVioceReqPtr;
-
-class AMD_DeviceControl_MsgQueryDeviceIpcStatusReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgQueryDeviceIpcStatusReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq> AMD_DeviceControl_MsgQueryDeviceIpcStatusReqPtr;
-
-class AMD_DeviceControl_MsgQueryDeviceIpcInfoReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgQueryDeviceIpcInfoReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq> AMD_DeviceControl_MsgQueryDeviceIpcInfoReqPtr;
-
-class AMD_DeviceControl_MsgStartPropertyServerReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgStartPropertyServerReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgStartPropertyServerReq> AMD_DeviceControl_MsgStartPropertyServerReqPtr;
-
-class AMD_DeviceControl_MsgStopPropertyServerReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_MsgStopPropertyServerReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_MsgStopPropertyServerReq> AMD_DeviceControl_MsgStopPropertyServerReqPtr;
-
-class AMD_DeviceControl_DeviceRefreshReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_DeviceRefreshReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_DeviceRefreshReq> AMD_DeviceControl_DeviceRefreshReqPtr;
-
-class AMD_DeviceControl_DeviceShareNotify : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_DeviceShareNotify();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_DeviceShareNotify> AMD_DeviceControl_DeviceShareNotifyPtr;
-
-class AMD_DeviceControl_GatewayRerootReq : public virtual ::Ice::AMDCallback
-{
-public:
-
-    virtual ~AMD_DeviceControl_GatewayRerootReq();
-
-    virtual void ice_response(::Ice::Int, const ::std::string&) = 0;
-};
-
-typedef ::IceUtil::Handle< ::Gateway::AMD_DeviceControl_GatewayRerootReq> AMD_DeviceControl_GatewayRerootReqPtr;
-
 }
 
 namespace IceAsync
 {
 
-namespace Gateway
+namespace Media
 {
 
-class AMD_DeviceControl_openRealStream : public ::Gateway::AMD_DeviceControl_openRealStream, public ::IceInternal::IncomingAsync
+class AMD_Stream_openRealStream : public ::Media::AMD_Stream_openRealStream, public ::IceInternal::IncomingAsync
 {
 public:
 
-    AMD_DeviceControl_openRealStream(::IceInternal::Incoming&);
+    AMD_Stream_openRealStream(::IceInternal::Incoming&);
 
-    virtual void ice_response(const ::Gateway::RealStreamRespParam&);
+    virtual void ice_response(const ::Media::RealStreamRespParam&);
 };
 
-class AMD_DeviceControl_closeStream : public ::Gateway::AMD_DeviceControl_closeStream, public ::IceInternal::IncomingAsync
+class AMD_Stream_closeStream : public ::Media::AMD_Stream_closeStream, public ::IceInternal::IncomingAsync
 {
 public:
 
-    AMD_DeviceControl_closeStream(::IceInternal::Incoming&);
+    AMD_Stream_closeStream(::IceInternal::Incoming&);
 
     virtual void ice_response();
 };
+
+}
+
+namespace Gateway
+{
 
 class AMD_DeviceControl_ptzControl : public ::Gateway::AMD_DeviceControl_ptzControl, public ::IceInternal::IncomingAsync
 {
@@ -2286,243 +1627,38 @@ public:
     virtual void ice_response(const ::Gateway::DeviceStatus&);
 };
 
-class AMD_DeviceControl_beatHeart : public ::Gateway::AMD_DeviceControl_beatHeart, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_beatHeart(::IceInternal::Incoming&);
-
-    virtual void ice_response(const ::std::string&);
-};
-
-class AMD_DeviceControl_CallSipUserReq : public ::Gateway::AMD_DeviceControl_CallSipUserReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_CallSipUserReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_CalibrationTimeReq : public ::Gateway::AMD_DeviceControl_CalibrationTimeReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_CalibrationTimeReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_HolderOperReq : public ::Gateway::AMD_DeviceControl_HolderOperReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_HolderOperReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_RecordingOperReq : public ::Gateway::AMD_DeviceControl_RecordingOperReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_RecordingOperReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_StopRecordingOperReq : public ::Gateway::AMD_DeviceControl_StopRecordingOperReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_StopRecordingOperReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_StartVoideRecoingFile : public ::Gateway::AMD_DeviceControl_StartVoideRecoingFile, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_StartVoideRecoingFile(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_RecordingFileReq : public ::Gateway::AMD_DeviceControl_RecordingFileReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_RecordingFileReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_LoadRecordingFile : public ::Gateway::AMD_DeviceControl_LoadRecordingFile, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_LoadRecordingFile(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_FindRecordingFileReq : public ::Gateway::AMD_DeviceControl_FindRecordingFileReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_FindRecordingFileReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_DataPlayStopOrStartReq : public ::Gateway::AMD_DeviceControl_DataPlayStopOrStartReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_DataPlayStopOrStartReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_SetupAlarmReq : public ::Gateway::AMD_DeviceControl_SetupAlarmReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_SetupAlarmReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_CloseAlarmReq : public ::Gateway::AMD_DeviceControl_CloseAlarmReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_CloseAlarmReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_RestorConfigReq : public ::Gateway::AMD_DeviceControl_RestorConfigReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_RestorConfigReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_RebootReq : public ::Gateway::AMD_DeviceControl_RebootReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_RebootReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_RemoteControlReq : public ::Gateway::AMD_DeviceControl_RemoteControlReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_RemoteControlReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgStartVioceReq : public ::Gateway::AMD_DeviceControl_MsgStartVioceReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgStartVioceReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgStopVioceReq : public ::Gateway::AMD_DeviceControl_MsgStopVioceReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgStopVioceReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgQueryDeviceIpcStatusReq : public ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgQueryDeviceIpcInfoReq : public ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgStartPropertyServerReq : public ::Gateway::AMD_DeviceControl_MsgStartPropertyServerReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgStartPropertyServerReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_MsgStopPropertyServerReq : public ::Gateway::AMD_DeviceControl_MsgStopPropertyServerReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_MsgStopPropertyServerReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_DeviceRefreshReq : public ::Gateway::AMD_DeviceControl_DeviceRefreshReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_DeviceRefreshReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_DeviceShareNotify : public ::Gateway::AMD_DeviceControl_DeviceShareNotify, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_DeviceShareNotify(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
-
-class AMD_DeviceControl_GatewayRerootReq : public ::Gateway::AMD_DeviceControl_GatewayRerootReq, public ::IceInternal::IncomingAsync
-{
-public:
-
-    AMD_DeviceControl_GatewayRerootReq(::IceInternal::Incoming&);
-
-    virtual void ice_response(::Ice::Int, const ::std::string&);
-};
+}
 
 }
+
+namespace Media
+{
+
+class Callback_Stream_openRealStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_openRealStream_Base> Callback_Stream_openRealStreamPtr;
+
+class Callback_Stream_closeStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_closeStream_Base> Callback_Stream_closeStreamPtr;
+
+class Callback_Stream_getStreamStatic_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_getStreamStatic_Base> Callback_Stream_getStreamStaticPtr;
+
+class Callback_Stream_getRecordFiles_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_getRecordFiles_Base> Callback_Stream_getRecordFilesPtr;
+
+class Callback_Stream_openVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_openVodStream_Base> Callback_Stream_openVodStreamPtr;
+
+class Callback_Stream_closeVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_closeVodStream_Base> Callback_Stream_closeVodStreamPtr;
+
+class Callback_Stream_controlVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_controlVodStream_Base> Callback_Stream_controlVodStreamPtr;
 
 }
 
 namespace Gateway
 {
-
-class Callback_DeviceControl_openRealStream_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_openRealStream_Base> Callback_DeviceControl_openRealStreamPtr;
-
-class Callback_DeviceControl_closeStream_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_closeStream_Base> Callback_DeviceControl_closeStreamPtr;
 
 class Callback_DeviceControl_ptzControl_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_DeviceControl_ptzControl_Base> Callback_DeviceControl_ptzControlPtr;
@@ -2539,128 +1675,68 @@ typedef ::IceUtil::Handle< Callback_DeviceControl_login_Base> Callback_DeviceCon
 class Callback_DeviceControl_shutdown_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_DeviceControl_shutdown_Base> Callback_DeviceControl_shutdownPtr;
 
-class Callback_DeviceControl_beatHeart_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_beatHeart_Base> Callback_DeviceControl_beatHeartPtr;
+class Callback_DeviceControl_Timing_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_DeviceControl_Timing_Base> Callback_DeviceControl_TimingPtr;
 
-class Callback_DeviceControl_CallSipUserReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_CallSipUserReq_Base> Callback_DeviceControl_CallSipUserReqPtr;
+class Callback_DeviceControl_setGuard_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_DeviceControl_setGuard_Base> Callback_DeviceControl_setGuardPtr;
 
-class Callback_DeviceControl_CalibrationTimeReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_CalibrationTimeReq_Base> Callback_DeviceControl_CalibrationTimeReqPtr;
+class Callback_DeviceControl_resetGuard_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_DeviceControl_resetGuard_Base> Callback_DeviceControl_resetGuardPtr;
 
-class Callback_DeviceControl_HolderOperReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_HolderOperReq_Base> Callback_DeviceControl_HolderOperReqPtr;
+class Callback_DeviceControl_subscribe_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_DeviceControl_subscribe_Base> Callback_DeviceControl_subscribePtr;
 
-class Callback_DeviceControl_RecordingOperReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_RecordingOperReq_Base> Callback_DeviceControl_RecordingOperReqPtr;
-
-class Callback_DeviceControl_StopRecordingOperReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_StopRecordingOperReq_Base> Callback_DeviceControl_StopRecordingOperReqPtr;
-
-class Callback_DeviceControl_StartVoideRecoingFile_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_StartVoideRecoingFile_Base> Callback_DeviceControl_StartVoideRecoingFilePtr;
-
-class Callback_DeviceControl_RecordingFileReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_RecordingFileReq_Base> Callback_DeviceControl_RecordingFileReqPtr;
-
-class Callback_DeviceControl_LoadRecordingFile_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_LoadRecordingFile_Base> Callback_DeviceControl_LoadRecordingFilePtr;
-
-class Callback_DeviceControl_FindRecordingFileReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_FindRecordingFileReq_Base> Callback_DeviceControl_FindRecordingFileReqPtr;
-
-class Callback_DeviceControl_DataPlayStopOrStartReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_DataPlayStopOrStartReq_Base> Callback_DeviceControl_DataPlayStopOrStartReqPtr;
-
-class Callback_DeviceControl_SetupAlarmReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_SetupAlarmReq_Base> Callback_DeviceControl_SetupAlarmReqPtr;
-
-class Callback_DeviceControl_CloseAlarmReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_CloseAlarmReq_Base> Callback_DeviceControl_CloseAlarmReqPtr;
-
-class Callback_DeviceControl_RestorConfigReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_RestorConfigReq_Base> Callback_DeviceControl_RestorConfigReqPtr;
-
-class Callback_DeviceControl_RebootReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_RebootReq_Base> Callback_DeviceControl_RebootReqPtr;
-
-class Callback_DeviceControl_RemoteControlReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_RemoteControlReq_Base> Callback_DeviceControl_RemoteControlReqPtr;
-
-class Callback_DeviceControl_MsgStartVioceReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgStartVioceReq_Base> Callback_DeviceControl_MsgStartVioceReqPtr;
-
-class Callback_DeviceControl_MsgStopVioceReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgStopVioceReq_Base> Callback_DeviceControl_MsgStopVioceReqPtr;
-
-class Callback_DeviceControl_MsgQueryDeviceIpcStatusReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgQueryDeviceIpcStatusReq_Base> Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr;
-
-class Callback_DeviceControl_MsgQueryDeviceIpcInfoReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgQueryDeviceIpcInfoReq_Base> Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr;
-
-class Callback_DeviceControl_MsgStartPropertyServerReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgStartPropertyServerReq_Base> Callback_DeviceControl_MsgStartPropertyServerReqPtr;
-
-class Callback_DeviceControl_MsgStopPropertyServerReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_MsgStopPropertyServerReq_Base> Callback_DeviceControl_MsgStopPropertyServerReqPtr;
-
-class Callback_DeviceControl_DeviceRefreshReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_DeviceRefreshReq_Base> Callback_DeviceControl_DeviceRefreshReqPtr;
-
-class Callback_DeviceControl_DeviceShareNotify_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_DeviceShareNotify_Base> Callback_DeviceControl_DeviceShareNotifyPtr;
-
-class Callback_DeviceControl_GatewayRerootReq_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DeviceControl_GatewayRerootReq_Base> Callback_DeviceControl_GatewayRerootReqPtr;
+class Callback_DeviceControl_reboot_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_DeviceControl_reboot_Base> Callback_DeviceControl_rebootPtr;
 
 }
 
 namespace IceProxy
 {
 
-namespace Gateway
+namespace Media
 {
 
-class DeviceControl : public virtual ::Ice::Proxy<DeviceControl, ::IceProxy::Ice::Object>
+class Stream : public virtual ::Ice::Proxy<Stream, ::IceProxy::Ice::Object>
 {
 public:
 
-    void openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, ::Gateway::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, ::Media::RealStreamRespParam& iceP_stm, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_openRealStream(iceP_resp, _iceI_begin_openRealStream(iceP_req, context, ::IceInternal::dummyCallback, 0, true));
+        end_openRealStream(iceP_stm, _iceI_begin_openRealStream(iceP_ctg, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_openRealStream(iceP_req, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_openRealStream(iceP_ctg, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_openRealStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_openRealStream(iceP_ctg, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_openRealStream(iceP_req, context, del, cookie);
+        return _iceI_begin_openRealStream(iceP_ctg, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Gateway::Callback_DeviceControl_openRealStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Media::Callback_Stream_openRealStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_openRealStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_openRealStream(iceP_ctg, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_openRealStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context, const ::Media::Callback_Stream_openRealStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_openRealStream(iceP_req, context, del, cookie);
+        return _iceI_begin_openRealStream(iceP_ctg, context, del, cookie);
     }
 
-    void end_openRealStream(::Gateway::RealStreamRespParam& iceP_resp, const ::Ice::AsyncResultPtr&);
+    void end_openRealStream(::Media::RealStreamRespParam& iceP_stm, const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_openRealStream(const ::Gateway::RealStreamReqParam&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_openRealStream(const ::Media::RealStreamReqParam&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -2684,12 +1760,12 @@ public:
         return _iceI_begin_closeStream(iceP_callid, iceP_id, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Gateway::Callback_DeviceControl_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
         return _iceI_begin_closeStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
         return _iceI_begin_closeStream(iceP_callid, iceP_id, context, del, cookie);
     }
@@ -2700,6 +1776,212 @@ private:
 
     ::Ice::AsyncResultPtr _iceI_begin_closeStream(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
+public:
+
+    void getStreamStatic(const ::std::string& iceP_id, ::Media::StreamStatic& iceP_static, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_getStreamStatic(iceP_static, _iceI_begin_getStreamStatic(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Media::Callback_Stream_getStreamStaticPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_getStreamStaticPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, del, cookie);
+    }
+
+    void end_getStreamStatic(::Media::StreamStatic& iceP_static, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getStreamStatic(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_getRecordFiles(_iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Media::Callback_Stream_getRecordFilesPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context, const ::Media::Callback_Stream_getRecordFilesPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, del, cookie);
+    }
+
+    void end_getRecordFiles(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getRecordFiles(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void openVodStream(const ::Media::RealStreamReqParam& iceP_req, ::Media::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_openVodStream(iceP_resp, _iceI_begin_openVodStream(iceP_req, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Media::Callback_Stream_openVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Media::Callback_Stream_openVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, del, cookie);
+    }
+
+    void end_openVodStream(::Media::RealStreamRespParam& iceP_resp, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_openVodStream(const ::Media::RealStreamReqParam&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_closeVodStream(_iceI_begin_closeVodStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_closeVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_closeVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    void end_closeVodStream(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_closeVodStream(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_controlVodStream(_iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_controlVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_controlVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    void end_controlVodStream(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_controlVodStream(const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    static const ::std::string& ice_staticId();
+
+protected:
+
+    virtual ::IceProxy::Ice::Object* _newInstance() const;
+};
+
+}
+
+namespace Gateway
+{
+
+class DeviceControl : public virtual ::Ice::Proxy<DeviceControl, ::IceProxy::Ice::Object>
+{
 public:
 
     void ptzControl(const ::std::string& iceP_id, const ::std::string& iceP_cmd, const ::Ice::Context& context = ::Ice::noExplicitContext)
@@ -2892,953 +2174,193 @@ private:
 
 public:
 
-    void beatHeart(const ::std::string& iceP_info, ::std::string& iceP_rinfo, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void Timing(const ::std::string& iceP_time, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_beatHeart(iceP_rinfo, _iceI_begin_beatHeart(iceP_info, context, ::IceInternal::dummyCallback, 0, true));
+        end_Timing(_iceI_begin_Timing(iceP_time, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_beatHeart(const ::std::string& iceP_info, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_Timing(const ::std::string& iceP_time, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_beatHeart(iceP_info, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_Timing(iceP_time, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_beatHeart(const ::std::string& iceP_info, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_Timing(const ::std::string& iceP_time, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_beatHeart(iceP_info, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_Timing(iceP_time, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_beatHeart(const ::std::string& iceP_info, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_Timing(const ::std::string& iceP_time, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_beatHeart(iceP_info, context, del, cookie);
+        return _iceI_begin_Timing(iceP_time, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_beatHeart(const ::std::string& iceP_info, const ::Gateway::Callback_DeviceControl_beatHeartPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_Timing(const ::std::string& iceP_time, const ::Gateway::Callback_DeviceControl_TimingPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_beatHeart(iceP_info, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_Timing(iceP_time, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_beatHeart(const ::std::string& iceP_info, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_beatHeartPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_Timing(const ::std::string& iceP_time, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_TimingPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_beatHeart(iceP_info, context, del, cookie);
+        return _iceI_begin_Timing(iceP_time, context, del, cookie);
     }
 
-    void end_beatHeart(::std::string& iceP_rinfo, const ::Ice::AsyncResultPtr&);
+    void end_Timing(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_beatHeart(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_Timing(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
-    void CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void setGuard(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_CallSipUserReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context, ::IceInternal::dummyCallback, 0, true));
+        end_setGuard(_iceI_begin_setGuard(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_setGuard(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_setGuard(iceP_id, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_setGuard(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_setGuard(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_setGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context, del, cookie);
+        return _iceI_begin_setGuard(iceP_id, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Gateway::Callback_DeviceControl_CallSipUserReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_setGuard(const ::std::string& iceP_id, const ::Gateway::Callback_DeviceControl_setGuardPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_setGuard(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_CallSipUserReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_setGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_setGuardPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CallSipUserReq(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, context, del, cookie);
+        return _iceI_begin_setGuard(iceP_id, context, del, cookie);
     }
 
-    void end_CallSipUserReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
+    void end_setGuard(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_CallSipUserReq(const ::std::string&, ::Ice::Int, const ::std::string&, ::Ice::Int, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_setGuard(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
-    void CalibrationTimeReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_CalibrationTimeReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
+        end_resetGuard(_iceI_begin_resetGuard(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_resetGuard(iceP_id, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_resetGuard(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_resetGuard(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, context, del, cookie);
+        return _iceI_begin_resetGuard(iceP_id, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_CalibrationTimeReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_resetGuard(const ::std::string& iceP_id, const ::Gateway::Callback_DeviceControl_resetGuardPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_resetGuard(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_CalibrationTimeReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_resetGuardPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_CalibrationTimeReq(iceP_pSzSipData, context, del, cookie);
+        return _iceI_begin_resetGuard(iceP_id, context, del, cookie);
     }
 
-    void end_CalibrationTimeReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
+    void end_resetGuard(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_CalibrationTimeReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_resetGuard(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
-    void HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void subscribe(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_HolderOperReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, context, ::IceInternal::dummyCallback, 0, true));
+        end_subscribe(_iceI_begin_subscribe(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_subscribe(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_subscribe(iceP_id, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_subscribe(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_subscribe(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_subscribe(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, context, del, cookie);
+        return _iceI_begin_subscribe(iceP_id, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Gateway::Callback_DeviceControl_HolderOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_subscribe(const ::std::string& iceP_id, const ::Gateway::Callback_DeviceControl_subscribePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_subscribe(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_HolderOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_subscribe(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_subscribePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_HolderOperReq(iceP_pSzSipData, iceP_pSzTypeOper, context, del, cookie);
+        return _iceI_begin_subscribe(iceP_id, context, del, cookie);
     }
 
-    void end_HolderOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
+    void end_subscribe(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_HolderOperReq(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_subscribe(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
-    void RecordingOperReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    void reboot(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        end_RecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_RecordingOperReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
+        end_reboot(_iceI_begin_reboot(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
     }
 
-    ::Ice::AsyncResultPtr begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    ::Ice::AsyncResultPtr begin_reboot(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
     {
-        return _iceI_begin_RecordingOperReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
+        return _iceI_begin_reboot(iceP_id, context, ::IceInternal::dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_reboot(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_RecordingOperReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_reboot(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_reboot(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_RecordingOperReq(iceP_pSzSipData, context, del, cookie);
+        return _iceI_begin_reboot(iceP_id, context, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_RecordingOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_reboot(const ::std::string& iceP_id, const ::Gateway::Callback_DeviceControl_rebootPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_RecordingOperReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
+        return _iceI_begin_reboot(iceP_id, ::Ice::noExplicitContext, del, cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_RecordingOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    ::Ice::AsyncResultPtr begin_reboot(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_rebootPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
     {
-        return _iceI_begin_RecordingOperReq(iceP_pSzSipData, context, del, cookie);
+        return _iceI_begin_reboot(iceP_id, context, del, cookie);
     }
 
-    void end_RecordingOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_RecordingOperReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void StopRecordingOperReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_StopRecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_StopRecordingOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_StopRecordingOperReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StopRecordingOperReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_StopRecordingOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
+    void end_reboot(const ::Ice::AsyncResultPtr&);
 
 private:
 
-    ::Ice::AsyncResultPtr _iceI_begin_StopRecordingOperReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_StartVoideRecoingFile(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Gateway::Callback_DeviceControl_StartVoideRecoingFilePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_StartVoideRecoingFilePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_StartVoideRecoingFile(iceP_pSzIp, iceP_iport, context, del, cookie);
-    }
-
-    void end_StartVoideRecoingFile(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_StartVoideRecoingFile(const ::std::string&, ::Ice::Int, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_RecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Gateway::Callback_DeviceControl_RecordingFileReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_RecordingFileReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, context, del, cookie);
-    }
-
-    void end_RecordingFileReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_RecordingFileReq(const ::std::string&, const ::std::string&, const ::std::string&, ::Ice::Int, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_LoadRecordingFile(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Gateway::Callback_DeviceControl_LoadRecordingFilePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_LoadRecordingFilePtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_LoadRecordingFile(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, context, del, cookie);
-    }
-
-    void end_LoadRecordingFile(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_LoadRecordingFile(const ::std::string&, const ::std::string&, const ::std::string&, ::Ice::Int, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_FindRecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Gateway::Callback_DeviceControl_FindRecordingFileReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_FindRecordingFileReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_FindRecordingFileReq(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, context, del, cookie);
-    }
-
-    void end_FindRecordingFileReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_FindRecordingFileReq(const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_DataPlayStopOrStartReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_DataPlayStopOrStartReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_DataPlayStopOrStartReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DataPlayStopOrStartReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_DataPlayStopOrStartReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_DataPlayStopOrStartReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void SetupAlarmReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_SetupAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_SetupAlarmReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_SetupAlarmReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_SetupAlarmReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_SetupAlarmReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_SetupAlarmReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_SetupAlarmReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_SetupAlarmReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_SetupAlarmReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_SetupAlarmReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_SetupAlarmReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void CloseAlarmReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_CloseAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_CloseAlarmReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_CloseAlarmReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_CloseAlarmReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_CloseAlarmReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_CloseAlarmReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_CloseAlarmReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_CloseAlarmReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_CloseAlarmReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_CloseAlarmReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_CloseAlarmReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void RestorConfigReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_RestorConfigReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_RestorConfigReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_RestorConfigReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RestorConfigReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RestorConfigReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_RestorConfigReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RestorConfigReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_RestorConfigReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RestorConfigReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_RestorConfigReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_RestorConfigReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void RebootReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_RebootReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_RebootReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_RebootReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RebootReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RebootReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_RebootReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RebootReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_RebootReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RebootReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_RebootReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_RebootReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void RemoteControlReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_RemoteControlReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_RemoteControlReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_RemoteControlReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RemoteControlReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RemoteControlReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_RemoteControlReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RemoteControlReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_RemoteControlReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_RemoteControlReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_RemoteControlReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_RemoteControlReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgStartVioceReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgStartVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgStartVioceReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgStartVioceReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartVioceReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgStartVioceReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgStartVioceReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgStopVioceReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgStopVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgStopVioceReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgStopVioceReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopVioceReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgStopVioceReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgStopVioceReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgQueryDeviceIpcStatusReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcStatusReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgQueryDeviceIpcStatusReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgQueryDeviceIpcStatusReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgQueryDeviceIpcInfoReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgQueryDeviceIpcInfoReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgQueryDeviceIpcInfoReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgQueryDeviceIpcInfoReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgStartPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgStartPropertyServerReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgStartPropertyServerReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStartPropertyServerReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgStartPropertyServerReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgStartPropertyServerReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_MsgStopPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_MsgStopPropertyServerReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_MsgStopPropertyServerReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_MsgStopPropertyServerReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_MsgStopPropertyServerReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_MsgStopPropertyServerReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void DeviceRefreshReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_DeviceRefreshReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_DeviceRefreshReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_DeviceRefreshReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceRefreshReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_DeviceRefreshReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_DeviceRefreshReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void DeviceShareNotify(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_DeviceShareNotify(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_DeviceShareNotify(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_DeviceShareNotify(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceShareNotify(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceShareNotify(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_DeviceShareNotifyPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceShareNotify(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_DeviceShareNotifyPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_DeviceShareNotify(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_DeviceShareNotify(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_DeviceShareNotify(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void GatewayRerootReq(const ::std::string& iceP_pSzSipData, ::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_GatewayRerootReq(iceP_iResMsglen, iceP_sResMsgbuf, _iceI_begin_GatewayRerootReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_GatewayRerootReq(iceP_pSzSipData, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_GatewayRerootReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_GatewayRerootReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Gateway::Callback_DeviceControl_GatewayRerootReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_GatewayRerootReq(iceP_pSzSipData, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::Gateway::Callback_DeviceControl_GatewayRerootReqPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_GatewayRerootReq(iceP_pSzSipData, context, del, cookie);
-    }
-
-    void end_GatewayRerootReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_GatewayRerootReq(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+    ::Ice::AsyncResultPtr _iceI_begin_reboot(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
 
 public:
 
@@ -3849,6 +2371,65 @@ protected:
     virtual ::IceProxy::Ice::Object* _newInstance() const;
 };
 
+}
+
+}
+
+namespace Media
+{
+
+class Stream : public virtual ::Ice::Object
+{
+public:
+
+    typedef StreamPrx ProxyType;
+    typedef StreamPtr PointerType;
+
+    virtual ~Stream();
+
+    virtual bool ice_isA(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) const;
+    virtual ::std::vector< ::std::string> ice_ids(const ::Ice::Current& = ::Ice::emptyCurrent) const;
+    virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::emptyCurrent) const;
+
+    static const ::std::string& ice_staticId();
+
+    virtual void openRealStream_async(const ::Media::AMD_Stream_openRealStreamPtr&, const ::Media::RealStreamReqParam&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeStream_async(const ::Media::AMD_Stream_closeStreamPtr&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getStreamStatic(const ::std::string&, ::Media::StreamStatic&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getStreamStatic(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getRecordFiles(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getRecordFiles(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void openVodStream(const ::Media::RealStreamReqParam&, ::Media::RealStreamRespParam&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_openVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeVodStream(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_closeVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void controlVodStream(const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_controlVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
+
+protected:
+
+    virtual void _iceWriteImpl(::Ice::OutputStream*) const;
+    virtual void _iceReadImpl(::Ice::InputStream*);
+};
+
+inline bool operator==(const Stream& lhs, const Stream& rhs)
+{
+    return static_cast<const ::Ice::Object&>(lhs) == static_cast<const ::Ice::Object&>(rhs);
+}
+
+inline bool operator<(const Stream& lhs, const Stream& rhs)
+{
+    return static_cast<const ::Ice::Object&>(lhs) < static_cast<const ::Ice::Object&>(rhs);
 }
 
 }
@@ -3871,12 +2452,6 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual void openRealStream_async(const ::Gateway::AMD_DeviceControl_openRealStreamPtr&, const ::Gateway::RealStreamReqParam&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void closeStream_async(const ::Gateway::AMD_DeviceControl_closeStreamPtr&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
-
     virtual void ptzControl_async(const ::Gateway::AMD_DeviceControl_ptzControlPtr&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_ptzControl(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -3892,80 +2467,20 @@ public:
     virtual void shutdown(const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_shutdown(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void beatHeart_async(const ::Gateway::AMD_DeviceControl_beatHeartPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_beatHeart(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void Timing(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_Timing(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void CallSipUserReq_async(const ::Gateway::AMD_DeviceControl_CallSipUserReqPtr&, const ::std::string&, ::Ice::Int, const ::std::string&, ::Ice::Int, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_CallSipUserReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void setGuard(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_setGuard(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void CalibrationTimeReq_async(const ::Gateway::AMD_DeviceControl_CalibrationTimeReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_CalibrationTimeReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void resetGuard(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_resetGuard(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void HolderOperReq_async(const ::Gateway::AMD_DeviceControl_HolderOperReqPtr&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_HolderOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void subscribe(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_subscribe(::IceInternal::Incoming&, const ::Ice::Current&);
 
-    virtual void RecordingOperReq_async(const ::Gateway::AMD_DeviceControl_RecordingOperReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_RecordingOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void StopRecordingOperReq_async(const ::Gateway::AMD_DeviceControl_StopRecordingOperReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_StopRecordingOperReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void StartVoideRecoingFile_async(const ::Gateway::AMD_DeviceControl_StartVoideRecoingFilePtr&, const ::std::string&, ::Ice::Int, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_StartVoideRecoingFile(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void RecordingFileReq_async(const ::Gateway::AMD_DeviceControl_RecordingFileReqPtr&, const ::std::string&, const ::std::string&, const ::std::string&, ::Ice::Int, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_RecordingFileReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void LoadRecordingFile_async(const ::Gateway::AMD_DeviceControl_LoadRecordingFilePtr&, const ::std::string&, const ::std::string&, const ::std::string&, ::Ice::Int, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_LoadRecordingFile(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void FindRecordingFileReq_async(const ::Gateway::AMD_DeviceControl_FindRecordingFileReqPtr&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_FindRecordingFileReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void DataPlayStopOrStartReq_async(const ::Gateway::AMD_DeviceControl_DataPlayStopOrStartReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_DataPlayStopOrStartReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void SetupAlarmReq_async(const ::Gateway::AMD_DeviceControl_SetupAlarmReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_SetupAlarmReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void CloseAlarmReq_async(const ::Gateway::AMD_DeviceControl_CloseAlarmReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_CloseAlarmReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void RestorConfigReq_async(const ::Gateway::AMD_DeviceControl_RestorConfigReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_RestorConfigReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void RebootReq_async(const ::Gateway::AMD_DeviceControl_RebootReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_RebootReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void RemoteControlReq_async(const ::Gateway::AMD_DeviceControl_RemoteControlReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_RemoteControlReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgStartVioceReq_async(const ::Gateway::AMD_DeviceControl_MsgStartVioceReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgStartVioceReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgStopVioceReq_async(const ::Gateway::AMD_DeviceControl_MsgStopVioceReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgStopVioceReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgQueryDeviceIpcStatusReq_async(const ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgQueryDeviceIpcInfoReq_async(const ::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgStartPropertyServerReq_async(const ::Gateway::AMD_DeviceControl_MsgStartPropertyServerReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgStartPropertyServerReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void MsgStopPropertyServerReq_async(const ::Gateway::AMD_DeviceControl_MsgStopPropertyServerReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_MsgStopPropertyServerReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void DeviceRefreshReq_async(const ::Gateway::AMD_DeviceControl_DeviceRefreshReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_DeviceRefreshReq(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void DeviceShareNotify_async(const ::Gateway::AMD_DeviceControl_DeviceShareNotifyPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_DeviceShareNotify(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void GatewayRerootReq_async(const ::Gateway::AMD_DeviceControl_GatewayRerootReqPtr&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_GatewayRerootReq(::IceInternal::Incoming&, const ::Ice::Current&);
+    virtual void reboot(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_reboot(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
@@ -3991,33 +2506,152 @@ namespace Ice
 {
 
 template<>
-struct StreamableTraits< ::Gateway::RequestCanceledException>
+struct StreamableTraits< ::Media::RequestCanceledException>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryUserException;
 };
 
 template<>
-struct StreamableTraits< ::Gateway::OpenStreamException>
+struct StreamableTraits< ::Media::OpenStreamException>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryUserException;
 };
 
 template<typename S>
-struct StreamWriter< ::Gateway::OpenStreamException, S>
+struct StreamWriter< ::Media::OpenStreamException, S>
 {
-    static void write(S* ostr, const ::Gateway::OpenStreamException& v)
+    static void write(S* ostr, const ::Media::OpenStreamException& v)
     {
+        ostr->write(v.callid);
         ostr->write(v.reason);
     }
 };
 
 template<typename S>
-struct StreamReader< ::Gateway::OpenStreamException, S>
+struct StreamReader< ::Media::OpenStreamException, S>
 {
-    static void read(S* istr, ::Gateway::OpenStreamException& v)
+    static void read(S* istr, ::Media::OpenStreamException& v)
     {
+        istr->read(v.callid);
         istr->read(v.reason);
     }
+};
+
+template<>
+struct StreamableTraits< ::Media::RealStreamRespParam>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 4;
+    static const bool fixedLength = false;
+};
+
+template<typename S>
+struct StreamWriter< ::Media::RealStreamRespParam, S>
+{
+    static void write(S* ostr, const ::Media::RealStreamRespParam& v)
+    {
+        ostr->write(v.id);
+        ostr->write(v.callid);
+        ostr->write(v.sourceip);
+        ostr->write(v.sourceport);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::Media::RealStreamRespParam, S>
+{
+    static void read(S* istr, ::Media::RealStreamRespParam& v)
+    {
+        istr->read(v.id);
+        istr->read(v.callid);
+        istr->read(v.sourceip);
+        istr->read(v.sourceport);
+    }
+};
+
+template<>
+struct StreamableTraits< ::Media::RealStreamReqParam>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 23;
+    static const bool fixedLength = false;
+};
+
+template<typename S>
+struct StreamWriter< ::Media::RealStreamReqParam, S>
+{
+    static void write(S* ostr, const ::Media::RealStreamReqParam& v)
+    {
+        ostr->write(v.id);
+        ostr->write(v.callid);
+        ostr->write(v.ip);
+        ostr->write(v.port);
+        ostr->write(v.name);
+        ostr->write(v.pwd);
+        ostr->write(v.destip);
+        ostr->write(v.destport);
+        ostr->write(v.ssrc);
+        ostr->write(v.pt);
+        ostr->write(v.sdk);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::Media::RealStreamReqParam, S>
+{
+    static void read(S* istr, ::Media::RealStreamReqParam& v)
+    {
+        istr->read(v.id);
+        istr->read(v.callid);
+        istr->read(v.ip);
+        istr->read(v.port);
+        istr->read(v.name);
+        istr->read(v.pwd);
+        istr->read(v.destip);
+        istr->read(v.destport);
+        istr->read(v.ssrc);
+        istr->read(v.pt);
+        istr->read(v.sdk);
+    }
+};
+
+template<>
+struct StreamableTraits< ::Media::StreamStatic>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 8;
+    static const bool fixedLength = true;
+};
+
+template<typename S>
+struct StreamWriter< ::Media::StreamStatic, S>
+{
+    static void write(S* ostr, const ::Media::StreamStatic& v)
+    {
+        ostr->write(v.freenode);
+        ostr->write(v.busynode);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::Media::StreamStatic, S>
+{
+    static void read(S* istr, ::Media::StreamStatic& v)
+    {
+        istr->read(v.freenode);
+        istr->read(v.busynode);
+    }
+};
+
+}
+
+namespace Ice
+{
+
+template<>
+struct StreamableTraits< ::Gateway::RequestCanceledException>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryUserException;
 };
 
 template<>
@@ -4041,74 +2675,6 @@ struct StreamReader< ::Gateway::DeviceControlException, S>
     static void read(S* istr, ::Gateway::DeviceControlException& v)
     {
         istr->read(v.reason);
-    }
-};
-
-template<>
-struct StreamableTraits< ::Gateway::RealStreamReqParam>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 15;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::Gateway::RealStreamReqParam, S>
-{
-    static void write(S* ostr, const ::Gateway::RealStreamReqParam& v)
-    {
-        ostr->write(v.id);
-        ostr->write(v.callid);
-        ostr->write(v.destip);
-        ostr->write(v.destport);
-        ostr->write(v.pt);
-        ostr->write(v.ssrc);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::Gateway::RealStreamReqParam, S>
-{
-    static void read(S* istr, ::Gateway::RealStreamReqParam& v)
-    {
-        istr->read(v.id);
-        istr->read(v.callid);
-        istr->read(v.destip);
-        istr->read(v.destport);
-        istr->read(v.pt);
-        istr->read(v.ssrc);
-    }
-};
-
-template<>
-struct StreamableTraits< ::Gateway::RealStreamRespParam>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 4;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::Gateway::RealStreamRespParam, S>
-{
-    static void write(S* ostr, const ::Gateway::RealStreamRespParam& v)
-    {
-        ostr->write(v.id);
-        ostr->write(v.callid);
-        ostr->write(v.sourceip);
-        ostr->write(v.sourceport);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::Gateway::RealStreamRespParam, S>
-{
-    static void read(S* istr, ::Gateway::RealStreamRespParam& v)
-    {
-        istr->read(v.id);
-        istr->read(v.callid);
-        istr->read(v.sourceip);
-        istr->read(v.sourceport);
     }
 };
 
@@ -4168,11 +2734,11 @@ struct StreamReader< ::Gateway::DeviceStatus, S>
 
 }
 
-namespace Gateway
+namespace Media
 {
 
 template<class T>
-class CallbackNC_DeviceControl_openRealStream : public Callback_DeviceControl_openRealStream_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_Stream_openRealStream : public Callback_Stream_openRealStream_Base, public ::IceInternal::TwowayCallbackNC<T>
 {
 public:
 
@@ -4180,20 +2746,392 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(const ::Gateway::RealStreamRespParam&);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&);
 
-    CallbackNC_DeviceControl_openRealStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_Stream_openRealStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
 
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Gateway::RealStreamRespParam iceP_resp;
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_stm;
         try
         {
-            proxy->end_openRealStream(iceP_resp, result);
+            proxy->end_openRealStream(iceP_stm, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_stm);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_Stream_openRealStreamPtr
+newCallback_Stream_openRealStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_openRealStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_openRealStreamPtr
+newCallback_Stream_openRealStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_openRealStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_openRealStream : public Callback_Stream_openRealStream_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&, const CT&);
+
+    Callback_Stream_openRealStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_stm;
+        try
+        {
+            proxy->end_openRealStream(iceP_stm, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_stm, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_Stream_openRealStreamPtr
+newCallback_Stream_openRealStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_openRealStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_openRealStreamPtr
+newCallback_Stream_openRealStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_openRealStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_closeStream : public Callback_Stream_closeStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_closeStream : public Callback_Stream_closeStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_getStreamStatic : public Callback_Stream_getStreamStatic_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::Media::StreamStatic&);
+
+    CallbackNC_Stream_getStreamStatic(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::StreamStatic iceP_static;
+        try
+        {
+            proxy->end_getStreamStatic(iceP_static, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_static);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::StreamStatic&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getStreamStatic<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(T* instance, void (T::*cb)(const ::Media::StreamStatic&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getStreamStatic<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_getStreamStatic : public Callback_Stream_getStreamStatic_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::Media::StreamStatic&, const CT&);
+
+    Callback_Stream_getStreamStatic(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::StreamStatic iceP_static;
+        try
+        {
+            proxy->end_getStreamStatic(iceP_static, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_static, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::StreamStatic&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getStreamStatic<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(T* instance, void (T::*cb)(const ::Media::StreamStatic&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getStreamStatic<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_getRecordFiles : public Callback_Stream_getRecordFiles_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_getRecordFiles(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_getRecordFiles : public Callback_Stream_getRecordFiles_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_getRecordFiles(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_openVodStream : public Callback_Stream_openVodStream_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&);
+
+    CallbackNC_Stream_openVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_resp;
+        try
+        {
+            proxy->end_openVodStream(iceP_resp, result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -4211,20 +3149,20 @@ private:
     Response _response;
 };
 
-template<class T> Callback_DeviceControl_openRealStreamPtr
-newCallback_DeviceControl_openRealStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Gateway::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_openRealStream<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_Stream_openVodStream<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_openRealStreamPtr
-newCallback_DeviceControl_openRealStream(T* instance, void (T::*cb)(const ::Gateway::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_openRealStream<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_Stream_openVodStream<T>(instance, cb, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_openRealStream : public Callback_DeviceControl_openRealStream_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_Stream_openVodStream : public Callback_Stream_openVodStream_Base, public ::IceInternal::TwowayCallback<T, CT>
 {
 public:
 
@@ -4232,20 +3170,20 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const ::Gateway::RealStreamRespParam&, const CT&);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&, const CT&);
 
-    Callback_DeviceControl_openRealStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_Stream_openVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
     {
     }
 
     virtual void completed(const ::Ice::AsyncResultPtr& result) const
     {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Gateway::RealStreamRespParam iceP_resp;
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_resp;
         try
         {
-            proxy->end_openRealStream(iceP_resp, result);
+            proxy->end_openVodStream(iceP_resp, result);
         }
         catch(const ::Ice::Exception& ex)
         {
@@ -4263,20 +3201,20 @@ private:
     Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_openRealStreamPtr
-newCallback_DeviceControl_openRealStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Gateway::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_openRealStream<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_Stream_openVodStream<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_openRealStreamPtr
-newCallback_DeviceControl_openRealStream(T* instance, void (T::*cb)(const ::Gateway::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_openRealStream<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_Stream_openVodStream<T, CT>(instance, cb, excb, sentcb);
 }
 
 template<class T>
-class CallbackNC_DeviceControl_closeStream : public Callback_DeviceControl_closeStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+class CallbackNC_Stream_closeVodStream : public Callback_Stream_closeVodStream_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -4286,38 +3224,38 @@ public:
     typedef void (T::*Sent)(bool);
     typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    CallbackNC_Stream_closeVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
 };
 
-template<class T> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_closeStream<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_Stream_closeVodStream<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_closeStream<T>(instance, 0, excb, sentcb);
+    return new CallbackNC_Stream_closeVodStream<T>(instance, 0, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_closeStream<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_Stream_closeVodStream<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_closeStream<T>(instance, 0, excb, sentcb);
+    return new CallbackNC_Stream_closeVodStream<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_closeStream : public Callback_DeviceControl_closeStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+class Callback_Stream_closeVodStream : public Callback_Stream_closeVodStream_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -4327,35 +3265,122 @@ public:
     typedef void (T::*Sent)(bool , const CT&);
     typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+    Callback_Stream_closeVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
         : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
 };
 
-template<class T, typename CT> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_closeStream<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_Stream_closeVodStream<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_closeStream<T, CT>(instance, 0, excb, sentcb);
+    return new Callback_Stream_closeVodStream<T, CT>(instance, 0, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_closeStream<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_Stream_closeVodStream<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_closeStreamPtr
-newCallback_DeviceControl_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_closeStream<T, CT>(instance, 0, excb, sentcb);
+    return new Callback_Stream_closeVodStream<T, CT>(instance, 0, excb, sentcb);
 }
+
+template<class T>
+class CallbackNC_Stream_controlVodStream : public Callback_Stream_controlVodStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_controlVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_controlVodStream : public Callback_Stream_controlVodStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_controlVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+}
+
+namespace Gateway
+{
 
 template<class T>
 class CallbackNC_DeviceControl_ptzControl : public Callback_DeviceControl_ptzControl_Base, public ::IceInternal::TwowayCallbackNC<T>
@@ -4878,7 +3903,7 @@ newCallback_DeviceControl_shutdown(T* instance, void (T::*excb)(const ::Ice::Exc
 }
 
 template<class T>
-class CallbackNC_DeviceControl_beatHeart : public Callback_DeviceControl_beatHeart_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_DeviceControl_Timing : public Callback_DeviceControl_Timing_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -4886,51 +3911,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(const ::std::string&);
+    typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_beatHeart(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    CallbackNC_DeviceControl_Timing(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::std::string iceP_rinfo;
-        try
-        {
-            proxy->end_beatHeart(iceP_rinfo, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_rinfo);
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T> Callback_DeviceControl_beatHeartPtr
-newCallback_DeviceControl_beatHeart(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_beatHeart<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_Timing<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_beatHeartPtr
-newCallback_DeviceControl_beatHeart(T* instance, void (T::*cb)(const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_beatHeart<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_Timing<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_Timing<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_Timing<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_beatHeart : public Callback_DeviceControl_beatHeart_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_DeviceControl_Timing : public Callback_DeviceControl_Timing_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -4938,51 +3952,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const ::std::string&, const CT&);
+    typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_beatHeart(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    Callback_DeviceControl_Timing(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::std::string iceP_rinfo;
-        try
-        {
-            proxy->end_beatHeart(iceP_rinfo, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_rinfo, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_beatHeartPtr
-newCallback_DeviceControl_beatHeart(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_beatHeart<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_Timing<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_beatHeartPtr
-newCallback_DeviceControl_beatHeart(T* instance, void (T::*cb)(const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_beatHeart<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_Timing<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_Timing<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_TimingPtr
+newCallback_DeviceControl_Timing(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_Timing<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>
-class CallbackNC_DeviceControl_CallSipUserReq : public Callback_DeviceControl_CallSipUserReq_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_DeviceControl_setGuard : public Callback_DeviceControl_setGuard_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -4990,52 +3993,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
+    typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_CallSipUserReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    CallbackNC_DeviceControl_setGuard(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CallSipUserReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T> Callback_DeviceControl_CallSipUserReqPtr
-newCallback_DeviceControl_CallSipUserReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_CallSipUserReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_setGuard<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_CallSipUserReqPtr
-newCallback_DeviceControl_CallSipUserReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_CallSipUserReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_setGuard<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_setGuard<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_setGuard<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_CallSipUserReq : public Callback_DeviceControl_CallSipUserReq_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_DeviceControl_setGuard : public Callback_DeviceControl_setGuard_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -5043,52 +4034,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
+    typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_CallSipUserReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    Callback_DeviceControl_setGuard(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CallSipUserReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_CallSipUserReqPtr
-newCallback_DeviceControl_CallSipUserReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_CallSipUserReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_setGuard<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_CallSipUserReqPtr
-newCallback_DeviceControl_CallSipUserReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_CallSipUserReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_setGuard<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_setGuard<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_setGuardPtr
+newCallback_DeviceControl_setGuard(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_setGuard<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>
-class CallbackNC_DeviceControl_CalibrationTimeReq : public Callback_DeviceControl_CalibrationTimeReq_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_DeviceControl_resetGuard : public Callback_DeviceControl_resetGuard_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -5096,52 +4075,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
+    typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_CalibrationTimeReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    CallbackNC_DeviceControl_resetGuard(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CalibrationTimeReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T> Callback_DeviceControl_CalibrationTimeReqPtr
-newCallback_DeviceControl_CalibrationTimeReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_CalibrationTimeReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_resetGuard<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_CalibrationTimeReqPtr
-newCallback_DeviceControl_CalibrationTimeReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_CalibrationTimeReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_resetGuard<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_resetGuard<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_resetGuard<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_CalibrationTimeReq : public Callback_DeviceControl_CalibrationTimeReq_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_DeviceControl_resetGuard : public Callback_DeviceControl_resetGuard_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -5149,52 +4116,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
+    typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_CalibrationTimeReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    Callback_DeviceControl_resetGuard(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CalibrationTimeReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_CalibrationTimeReqPtr
-newCallback_DeviceControl_CalibrationTimeReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_CalibrationTimeReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_resetGuard<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_CalibrationTimeReqPtr
-newCallback_DeviceControl_CalibrationTimeReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_CalibrationTimeReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_resetGuard<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_resetGuard<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_resetGuardPtr
+newCallback_DeviceControl_resetGuard(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_resetGuard<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>
-class CallbackNC_DeviceControl_HolderOperReq : public Callback_DeviceControl_HolderOperReq_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_DeviceControl_subscribe : public Callback_DeviceControl_subscribe_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -5202,52 +4157,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
+    typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_HolderOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    CallbackNC_DeviceControl_subscribe(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_HolderOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T> Callback_DeviceControl_HolderOperReqPtr
-newCallback_DeviceControl_HolderOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_HolderOperReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_subscribe<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_HolderOperReqPtr
-newCallback_DeviceControl_HolderOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_HolderOperReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_subscribe<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_subscribe<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_subscribe<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_HolderOperReq : public Callback_DeviceControl_HolderOperReq_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_DeviceControl_subscribe : public Callback_DeviceControl_subscribe_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -5255,52 +4198,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
+    typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_HolderOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    Callback_DeviceControl_subscribe(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_HolderOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_HolderOperReqPtr
-newCallback_DeviceControl_HolderOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_HolderOperReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_subscribe<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_HolderOperReqPtr
-newCallback_DeviceControl_HolderOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_HolderOperReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_subscribe<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_subscribe<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_DeviceControl_subscribePtr
+newCallback_DeviceControl_subscribe(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_DeviceControl_subscribe<T, CT>(instance, 0, excb, sentcb);
 }
 
 template<class T>
-class CallbackNC_DeviceControl_RecordingOperReq : public Callback_DeviceControl_RecordingOperReq_Base, public ::IceInternal::TwowayCallbackNC<T>
+class CallbackNC_DeviceControl_reboot : public Callback_DeviceControl_reboot_Base, public ::IceInternal::OnewayCallbackNC<T>
 {
 public:
 
@@ -5308,52 +4239,40 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception&);
     typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
+    typedef void (T::*Response)();
 
-    CallbackNC_DeviceControl_RecordingOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    CallbackNC_DeviceControl_reboot(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T> Callback_DeviceControl_RecordingOperReqPtr
-newCallback_DeviceControl_RecordingOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_RecordingOperReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_reboot<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DeviceControl_RecordingOperReqPtr
-newCallback_DeviceControl_RecordingOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+template<class T> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
 {
-    return new CallbackNC_DeviceControl_RecordingOperReq<T>(instance, cb, excb, sentcb);
+    return new CallbackNC_DeviceControl_reboot<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_reboot<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_DeviceControl_reboot<T>(instance, 0, excb, sentcb);
 }
 
 template<class T, typename CT>
-class Callback_DeviceControl_RecordingOperReq : public Callback_DeviceControl_RecordingOperReq_Base, public ::IceInternal::TwowayCallback<T, CT>
+class Callback_DeviceControl_reboot : public Callback_DeviceControl_reboot_Base, public ::IceInternal::OnewayCallback<T, CT>
 {
 public:
 
@@ -5361,2168 +4280,36 @@ public:
 
     typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
     typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
+    typedef void (T::*Response)(const CT&);
 
-    Callback_DeviceControl_RecordingOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    Callback_DeviceControl_reboot(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
     {
     }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
 };
 
-template<class T, typename CT> Callback_DeviceControl_RecordingOperReqPtr
-newCallback_DeviceControl_RecordingOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_RecordingOperReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_reboot<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_RecordingOperReqPtr
-newCallback_DeviceControl_RecordingOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_RecordingOperReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_reboot<T, CT>(instance, 0, excb, sentcb);
 }
 
-template<class T>
-class CallbackNC_DeviceControl_StopRecordingOperReq : public Callback_DeviceControl_StopRecordingOperReq_Base, public ::IceInternal::TwowayCallbackNC<T>
+template<class T, typename CT> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_StopRecordingOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_StopRecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_StopRecordingOperReqPtr
-newCallback_DeviceControl_StopRecordingOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_StopRecordingOperReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_StopRecordingOperReqPtr
-newCallback_DeviceControl_StopRecordingOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_StopRecordingOperReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_StopRecordingOperReq : public Callback_DeviceControl_StopRecordingOperReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_StopRecordingOperReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_StopRecordingOperReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_StopRecordingOperReqPtr
-newCallback_DeviceControl_StopRecordingOperReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_StopRecordingOperReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_StopRecordingOperReqPtr
-newCallback_DeviceControl_StopRecordingOperReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_StopRecordingOperReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_StartVoideRecoingFile : public Callback_DeviceControl_StartVoideRecoingFile_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_StartVoideRecoingFile(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_StartVoideRecoingFile(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_StartVoideRecoingFilePtr
-newCallback_DeviceControl_StartVoideRecoingFile(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_StartVoideRecoingFile<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_StartVoideRecoingFilePtr
-newCallback_DeviceControl_StartVoideRecoingFile(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_StartVoideRecoingFile<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_StartVoideRecoingFile : public Callback_DeviceControl_StartVoideRecoingFile_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_StartVoideRecoingFile(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_StartVoideRecoingFile(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_StartVoideRecoingFilePtr
-newCallback_DeviceControl_StartVoideRecoingFile(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_StartVoideRecoingFile<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_StartVoideRecoingFilePtr
-newCallback_DeviceControl_StartVoideRecoingFile(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_StartVoideRecoingFile<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_RecordingFileReq : public Callback_DeviceControl_RecordingFileReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_RecordingFileReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_RecordingFileReqPtr
-newCallback_DeviceControl_RecordingFileReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RecordingFileReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_RecordingFileReqPtr
-newCallback_DeviceControl_RecordingFileReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RecordingFileReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_RecordingFileReq : public Callback_DeviceControl_RecordingFileReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_RecordingFileReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_RecordingFileReqPtr
-newCallback_DeviceControl_RecordingFileReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RecordingFileReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_RecordingFileReqPtr
-newCallback_DeviceControl_RecordingFileReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RecordingFileReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_LoadRecordingFile : public Callback_DeviceControl_LoadRecordingFile_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_LoadRecordingFile(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_LoadRecordingFile(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_LoadRecordingFilePtr
-newCallback_DeviceControl_LoadRecordingFile(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_LoadRecordingFile<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_LoadRecordingFilePtr
-newCallback_DeviceControl_LoadRecordingFile(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_LoadRecordingFile<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_LoadRecordingFile : public Callback_DeviceControl_LoadRecordingFile_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_LoadRecordingFile(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_LoadRecordingFile(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_LoadRecordingFilePtr
-newCallback_DeviceControl_LoadRecordingFile(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_LoadRecordingFile<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_LoadRecordingFilePtr
-newCallback_DeviceControl_LoadRecordingFile(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_LoadRecordingFile<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_FindRecordingFileReq : public Callback_DeviceControl_FindRecordingFileReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_FindRecordingFileReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_FindRecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_FindRecordingFileReqPtr
-newCallback_DeviceControl_FindRecordingFileReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_FindRecordingFileReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_FindRecordingFileReqPtr
-newCallback_DeviceControl_FindRecordingFileReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_FindRecordingFileReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_FindRecordingFileReq : public Callback_DeviceControl_FindRecordingFileReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_FindRecordingFileReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_FindRecordingFileReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_FindRecordingFileReqPtr
-newCallback_DeviceControl_FindRecordingFileReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_FindRecordingFileReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_FindRecordingFileReqPtr
-newCallback_DeviceControl_FindRecordingFileReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_FindRecordingFileReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_DataPlayStopOrStartReq : public Callback_DeviceControl_DataPlayStopOrStartReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_DataPlayStopOrStartReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DataPlayStopOrStartReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_DataPlayStopOrStartReqPtr
-newCallback_DeviceControl_DataPlayStopOrStartReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DataPlayStopOrStartReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_DataPlayStopOrStartReqPtr
-newCallback_DeviceControl_DataPlayStopOrStartReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DataPlayStopOrStartReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_DataPlayStopOrStartReq : public Callback_DeviceControl_DataPlayStopOrStartReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_DataPlayStopOrStartReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DataPlayStopOrStartReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_DataPlayStopOrStartReqPtr
-newCallback_DeviceControl_DataPlayStopOrStartReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DataPlayStopOrStartReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_DataPlayStopOrStartReqPtr
-newCallback_DeviceControl_DataPlayStopOrStartReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DataPlayStopOrStartReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_SetupAlarmReq : public Callback_DeviceControl_SetupAlarmReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_SetupAlarmReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_SetupAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_SetupAlarmReqPtr
-newCallback_DeviceControl_SetupAlarmReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_SetupAlarmReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_SetupAlarmReqPtr
-newCallback_DeviceControl_SetupAlarmReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_SetupAlarmReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_SetupAlarmReq : public Callback_DeviceControl_SetupAlarmReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_SetupAlarmReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_SetupAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_SetupAlarmReqPtr
-newCallback_DeviceControl_SetupAlarmReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_SetupAlarmReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_SetupAlarmReqPtr
-newCallback_DeviceControl_SetupAlarmReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_SetupAlarmReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_CloseAlarmReq : public Callback_DeviceControl_CloseAlarmReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_CloseAlarmReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CloseAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_CloseAlarmReqPtr
-newCallback_DeviceControl_CloseAlarmReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_CloseAlarmReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_CloseAlarmReqPtr
-newCallback_DeviceControl_CloseAlarmReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_CloseAlarmReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_CloseAlarmReq : public Callback_DeviceControl_CloseAlarmReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_CloseAlarmReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_CloseAlarmReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_CloseAlarmReqPtr
-newCallback_DeviceControl_CloseAlarmReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_CloseAlarmReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_CloseAlarmReqPtr
-newCallback_DeviceControl_CloseAlarmReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_CloseAlarmReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_RestorConfigReq : public Callback_DeviceControl_RestorConfigReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_RestorConfigReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RestorConfigReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_RestorConfigReqPtr
-newCallback_DeviceControl_RestorConfigReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RestorConfigReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_RestorConfigReqPtr
-newCallback_DeviceControl_RestorConfigReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RestorConfigReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_RestorConfigReq : public Callback_DeviceControl_RestorConfigReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_RestorConfigReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RestorConfigReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_RestorConfigReqPtr
-newCallback_DeviceControl_RestorConfigReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RestorConfigReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_RestorConfigReqPtr
-newCallback_DeviceControl_RestorConfigReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RestorConfigReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_RebootReq : public Callback_DeviceControl_RebootReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_RebootReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RebootReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_RebootReqPtr
-newCallback_DeviceControl_RebootReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RebootReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_RebootReqPtr
-newCallback_DeviceControl_RebootReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RebootReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_RebootReq : public Callback_DeviceControl_RebootReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_RebootReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RebootReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_RebootReqPtr
-newCallback_DeviceControl_RebootReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RebootReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_RebootReqPtr
-newCallback_DeviceControl_RebootReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RebootReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_RemoteControlReq : public Callback_DeviceControl_RemoteControlReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_RemoteControlReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RemoteControlReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_RemoteControlReqPtr
-newCallback_DeviceControl_RemoteControlReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RemoteControlReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_RemoteControlReqPtr
-newCallback_DeviceControl_RemoteControlReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_RemoteControlReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_RemoteControlReq : public Callback_DeviceControl_RemoteControlReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_RemoteControlReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_RemoteControlReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_RemoteControlReqPtr
-newCallback_DeviceControl_RemoteControlReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RemoteControlReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_RemoteControlReqPtr
-newCallback_DeviceControl_RemoteControlReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_RemoteControlReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgStartVioceReq : public Callback_DeviceControl_MsgStartVioceReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgStartVioceReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStartVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgStartVioceReqPtr
-newCallback_DeviceControl_MsgStartVioceReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStartVioceReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgStartVioceReqPtr
-newCallback_DeviceControl_MsgStartVioceReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStartVioceReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgStartVioceReq : public Callback_DeviceControl_MsgStartVioceReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgStartVioceReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStartVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgStartVioceReqPtr
-newCallback_DeviceControl_MsgStartVioceReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStartVioceReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgStartVioceReqPtr
-newCallback_DeviceControl_MsgStartVioceReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStartVioceReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgStopVioceReq : public Callback_DeviceControl_MsgStopVioceReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgStopVioceReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStopVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgStopVioceReqPtr
-newCallback_DeviceControl_MsgStopVioceReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStopVioceReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgStopVioceReqPtr
-newCallback_DeviceControl_MsgStopVioceReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStopVioceReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgStopVioceReq : public Callback_DeviceControl_MsgStopVioceReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgStopVioceReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStopVioceReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgStopVioceReqPtr
-newCallback_DeviceControl_MsgStopVioceReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStopVioceReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgStopVioceReqPtr
-newCallback_DeviceControl_MsgStopVioceReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStopVioceReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgQueryDeviceIpcStatusReq : public Callback_DeviceControl_MsgQueryDeviceIpcStatusReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgQueryDeviceIpcStatusReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgQueryDeviceIpcStatusReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcStatusReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgQueryDeviceIpcStatusReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcStatusReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgQueryDeviceIpcStatusReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgQueryDeviceIpcStatusReq : public Callback_DeviceControl_MsgQueryDeviceIpcStatusReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgQueryDeviceIpcStatusReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgQueryDeviceIpcStatusReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcStatusReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgQueryDeviceIpcStatusReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgQueryDeviceIpcStatusReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcStatusReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgQueryDeviceIpcStatusReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgQueryDeviceIpcInfoReq : public Callback_DeviceControl_MsgQueryDeviceIpcInfoReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgQueryDeviceIpcInfoReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgQueryDeviceIpcInfoReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcInfoReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgQueryDeviceIpcInfoReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcInfoReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgQueryDeviceIpcInfoReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgQueryDeviceIpcInfoReq : public Callback_DeviceControl_MsgQueryDeviceIpcInfoReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgQueryDeviceIpcInfoReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgQueryDeviceIpcInfoReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcInfoReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgQueryDeviceIpcInfoReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgQueryDeviceIpcInfoReqPtr
-newCallback_DeviceControl_MsgQueryDeviceIpcInfoReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgQueryDeviceIpcInfoReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgStartPropertyServerReq : public Callback_DeviceControl_MsgStartPropertyServerReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgStartPropertyServerReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStartPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgStartPropertyServerReqPtr
-newCallback_DeviceControl_MsgStartPropertyServerReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStartPropertyServerReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgStartPropertyServerReqPtr
-newCallback_DeviceControl_MsgStartPropertyServerReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStartPropertyServerReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgStartPropertyServerReq : public Callback_DeviceControl_MsgStartPropertyServerReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgStartPropertyServerReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStartPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgStartPropertyServerReqPtr
-newCallback_DeviceControl_MsgStartPropertyServerReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStartPropertyServerReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgStartPropertyServerReqPtr
-newCallback_DeviceControl_MsgStartPropertyServerReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStartPropertyServerReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_MsgStopPropertyServerReq : public Callback_DeviceControl_MsgStopPropertyServerReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_MsgStopPropertyServerReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStopPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_MsgStopPropertyServerReqPtr
-newCallback_DeviceControl_MsgStopPropertyServerReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStopPropertyServerReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_MsgStopPropertyServerReqPtr
-newCallback_DeviceControl_MsgStopPropertyServerReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_MsgStopPropertyServerReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_MsgStopPropertyServerReq : public Callback_DeviceControl_MsgStopPropertyServerReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_MsgStopPropertyServerReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_MsgStopPropertyServerReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_MsgStopPropertyServerReqPtr
-newCallback_DeviceControl_MsgStopPropertyServerReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStopPropertyServerReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_MsgStopPropertyServerReqPtr
-newCallback_DeviceControl_MsgStopPropertyServerReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_MsgStopPropertyServerReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_DeviceRefreshReq : public Callback_DeviceControl_DeviceRefreshReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_DeviceRefreshReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DeviceRefreshReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_DeviceRefreshReqPtr
-newCallback_DeviceControl_DeviceRefreshReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DeviceRefreshReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_DeviceRefreshReqPtr
-newCallback_DeviceControl_DeviceRefreshReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DeviceRefreshReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_DeviceRefreshReq : public Callback_DeviceControl_DeviceRefreshReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_DeviceRefreshReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DeviceRefreshReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_DeviceRefreshReqPtr
-newCallback_DeviceControl_DeviceRefreshReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DeviceRefreshReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_DeviceRefreshReqPtr
-newCallback_DeviceControl_DeviceRefreshReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DeviceRefreshReq<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_DeviceShareNotify : public Callback_DeviceControl_DeviceShareNotify_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_DeviceShareNotify(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DeviceShareNotify(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_DeviceShareNotifyPtr
-newCallback_DeviceControl_DeviceShareNotify(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DeviceShareNotify<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_DeviceShareNotifyPtr
-newCallback_DeviceControl_DeviceShareNotify(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_DeviceShareNotify<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_DeviceShareNotify : public Callback_DeviceControl_DeviceShareNotify_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_DeviceShareNotify(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_DeviceShareNotify(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_DeviceShareNotifyPtr
-newCallback_DeviceControl_DeviceShareNotify(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DeviceShareNotify<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DeviceControl_DeviceShareNotifyPtr
-newCallback_DeviceControl_DeviceShareNotify(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_DeviceShareNotify<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DeviceControl_GatewayRerootReq : public Callback_DeviceControl_GatewayRerootReq_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&);
-
-    CallbackNC_DeviceControl_GatewayRerootReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_GatewayRerootReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf);
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DeviceControl_GatewayRerootReqPtr
-newCallback_DeviceControl_GatewayRerootReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_GatewayRerootReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DeviceControl_GatewayRerootReqPtr
-newCallback_DeviceControl_GatewayRerootReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DeviceControl_GatewayRerootReq<T>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DeviceControl_GatewayRerootReq : public Callback_DeviceControl_GatewayRerootReq_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(::Ice::Int, const ::std::string&, const CT&);
-
-    Callback_DeviceControl_GatewayRerootReq(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::Gateway::DeviceControlPrx proxy = ::Gateway::DeviceControlPrx::uncheckedCast(result->getProxy());
-        ::Ice::Int iceP_iResMsglen;
-        ::std::string iceP_sResMsgbuf;
-        try
-        {
-            proxy->end_GatewayRerootReq(iceP_iResMsglen, iceP_sResMsgbuf, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_iResMsglen, iceP_sResMsgbuf, CT::dynamicCast(result->getCookie()));
-        }
-    }
-
-private:
-
-    Response _response;
-};
-
-template<class T, typename CT> Callback_DeviceControl_GatewayRerootReqPtr
-newCallback_DeviceControl_GatewayRerootReq(const IceUtil::Handle<T>& instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DeviceControl_GatewayRerootReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_reboot<T, CT>(instance, cb, excb, sentcb);
 }
 
-template<class T, typename CT> Callback_DeviceControl_GatewayRerootReqPtr
-newCallback_DeviceControl_GatewayRerootReq(T* instance, void (T::*cb)(::Ice::Int, const ::std::string&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+template<class T, typename CT> Callback_DeviceControl_rebootPtr
+newCallback_DeviceControl_reboot(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
-    return new Callback_DeviceControl_GatewayRerootReq<T, CT>(instance, cb, excb, sentcb);
+    return new Callback_DeviceControl_reboot<T, CT>(instance, 0, excb, sentcb);
 }
 
 }

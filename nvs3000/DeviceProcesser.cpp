@@ -1,5 +1,5 @@
 #include "DeviceProcesser.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 //DeviceProcesser::DeviceProcesser():
 //	queue_()

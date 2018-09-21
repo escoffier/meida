@@ -53,9 +53,38 @@
 namespace
 {
 
-const ::IceInternal::DefaultUserExceptionFactoryInit<::Gateway::RequestCanceledException> iceC_Gateway_RequestCanceledException_init("::Gateway::RequestCanceledException");
+const ::IceInternal::DefaultUserExceptionFactoryInit<::Media::RequestCanceledException> iceC_Media_RequestCanceledException_init("::Media::RequestCanceledException");
 
-const ::IceInternal::DefaultUserExceptionFactoryInit<::Gateway::OpenStreamException> iceC_Gateway_OpenStreamException_init("::Gateway::OpenStreamException");
+const ::IceInternal::DefaultUserExceptionFactoryInit<::Media::OpenStreamException> iceC_Media_OpenStreamException_init("::Media::OpenStreamException");
+
+const ::std::string iceC_Media_Stream_ids[2] =
+{
+    "::Ice::Object",
+    "::Media::Stream"
+};
+const ::std::string iceC_Media_Stream_ops[] =
+{
+    "closeStream",
+    "closeVodStream",
+    "controlVodStream",
+    "getRecordFiles",
+    "getStreamStatic",
+    "ice_id",
+    "ice_ids",
+    "ice_isA",
+    "ice_ping",
+    "openRealStream",
+    "openVodStream"
+};
+const ::std::string iceC_Media_Stream_openRealStream_name = "openRealStream";
+const ::std::string iceC_Media_Stream_closeStream_name = "closeStream";
+const ::std::string iceC_Media_Stream_getStreamStatic_name = "getStreamStatic";
+const ::std::string iceC_Media_Stream_getRecordFiles_name = "getRecordFiles";
+const ::std::string iceC_Media_Stream_openVodStream_name = "openVodStream";
+const ::std::string iceC_Media_Stream_closeVodStream_name = "closeVodStream";
+const ::std::string iceC_Media_Stream_controlVodStream_name = "controlVodStream";
+
+const ::IceInternal::DefaultUserExceptionFactoryInit<::Gateway::RequestCanceledException> iceC_Gateway_RequestCanceledException_init("::Gateway::RequestCanceledException");
 
 const ::IceInternal::DefaultUserExceptionFactoryInit<::Gateway::DeviceControlException> iceC_Gateway_DeviceControlException_init("::Gateway::DeviceControlException");
 
@@ -66,32 +95,7 @@ const ::std::string iceC_Gateway_DeviceControl_ids[2] =
 };
 const ::std::string iceC_Gateway_DeviceControl_ops[] =
 {
-    "CalibrationTimeReq",
-    "CallSipUserReq",
-    "CloseAlarmReq",
-    "DataPlayStopOrStartReq",
-    "DeviceRefreshReq",
-    "DeviceShareNotify",
-    "FindRecordingFileReq",
-    "GatewayRerootReq",
-    "HolderOperReq",
-    "LoadRecordingFile",
-    "MsgQueryDeviceIpcInfoReq",
-    "MsgQueryDeviceIpcStatusReq",
-    "MsgStartPropertyServerReq",
-    "MsgStartVioceReq",
-    "MsgStopPropertyServerReq",
-    "MsgStopVioceReq",
-    "RebootReq",
-    "RecordingFileReq",
-    "RecordingOperReq",
-    "RemoteControlReq",
-    "RestorConfigReq",
-    "SetupAlarmReq",
-    "StartVoideRecoingFile",
-    "StopRecordingOperReq",
-    "beatHeart",
-    "closeStream",
+    "Timing",
     "getDeviceInfo",
     "getDeviceStatus",
     "ice_id",
@@ -99,43 +103,46 @@ const ::std::string iceC_Gateway_DeviceControl_ops[] =
     "ice_isA",
     "ice_ping",
     "login",
-    "openRealStream",
     "ptzControl",
-    "shutdown"
+    "reboot",
+    "resetGuard",
+    "setGuard",
+    "shutdown",
+    "subscribe"
 };
-const ::std::string iceC_Gateway_DeviceControl_openRealStream_name = "openRealStream";
-const ::std::string iceC_Gateway_DeviceControl_closeStream_name = "closeStream";
 const ::std::string iceC_Gateway_DeviceControl_ptzControl_name = "ptzControl";
 const ::std::string iceC_Gateway_DeviceControl_getDeviceInfo_name = "getDeviceInfo";
 const ::std::string iceC_Gateway_DeviceControl_getDeviceStatus_name = "getDeviceStatus";
 const ::std::string iceC_Gateway_DeviceControl_login_name = "login";
 const ::std::string iceC_Gateway_DeviceControl_shutdown_name = "shutdown";
-const ::std::string iceC_Gateway_DeviceControl_beatHeart_name = "beatHeart";
-const ::std::string iceC_Gateway_DeviceControl_CallSipUserReq_name = "CallSipUserReq";
-const ::std::string iceC_Gateway_DeviceControl_CalibrationTimeReq_name = "CalibrationTimeReq";
-const ::std::string iceC_Gateway_DeviceControl_HolderOperReq_name = "HolderOperReq";
-const ::std::string iceC_Gateway_DeviceControl_RecordingOperReq_name = "RecordingOperReq";
-const ::std::string iceC_Gateway_DeviceControl_StopRecordingOperReq_name = "StopRecordingOperReq";
-const ::std::string iceC_Gateway_DeviceControl_StartVoideRecoingFile_name = "StartVoideRecoingFile";
-const ::std::string iceC_Gateway_DeviceControl_RecordingFileReq_name = "RecordingFileReq";
-const ::std::string iceC_Gateway_DeviceControl_LoadRecordingFile_name = "LoadRecordingFile";
-const ::std::string iceC_Gateway_DeviceControl_FindRecordingFileReq_name = "FindRecordingFileReq";
-const ::std::string iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name = "DataPlayStopOrStartReq";
-const ::std::string iceC_Gateway_DeviceControl_SetupAlarmReq_name = "SetupAlarmReq";
-const ::std::string iceC_Gateway_DeviceControl_CloseAlarmReq_name = "CloseAlarmReq";
-const ::std::string iceC_Gateway_DeviceControl_RestorConfigReq_name = "RestorConfigReq";
-const ::std::string iceC_Gateway_DeviceControl_RebootReq_name = "RebootReq";
-const ::std::string iceC_Gateway_DeviceControl_RemoteControlReq_name = "RemoteControlReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgStartVioceReq_name = "MsgStartVioceReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgStopVioceReq_name = "MsgStopVioceReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name = "MsgQueryDeviceIpcStatusReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name = "MsgQueryDeviceIpcInfoReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name = "MsgStartPropertyServerReq";
-const ::std::string iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name = "MsgStopPropertyServerReq";
-const ::std::string iceC_Gateway_DeviceControl_DeviceRefreshReq_name = "DeviceRefreshReq";
-const ::std::string iceC_Gateway_DeviceControl_DeviceShareNotify_name = "DeviceShareNotify";
-const ::std::string iceC_Gateway_DeviceControl_GatewayRerootReq_name = "GatewayRerootReq";
+const ::std::string iceC_Gateway_DeviceControl_Timing_name = "Timing";
+const ::std::string iceC_Gateway_DeviceControl_setGuard_name = "setGuard";
+const ::std::string iceC_Gateway_DeviceControl_resetGuard_name = "resetGuard";
+const ::std::string iceC_Gateway_DeviceControl_subscribe_name = "subscribe";
+const ::std::string iceC_Gateway_DeviceControl_reboot_name = "reboot";
 
+}
+
+Media::RequestCanceledException::~RequestCanceledException()
+{
+}
+
+const ::std::string&
+Media::RequestCanceledException::ice_staticId()
+{
+    static const ::std::string typeId = "::Media::RequestCanceledException";
+    return typeId;
+}
+
+Media::OpenStreamException::~OpenStreamException()
+{
+}
+
+const ::std::string&
+Media::OpenStreamException::ice_staticId()
+{
+    static const ::std::string typeId = "::Media::OpenStreamException";
+    return typeId;
 }
 
 Gateway::RequestCanceledException::~RequestCanceledException()
@@ -149,17 +156,6 @@ Gateway::RequestCanceledException::ice_staticId()
     return typeId;
 }
 
-Gateway::OpenStreamException::~OpenStreamException()
-{
-}
-
-const ::std::string&
-Gateway::OpenStreamException::ice_staticId()
-{
-    static const ::std::string typeId = "::Gateway::OpenStreamException";
-    return typeId;
-}
-
 Gateway::DeviceControlException::~DeviceControlException()
 {
 }
@@ -169,6 +165,203 @@ Gateway::DeviceControlException::ice_staticId()
 {
     static const ::std::string typeId = "::Gateway::DeviceControlException";
     return typeId;
+}
+
+bool
+Media::Stream::ice_isA(::std::string s, const ::Ice::Current&) const
+{
+    return ::std::binary_search(iceC_Media_Stream_ids, iceC_Media_Stream_ids + 2, s);
+}
+
+::std::vector<::std::string>
+Media::Stream::ice_ids(const ::Ice::Current&) const
+{
+    return ::std::vector<::std::string>(&iceC_Media_Stream_ids[0], &iceC_Media_Stream_ids[2]);
+}
+
+::std::string
+Media::Stream::ice_id(const ::Ice::Current&) const
+{
+    return ice_staticId();
+}
+
+const ::std::string&
+Media::Stream::ice_staticId()
+{
+    static const ::std::string typeId = "::Media::Stream";
+    return typeId;
+}
+
+bool
+Media::Stream::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::Media::RealStreamReqParam iceP_ctg;
+    istr->readAll(iceP_ctg);
+    inS.endReadParams();
+    auto inA = ::IceInternal::IncomingAsync::create(inS);
+    auto responseCB = [inA](const ::Media::RealStreamRespParam& iceP_stm)
+    {
+        auto ostr = inA->startWriteParams();
+        ostr->writeAll(iceP_stm);
+        inA->endWriteParams();
+        inA->completed();
+    };
+    this->openRealStreamAsync(::std::move(iceP_ctg), responseCB, inA->exception(), current);
+    return false;
+}
+
+bool
+Media::Stream::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->readAll(iceP_callid, iceP_id);
+    inS.endReadParams();
+    auto inA = ::IceInternal::IncomingAsync::create(inS);
+    this->closeStreamAsync(::std::move(iceP_callid), ::std::move(iceP_id), inA->response(), inA->exception(), current);
+    return false;
+}
+
+bool
+Media::Stream::_iceD_getStreamStatic(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_id;
+    istr->readAll(iceP_id);
+    inS.endReadParams();
+    ::Media::StreamStatic iceP_static;
+    this->getStreamStatic(::std::move(iceP_id), iceP_static, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(iceP_static);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_getRecordFiles(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_startTime;
+    ::std::string iceP_endtime;
+    istr->readAll(iceP_startTime, iceP_endtime);
+    inS.endReadParams();
+    this->getRecordFiles(::std::move(iceP_startTime), ::std::move(iceP_endtime), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_openVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::Media::RealStreamReqParam iceP_req;
+    istr->readAll(iceP_req);
+    inS.endReadParams();
+    ::Media::RealStreamRespParam iceP_resp;
+    this->openVodStream(::std::move(iceP_req), iceP_resp, current);
+    auto ostr = inS.startWriteParams();
+    ostr->writeAll(iceP_resp);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_closeVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->readAll(iceP_callid, iceP_id);
+    inS.endReadParams();
+    this->closeVodStream(::std::move(iceP_callid), ::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_controlVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
+    auto istr = inS.startReadParams();
+    ::std::string iceP_cmd;
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->readAll(iceP_cmd, iceP_callid, iceP_id);
+    inS.endReadParams();
+    this->controlVodStream(::std::move(iceP_cmd), ::std::move(iceP_callid), ::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
+{
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_ops, iceC_Media_Stream_ops + 11, current.operation);
+    if(r.first == r.second)
+    {
+        throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
+    }
+
+    switch(r.first - iceC_Media_Stream_ops)
+    {
+        case 0:
+        {
+            return _iceD_closeStream(in, current);
+        }
+        case 1:
+        {
+            return _iceD_closeVodStream(in, current);
+        }
+        case 2:
+        {
+            return _iceD_controlVodStream(in, current);
+        }
+        case 3:
+        {
+            return _iceD_getRecordFiles(in, current);
+        }
+        case 4:
+        {
+            return _iceD_getStreamStatic(in, current);
+        }
+        case 5:
+        {
+            return _iceD_ice_id(in, current);
+        }
+        case 6:
+        {
+            return _iceD_ice_ids(in, current);
+        }
+        case 7:
+        {
+            return _iceD_ice_isA(in, current);
+        }
+        case 8:
+        {
+            return _iceD_ice_ping(in, current);
+        }
+        case 9:
+        {
+            return _iceD_openRealStream(in, current);
+        }
+        case 10:
+        {
+            return _iceD_openVodStream(in, current);
+        }
+        default:
+        {
+            assert(false);
+            throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
+        }
+    }
 }
 
 bool
@@ -194,40 +387,6 @@ Gateway::DeviceControl::ice_staticId()
 {
     static const ::std::string typeId = "::Gateway::DeviceControl";
     return typeId;
-}
-
-bool
-Gateway::DeviceControl::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::Gateway::RealStreamReqParam iceP_req;
-    istr->readAll(iceP_req);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](const ::Gateway::RealStreamRespParam& iceP_resp)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_resp);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->openRealStreamAsync(::std::move(iceP_req), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_callid;
-    ::std::string iceP_id;
-    istr->readAll(iceP_callid, iceP_id);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    this->closeStreamAsync(::std::move(iceP_callid), ::std::move(iceP_id), inA->response(), inA->exception(), current);
-    return false;
 }
 
 bool
@@ -311,523 +470,74 @@ Gateway::DeviceControl::_iceD_shutdown(::IceInternal::Incoming& inS, const ::Ice
 }
 
 bool
-Gateway::DeviceControl::_iceD_beatHeart(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_Timing(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_info;
-    istr->readAll(iceP_info);
+    ::std::string iceP_time;
+    istr->readAll(iceP_time);
     inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](const ::std::string& iceP_rinfo)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_rinfo);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->beatHeartAsync(::std::move(iceP_info), responseCB, inA->exception(), current);
-    return false;
+    this->Timing(::std::move(iceP_time), current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_CallSipUserReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_setGuard(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    int iceP_iType;
-    ::std::string iceP_pSzIp;
-    int iceP_iport;
-    istr->readAll(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport);
+    ::std::string iceP_id;
+    istr->readAll(iceP_id);
     inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->CallSipUserReqAsync(::std::move(iceP_pSzSipData), iceP_iType, ::std::move(iceP_pSzIp), iceP_iport, responseCB, inA->exception(), current);
-    return false;
+    this->setGuard(::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_CalibrationTimeReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_resetGuard(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
+    ::std::string iceP_id;
+    istr->readAll(iceP_id);
     inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->CalibrationTimeReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
+    this->resetGuard(::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_HolderOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_subscribe(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzTypeOper;
-    istr->readAll(iceP_pSzSipData, iceP_pSzTypeOper);
+    ::std::string iceP_id;
+    istr->readAll(iceP_id);
     inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->HolderOperReqAsync(::std::move(iceP_pSzSipData), ::std::move(iceP_pSzTypeOper), responseCB, inA->exception(), current);
-    return false;
+    this->subscribe(::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_RecordingOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_reboot(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
+    ::std::string iceP_id;
+    istr->readAll(iceP_id);
     inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->RecordingOperReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_StopRecordingOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->StopRecordingOperReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_StartVoideRecoingFile(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzIp;
-    int iceP_iport;
-    istr->readAll(iceP_pSzIp, iceP_iport);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->StartVoideRecoingFileAsync(::std::move(iceP_pSzIp), iceP_iport, responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RecordingFileReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzStartTime;
-    ::std::string iceP_pSzEndTime;
-    int iceP_iType;
-    istr->readAll(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->RecordingFileReqAsync(::std::move(iceP_pSzSipData), ::std::move(iceP_pSzStartTime), ::std::move(iceP_pSzEndTime), iceP_iType, responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_LoadRecordingFile(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipIdVal;
-    ::std::string iceP_pSzStarTime;
-    ::std::string iceP_pSzEndTime;
-    int iceP_sbType;
-    ::std::string iceP_pSzFilePath;
-    istr->readAll(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->LoadRecordingFileAsync(::std::move(iceP_pSzSipIdVal), ::std::move(iceP_pSzStarTime), ::std::move(iceP_pSzEndTime), iceP_sbType, ::std::move(iceP_pSzFilePath), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_FindRecordingFileReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzStartTime;
-    ::std::string iceP_pSzEndTime;
-    istr->readAll(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->FindRecordingFileReqAsync(::std::move(iceP_pSzSipData), ::std::move(iceP_pSzStartTime), ::std::move(iceP_pSzEndTime), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DataPlayStopOrStartReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->DataPlayStopOrStartReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_SetupAlarmReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->SetupAlarmReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_CloseAlarmReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->CloseAlarmReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RestorConfigReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->RestorConfigReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RebootReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->RebootReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RemoteControlReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->RemoteControlReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStartVioceReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgStartVioceReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStopVioceReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgStopVioceReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgQueryDeviceIpcStatusReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgQueryDeviceIpcInfoReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStartPropertyServerReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgStartPropertyServerReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStopPropertyServerReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->MsgStopPropertyServerReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DeviceRefreshReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->DeviceRefreshReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DeviceShareNotify(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->DeviceShareNotifyAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_GatewayRerootReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
-    auto istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->readAll(iceP_pSzSipData);
-    inS.endReadParams();
-    auto inA = ::IceInternal::IncomingAsync::create(inS);
-    auto responseCB = [inA](int iceP_iResMsglen, const ::std::string& iceP_sResMsgbuf)
-    {
-        auto ostr = inA->startWriteParams();
-        ostr->writeAll(iceP_iResMsglen, iceP_sResMsgbuf);
-        inA->endWriteParams();
-        inA->completed();
-    };
-    this->GatewayRerootReqAsync(::std::move(iceP_pSzSipData), responseCB, inA->exception(), current);
-    return false;
+    this->reboot(::std::move(iceP_id), current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
 Gateway::DeviceControl::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Gateway_DeviceControl_ops, iceC_Gateway_DeviceControl_ops + 36, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Gateway_DeviceControl_ops, iceC_Gateway_DeviceControl_ops + 14, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -837,147 +547,59 @@ Gateway::DeviceControl::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::C
     {
         case 0:
         {
-            return _iceD_CalibrationTimeReq(in, current);
+            return _iceD_Timing(in, current);
         }
         case 1:
         {
-            return _iceD_CallSipUserReq(in, current);
+            return _iceD_getDeviceInfo(in, current);
         }
         case 2:
         {
-            return _iceD_CloseAlarmReq(in, current);
+            return _iceD_getDeviceStatus(in, current);
         }
         case 3:
         {
-            return _iceD_DataPlayStopOrStartReq(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 4:
         {
-            return _iceD_DeviceRefreshReq(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 5:
         {
-            return _iceD_DeviceShareNotify(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 6:
         {
-            return _iceD_FindRecordingFileReq(in, current);
+            return _iceD_ice_ping(in, current);
         }
         case 7:
         {
-            return _iceD_GatewayRerootReq(in, current);
+            return _iceD_login(in, current);
         }
         case 8:
         {
-            return _iceD_HolderOperReq(in, current);
+            return _iceD_ptzControl(in, current);
         }
         case 9:
         {
-            return _iceD_LoadRecordingFile(in, current);
+            return _iceD_reboot(in, current);
         }
         case 10:
         {
-            return _iceD_MsgQueryDeviceIpcInfoReq(in, current);
+            return _iceD_resetGuard(in, current);
         }
         case 11:
         {
-            return _iceD_MsgQueryDeviceIpcStatusReq(in, current);
+            return _iceD_setGuard(in, current);
         }
         case 12:
         {
-            return _iceD_MsgStartPropertyServerReq(in, current);
+            return _iceD_shutdown(in, current);
         }
         case 13:
         {
-            return _iceD_MsgStartVioceReq(in, current);
-        }
-        case 14:
-        {
-            return _iceD_MsgStopPropertyServerReq(in, current);
-        }
-        case 15:
-        {
-            return _iceD_MsgStopVioceReq(in, current);
-        }
-        case 16:
-        {
-            return _iceD_RebootReq(in, current);
-        }
-        case 17:
-        {
-            return _iceD_RecordingFileReq(in, current);
-        }
-        case 18:
-        {
-            return _iceD_RecordingOperReq(in, current);
-        }
-        case 19:
-        {
-            return _iceD_RemoteControlReq(in, current);
-        }
-        case 20:
-        {
-            return _iceD_RestorConfigReq(in, current);
-        }
-        case 21:
-        {
-            return _iceD_SetupAlarmReq(in, current);
-        }
-        case 22:
-        {
-            return _iceD_StartVoideRecoingFile(in, current);
-        }
-        case 23:
-        {
-            return _iceD_StopRecordingOperReq(in, current);
-        }
-        case 24:
-        {
-            return _iceD_beatHeart(in, current);
-        }
-        case 25:
-        {
-            return _iceD_closeStream(in, current);
-        }
-        case 26:
-        {
-            return _iceD_getDeviceInfo(in, current);
-        }
-        case 27:
-        {
-            return _iceD_getDeviceStatus(in, current);
-        }
-        case 28:
-        {
-            return _iceD_ice_id(in, current);
-        }
-        case 29:
-        {
-            return _iceD_ice_ids(in, current);
-        }
-        case 30:
-        {
-            return _iceD_ice_isA(in, current);
-        }
-        case 31:
-        {
-            return _iceD_ice_ping(in, current);
-        }
-        case 32:
-        {
-            return _iceD_login(in, current);
-        }
-        case 33:
-        {
-            return _iceD_openRealStream(in, current);
-        }
-        case 34:
-        {
-            return _iceD_ptzControl(in, current);
-        }
-        case 35:
-        {
-            return _iceD_shutdown(in, current);
+            return _iceD_subscribe(in, current);
         }
         default:
         {
@@ -988,13 +610,13 @@ Gateway::DeviceControl::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::C
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::RealStreamRespParam>>& outAsync, const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context)
+Media::StreamPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>& outAsync, const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_openRealStream_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_openRealStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    _checkTwowayOnly(iceC_Media_Stream_openRealStream_name);
+    outAsync->invoke(iceC_Media_Stream_openRealStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_req);
+            ostr->writeAll(iceP_ctg);
         },
         [](const ::Ice::UserException& ex)
         {
@@ -1002,7 +624,7 @@ Gateway::DeviceControlPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInt
             {
                 ex.ice_throw();
             }
-            catch(const ::Gateway::OpenStreamException&)
+            catch(const ::Media::OpenStreamException&)
             {
                 throw;
             }
@@ -1013,14 +635,83 @@ Gateway::DeviceControlPrx::_iceI_openRealStream(const ::std::shared_ptr<::IceInt
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context)
+Media::StreamPrx::_iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context)
 {
-    outAsync->invoke(iceC_Gateway_DeviceControl_closeStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Media_Stream_closeStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
             ostr->writeAll(iceP_callid, iceP_id);
         },
         nullptr);
+}
+
+void
+Media::StreamPrx::_iceI_getStreamStatic(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::StreamStatic>>& outAsync, const ::std::string& iceP_id, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_Media_Stream_getStreamStatic_name);
+    outAsync->invoke(iceC_Media_Stream_getStreamStatic_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_id);
+        },
+        nullptr);
+}
+
+void
+Media::StreamPrx::_iceI_getRecordFiles(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_Media_Stream_getRecordFiles_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_startTime, iceP_endtime);
+        },
+        nullptr);
+}
+
+void
+Media::StreamPrx::_iceI_openVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>& outAsync, const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context)
+{
+    _checkTwowayOnly(iceC_Media_Stream_openVodStream_name);
+    outAsync->invoke(iceC_Media_Stream_openVodStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_req);
+        },
+        nullptr);
+}
+
+void
+Media::StreamPrx::_iceI_closeVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_Media_Stream_closeVodStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_callid, iceP_id);
+        },
+        nullptr);
+}
+
+void
+Media::StreamPrx::_iceI_controlVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context)
+{
+    outAsync->invoke(iceC_Media_Stream_controlVodStream_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+        [&](::Ice::OutputStream* ostr)
+        {
+            ostr->writeAll(iceP_cmd, iceP_callid, iceP_id);
+        },
+        nullptr);
+}
+
+::std::shared_ptr<::Ice::ObjectPrx>
+Media::StreamPrx::_newInstance() const
+{
+    return ::IceInternal::createProxy<StreamPrx>();
+}
+
+const ::std::string&
+Media::StreamPrx::ice_staticId()
+{
+    return Media::Stream::ice_staticId();
 }
 
 void
@@ -1119,447 +810,58 @@ Gateway::DeviceControlPrx::_iceI_shutdown(const ::std::shared_ptr<::IceInternal:
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_beatHeart(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::std::string>>& outAsync, const ::std::string& iceP_info, const ::Ice::Context& context)
+Gateway::DeviceControlPrx::_iceI_Timing(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_time, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_beatHeart_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_beatHeart_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Gateway_DeviceControl_Timing_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_info);
+            ostr->writeAll(iceP_time);
         },
         nullptr);
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_CallSipUserReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CallSipUserReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, int iceP_iType, const ::std::string& iceP_pSzIp, int iceP_iport, const ::Ice::Context& context)
+Gateway::DeviceControlPrx::_iceI_setGuard(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CallSipUserReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_CallSipUserReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Gateway_DeviceControl_setGuard_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport);
+            ostr->writeAll(iceP_id);
         },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::CallSipUserReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
+        nullptr);
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_CalibrationTimeReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CalibrationTimeReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
+Gateway::DeviceControlPrx::_iceI_resetGuard(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CalibrationTimeReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_CalibrationTimeReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Gateway_DeviceControl_resetGuard_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_pSzSipData);
+            ostr->writeAll(iceP_id);
         },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::CalibrationTimeReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
+        nullptr);
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_HolderOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::HolderOperReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context)
+Gateway::DeviceControlPrx::_iceI_subscribe(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_HolderOperReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_HolderOperReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Gateway_DeviceControl_subscribe_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_pSzSipData, iceP_pSzTypeOper);
+            ostr->writeAll(iceP_id);
         },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::HolderOperReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
+        nullptr);
 }
 
 void
-Gateway::DeviceControlPrx::_iceI_RecordingOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RecordingOperReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
+Gateway::DeviceControlPrx::_iceI_reboot(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>& outAsync, const ::std::string& iceP_id, const ::Ice::Context& context)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RecordingOperReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_RecordingOperReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
+    outAsync->invoke(iceC_Gateway_DeviceControl_reboot_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         [&](::Ice::OutputStream* ostr)
         {
-            ostr->writeAll(iceP_pSzSipData);
+            ostr->writeAll(iceP_id);
         },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::RecordingOperReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_StopRecordingOperReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::StopRecordingOperReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_StopRecordingOperReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_StopRecordingOperReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::StopRecordingOperReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_StartVoideRecoingFile(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::StartVoideRecoingFileResult>>& outAsync, const ::std::string& iceP_pSzIp, int iceP_iport, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_StartVoideRecoingFile_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_StartVoideRecoingFile_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzIp, iceP_iport);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::StartVoideRecoingFileResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_RecordingFileReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RecordingFileReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, int iceP_iType, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RecordingFileReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_RecordingFileReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::RecordingFileReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_LoadRecordingFile(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::LoadRecordingFileResult>>& outAsync, const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_LoadRecordingFile_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_LoadRecordingFile_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::LoadRecordingFileResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_FindRecordingFileReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::FindRecordingFileReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_FindRecordingFileReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_FindRecordingFileReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::FindRecordingFileReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_DataPlayStopOrStartReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DataPlayStopOrStartReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::DataPlayStopOrStartReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_SetupAlarmReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::SetupAlarmReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_SetupAlarmReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_SetupAlarmReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::SetupAlarmReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_CloseAlarmReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::CloseAlarmReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CloseAlarmReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_CloseAlarmReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::CloseAlarmReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_RestorConfigReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RestorConfigReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RestorConfigReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_RestorConfigReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::RestorConfigReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_RebootReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RebootReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RebootReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_RebootReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::RebootReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_RemoteControlReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::RemoteControlReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RemoteControlReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_RemoteControlReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::RemoteControlReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgStartVioceReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStartVioceReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStartVioceReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgStartVioceReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgStartVioceReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgStopVioceReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStopVioceReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStopVioceReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgStopVioceReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgStopVioceReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcStatusReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgQueryDeviceIpcStatusReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgQueryDeviceIpcInfoReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgQueryDeviceIpcInfoReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgStartPropertyServerReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStartPropertyServerReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgStartPropertyServerReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_MsgStopPropertyServerReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::MsgStopPropertyServerReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::MsgStopPropertyServerReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_DeviceRefreshReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DeviceRefreshReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DeviceRefreshReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_DeviceRefreshReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::DeviceRefreshReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_DeviceShareNotify(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::DeviceShareNotifyResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DeviceShareNotify_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_DeviceShareNotify_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::DeviceShareNotifyResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
-}
-
-void
-Gateway::DeviceControlPrx::_iceI_GatewayRerootReq(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Gateway::DeviceControl::GatewayRerootReqResult>>& outAsync, const ::std::string& iceP_pSzSipData, const ::Ice::Context& context)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_GatewayRerootReq_name);
-    outAsync->invoke(iceC_Gateway_DeviceControl_GatewayRerootReq_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
-        [&](::Ice::OutputStream* ostr)
-        {
-            ostr->writeAll(iceP_pSzSipData);
-        },
-        nullptr,
-        [](::Ice::InputStream* istr)
-        {
-            ::Gateway::DeviceControl::GatewayRerootReqResult v;
-            istr->readAll(v.iResMsglen, v.sResMsgbuf);
-            return v;
-        });
+        nullptr);
 }
 
 ::std::shared_ptr<::Ice::ObjectPrx>
@@ -1578,14 +880,33 @@ namespace Ice
 {
 }
 
+namespace Ice
+{
+}
+
 #else // C++98 mapping
 
 namespace
 {
 
-const ::std::string iceC_Gateway_DeviceControl_openRealStream_name = "openRealStream";
+const ::std::string iceC_Media_Stream_openRealStream_name = "openRealStream";
 
-const ::std::string iceC_Gateway_DeviceControl_closeStream_name = "closeStream";
+const ::std::string iceC_Media_Stream_closeStream_name = "closeStream";
+
+const ::std::string iceC_Media_Stream_getStreamStatic_name = "getStreamStatic";
+
+const ::std::string iceC_Media_Stream_getRecordFiles_name = "getRecordFiles";
+
+const ::std::string iceC_Media_Stream_openVodStream_name = "openVodStream";
+
+const ::std::string iceC_Media_Stream_closeVodStream_name = "closeVodStream";
+
+const ::std::string iceC_Media_Stream_controlVodStream_name = "controlVodStream";
+
+}
+
+namespace
+{
 
 const ::std::string iceC_Gateway_DeviceControl_ptzControl_name = "ptzControl";
 
@@ -1597,56 +918,113 @@ const ::std::string iceC_Gateway_DeviceControl_login_name = "login";
 
 const ::std::string iceC_Gateway_DeviceControl_shutdown_name = "shutdown";
 
-const ::std::string iceC_Gateway_DeviceControl_beatHeart_name = "beatHeart";
+const ::std::string iceC_Gateway_DeviceControl_Timing_name = "Timing";
 
-const ::std::string iceC_Gateway_DeviceControl_CallSipUserReq_name = "CallSipUserReq";
+const ::std::string iceC_Gateway_DeviceControl_setGuard_name = "setGuard";
 
-const ::std::string iceC_Gateway_DeviceControl_CalibrationTimeReq_name = "CalibrationTimeReq";
+const ::std::string iceC_Gateway_DeviceControl_resetGuard_name = "resetGuard";
 
-const ::std::string iceC_Gateway_DeviceControl_HolderOperReq_name = "HolderOperReq";
+const ::std::string iceC_Gateway_DeviceControl_subscribe_name = "subscribe";
 
-const ::std::string iceC_Gateway_DeviceControl_RecordingOperReq_name = "RecordingOperReq";
+const ::std::string iceC_Gateway_DeviceControl_reboot_name = "reboot";
 
-const ::std::string iceC_Gateway_DeviceControl_StopRecordingOperReq_name = "StopRecordingOperReq";
+}
 
-const ::std::string iceC_Gateway_DeviceControl_StartVoideRecoingFile_name = "StartVoideRecoingFile";
+namespace
+{
 
-const ::std::string iceC_Gateway_DeviceControl_RecordingFileReq_name = "RecordingFileReq";
+const ::IceInternal::DefaultUserExceptionFactoryInit< ::Media::RequestCanceledException> iceC_Media_RequestCanceledException_init("::Media::RequestCanceledException");
 
-const ::std::string iceC_Gateway_DeviceControl_LoadRecordingFile_name = "LoadRecordingFile";
+}
 
-const ::std::string iceC_Gateway_DeviceControl_FindRecordingFileReq_name = "FindRecordingFileReq";
+Media::RequestCanceledException::~RequestCanceledException() throw()
+{
+}
 
-const ::std::string iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name = "DataPlayStopOrStartReq";
+::std::string
+Media::RequestCanceledException::ice_id() const
+{
+    return "::Media::RequestCanceledException";
+}
 
-const ::std::string iceC_Gateway_DeviceControl_SetupAlarmReq_name = "SetupAlarmReq";
+Media::RequestCanceledException*
+Media::RequestCanceledException::ice_clone() const
+{
+    return new RequestCanceledException(*this);
+}
 
-const ::std::string iceC_Gateway_DeviceControl_CloseAlarmReq_name = "CloseAlarmReq";
+void
+Media::RequestCanceledException::ice_throw() const
+{
+    throw *this;
+}
 
-const ::std::string iceC_Gateway_DeviceControl_RestorConfigReq_name = "RestorConfigReq";
+void
+Media::RequestCanceledException::_writeImpl(::Ice::OutputStream* ostr) const
+{
+    ostr->startSlice("::Media::RequestCanceledException", -1, true);
+    Ice::StreamWriter< ::Media::RequestCanceledException, ::Ice::OutputStream>::write(ostr, *this);
+    ostr->endSlice();
+}
 
-const ::std::string iceC_Gateway_DeviceControl_RebootReq_name = "RebootReq";
+void
+Media::RequestCanceledException::_readImpl(::Ice::InputStream* istr)
+{
+    istr->startSlice();
+    Ice::StreamReader< ::Media::RequestCanceledException, ::Ice::InputStream>::read(istr, *this);
+    istr->endSlice();
+}
 
-const ::std::string iceC_Gateway_DeviceControl_RemoteControlReq_name = "RemoteControlReq";
+namespace
+{
 
-const ::std::string iceC_Gateway_DeviceControl_MsgStartVioceReq_name = "MsgStartVioceReq";
+const ::IceInternal::DefaultUserExceptionFactoryInit< ::Media::OpenStreamException> iceC_Media_OpenStreamException_init("::Media::OpenStreamException");
 
-const ::std::string iceC_Gateway_DeviceControl_MsgStopVioceReq_name = "MsgStopVioceReq";
+}
 
-const ::std::string iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name = "MsgQueryDeviceIpcStatusReq";
+Media::OpenStreamException::OpenStreamException(const ::std::string& iceP_callid, const ::std::string& iceP_reason) :
+    ::Ice::UserException(),
+    callid(iceP_callid),
+    reason(iceP_reason)
+{
+}
 
-const ::std::string iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name = "MsgQueryDeviceIpcInfoReq";
+Media::OpenStreamException::~OpenStreamException() throw()
+{
+}
 
-const ::std::string iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name = "MsgStartPropertyServerReq";
+::std::string
+Media::OpenStreamException::ice_id() const
+{
+    return "::Media::OpenStreamException";
+}
 
-const ::std::string iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name = "MsgStopPropertyServerReq";
+Media::OpenStreamException*
+Media::OpenStreamException::ice_clone() const
+{
+    return new OpenStreamException(*this);
+}
 
-const ::std::string iceC_Gateway_DeviceControl_DeviceRefreshReq_name = "DeviceRefreshReq";
+void
+Media::OpenStreamException::ice_throw() const
+{
+    throw *this;
+}
 
-const ::std::string iceC_Gateway_DeviceControl_DeviceShareNotify_name = "DeviceShareNotify";
+void
+Media::OpenStreamException::_writeImpl(::Ice::OutputStream* ostr) const
+{
+    ostr->startSlice("::Media::OpenStreamException", -1, true);
+    Ice::StreamWriter< ::Media::OpenStreamException, ::Ice::OutputStream>::write(ostr, *this);
+    ostr->endSlice();
+}
 
-const ::std::string iceC_Gateway_DeviceControl_GatewayRerootReq_name = "GatewayRerootReq";
-
+void
+Media::OpenStreamException::_readImpl(::Ice::InputStream* istr)
+{
+    istr->startSlice();
+    Ice::StreamReader< ::Media::OpenStreamException, ::Ice::InputStream>::read(istr, *this);
+    istr->endSlice();
 }
 
 namespace
@@ -1691,57 +1069,6 @@ Gateway::RequestCanceledException::_readImpl(::Ice::InputStream* istr)
 {
     istr->startSlice();
     Ice::StreamReader< ::Gateway::RequestCanceledException, ::Ice::InputStream>::read(istr, *this);
-    istr->endSlice();
-}
-
-namespace
-{
-
-const ::IceInternal::DefaultUserExceptionFactoryInit< ::Gateway::OpenStreamException> iceC_Gateway_OpenStreamException_init("::Gateway::OpenStreamException");
-
-}
-
-Gateway::OpenStreamException::OpenStreamException(const ::std::string& iceP_reason) :
-    ::Ice::UserException(),
-    reason(iceP_reason)
-{
-}
-
-Gateway::OpenStreamException::~OpenStreamException() throw()
-{
-}
-
-::std::string
-Gateway::OpenStreamException::ice_id() const
-{
-    return "::Gateway::OpenStreamException";
-}
-
-Gateway::OpenStreamException*
-Gateway::OpenStreamException::ice_clone() const
-{
-    return new OpenStreamException(*this);
-}
-
-void
-Gateway::OpenStreamException::ice_throw() const
-{
-    throw *this;
-}
-
-void
-Gateway::OpenStreamException::_writeImpl(::Ice::OutputStream* ostr) const
-{
-    ostr->startSlice("::Gateway::OpenStreamException", -1, true);
-    Ice::StreamWriter< ::Gateway::OpenStreamException, ::Ice::OutputStream>::write(ostr, *this);
-    ostr->endSlice();
-}
-
-void
-Gateway::OpenStreamException::_readImpl(::Ice::InputStream* istr)
-{
-    istr->startSlice();
-    Ice::StreamReader< ::Gateway::OpenStreamException, ::Ice::InputStream>::read(istr, *this);
     istr->endSlice();
 }
 
@@ -1796,11 +1123,11 @@ Gateway::DeviceControlException::_readImpl(::Ice::InputStream* istr)
     istr->endSlice();
 }
 
-Gateway::AMD_DeviceControl_openRealStream::~AMD_DeviceControl_openRealStream()
+Media::AMD_Stream_openRealStream::~AMD_Stream_openRealStream()
 {
 }
 
-Gateway::AMD_DeviceControl_closeStream::~AMD_DeviceControl_closeStream()
+Media::AMD_Stream_closeStream::~AMD_Stream_closeStream()
 {
 }
 
@@ -1816,127 +1143,27 @@ Gateway::AMD_DeviceControl_getDeviceStatus::~AMD_DeviceControl_getDeviceStatus()
 {
 }
 
-Gateway::AMD_DeviceControl_beatHeart::~AMD_DeviceControl_beatHeart()
-{
-}
-
-Gateway::AMD_DeviceControl_CallSipUserReq::~AMD_DeviceControl_CallSipUserReq()
-{
-}
-
-Gateway::AMD_DeviceControl_CalibrationTimeReq::~AMD_DeviceControl_CalibrationTimeReq()
-{
-}
-
-Gateway::AMD_DeviceControl_HolderOperReq::~AMD_DeviceControl_HolderOperReq()
-{
-}
-
-Gateway::AMD_DeviceControl_RecordingOperReq::~AMD_DeviceControl_RecordingOperReq()
-{
-}
-
-Gateway::AMD_DeviceControl_StopRecordingOperReq::~AMD_DeviceControl_StopRecordingOperReq()
-{
-}
-
-Gateway::AMD_DeviceControl_StartVoideRecoingFile::~AMD_DeviceControl_StartVoideRecoingFile()
-{
-}
-
-Gateway::AMD_DeviceControl_RecordingFileReq::~AMD_DeviceControl_RecordingFileReq()
-{
-}
-
-Gateway::AMD_DeviceControl_LoadRecordingFile::~AMD_DeviceControl_LoadRecordingFile()
-{
-}
-
-Gateway::AMD_DeviceControl_FindRecordingFileReq::~AMD_DeviceControl_FindRecordingFileReq()
-{
-}
-
-Gateway::AMD_DeviceControl_DataPlayStopOrStartReq::~AMD_DeviceControl_DataPlayStopOrStartReq()
-{
-}
-
-Gateway::AMD_DeviceControl_SetupAlarmReq::~AMD_DeviceControl_SetupAlarmReq()
-{
-}
-
-Gateway::AMD_DeviceControl_CloseAlarmReq::~AMD_DeviceControl_CloseAlarmReq()
-{
-}
-
-Gateway::AMD_DeviceControl_RestorConfigReq::~AMD_DeviceControl_RestorConfigReq()
-{
-}
-
-Gateway::AMD_DeviceControl_RebootReq::~AMD_DeviceControl_RebootReq()
-{
-}
-
-Gateway::AMD_DeviceControl_RemoteControlReq::~AMD_DeviceControl_RemoteControlReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgStartVioceReq::~AMD_DeviceControl_MsgStartVioceReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgStopVioceReq::~AMD_DeviceControl_MsgStopVioceReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq::~AMD_DeviceControl_MsgQueryDeviceIpcStatusReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq::~AMD_DeviceControl_MsgQueryDeviceIpcInfoReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgStartPropertyServerReq::~AMD_DeviceControl_MsgStartPropertyServerReq()
-{
-}
-
-Gateway::AMD_DeviceControl_MsgStopPropertyServerReq::~AMD_DeviceControl_MsgStopPropertyServerReq()
-{
-}
-
-Gateway::AMD_DeviceControl_DeviceRefreshReq::~AMD_DeviceControl_DeviceRefreshReq()
-{
-}
-
-Gateway::AMD_DeviceControl_DeviceShareNotify::~AMD_DeviceControl_DeviceShareNotify()
-{
-}
-
-Gateway::AMD_DeviceControl_GatewayRerootReq::~AMD_DeviceControl_GatewayRerootReq()
-{
-}
-
-IceAsync::Gateway::AMD_DeviceControl_openRealStream::AMD_DeviceControl_openRealStream(::IceInternal::Incoming& in) :
+IceAsync::Media::AMD_Stream_openRealStream::AMD_Stream_openRealStream(::IceInternal::Incoming& in) :
     ::IceInternal::IncomingAsync(in)
 {
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_openRealStream::ice_response(const ::Gateway::RealStreamRespParam& resp)
+IceAsync::Media::AMD_Stream_openRealStream::ice_response(const ::Media::RealStreamRespParam& stm)
 {
     ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(resp);
+    ostr->write(stm);
     endWriteParams();
     completed();
 }
 
-IceAsync::Gateway::AMD_DeviceControl_closeStream::AMD_DeviceControl_closeStream(::IceInternal::Incoming& in) :
+IceAsync::Media::AMD_Stream_closeStream::AMD_Stream_closeStream(::IceInternal::Incoming& in) :
     ::IceInternal::IncomingAsync(in)
 {
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_closeStream::ice_response()
+IceAsync::Media::AMD_Stream_closeStream::ice_response()
 {
     writeEmptyParams();
     completed();
@@ -1981,379 +1208,263 @@ IceAsync::Gateway::AMD_DeviceControl_getDeviceStatus::ice_response(const ::Gatew
     endWriteParams();
     completed();
 }
+::IceProxy::Ice::Object* ::IceProxy::Media::upCast(::IceProxy::Media::Stream* p) { return p; }
 
-IceAsync::Gateway::AMD_DeviceControl_beatHeart::AMD_DeviceControl_beatHeart(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+void
+::IceProxy::Media::_readProxy(::Ice::InputStream* istr, ::IceInternal::ProxyHandle< ::IceProxy::Media::Stream>& v)
 {
+    ::Ice::ObjectPrx proxy;
+    istr->read(proxy);
+    if(!proxy)
+    {
+        v = 0;
+    }
+    else
+    {
+        v = new ::IceProxy::Media::Stream;
+        v->_copyFrom(proxy);
+    }
+}
+
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_openRealStream(const ::Media::RealStreamReqParam& iceP_ctg, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+{
+    _checkTwowayOnly(iceC_Media_Stream_openRealStream_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_openRealStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_openRealStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_ctg);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_openRealStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_beatHeart::ice_response(const ::std::string& rinfo)
+IceProxy::Media::Stream::end_openRealStream(::Media::RealStreamRespParam& iceP_stm, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(rinfo);
-    endWriteParams();
-    completed();
+    ::Ice::AsyncResult::_check(result, this, iceC_Media_Stream_openRealStream_name);
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Media::OpenStreamException&)
+        {
+            throw;
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_stm);
+    result->_endReadParams();
 }
 
-IceAsync::Gateway::AMD_DeviceControl_CallSipUserReq::AMD_DeviceControl_CallSipUserReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_CallSipUserReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_CalibrationTimeReq::AMD_DeviceControl_CalibrationTimeReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_CalibrationTimeReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_HolderOperReq::AMD_DeviceControl_HolderOperReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_HolderOperReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_RecordingOperReq::AMD_DeviceControl_RecordingOperReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_closeStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_closeStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_callid);
+        ostr->write(iceP_id);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_closeStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_RecordingOperReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_closeStream(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    _end(result, iceC_Media_Stream_closeStream_name);
 }
 
-IceAsync::Gateway::AMD_DeviceControl_StopRecordingOperReq::AMD_DeviceControl_StopRecordingOperReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_StopRecordingOperReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_StartVoideRecoingFile::AMD_DeviceControl_StartVoideRecoingFile(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    _checkTwowayOnly(iceC_Media_Stream_getStreamStatic_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_getStreamStatic_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_getStreamStatic_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_id);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_getStreamStatic_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_StartVoideRecoingFile::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_getStreamStatic(::Media::StreamStatic& iceP_static, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    ::Ice::AsyncResult::_check(result, this, iceC_Media_Stream_getStreamStatic_name);
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_static);
+    result->_endReadParams();
 }
 
-IceAsync::Gateway::AMD_DeviceControl_RecordingFileReq::AMD_DeviceControl_RecordingFileReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_RecordingFileReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_LoadRecordingFile::AMD_DeviceControl_LoadRecordingFile(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_LoadRecordingFile::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_FindRecordingFileReq::AMD_DeviceControl_FindRecordingFileReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_getRecordFiles_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_getRecordFiles_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_startTime);
+        ostr->write(iceP_endtime);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_getRecordFiles_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_FindRecordingFileReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_getRecordFiles(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    _end(result, iceC_Media_Stream_getRecordFiles_name);
 }
 
-IceAsync::Gateway::AMD_DeviceControl_DataPlayStopOrStartReq::AMD_DeviceControl_DataPlayStopOrStartReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_DataPlayStopOrStartReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_SetupAlarmReq::AMD_DeviceControl_SetupAlarmReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    _checkTwowayOnly(iceC_Media_Stream_openVodStream_name, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_openVodStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_openVodStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_req);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_openVodStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_SetupAlarmReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_openVodStream(::Media::RealStreamRespParam& iceP_resp, const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    ::Ice::AsyncResult::_check(result, this, iceC_Media_Stream_openVodStream_name);
+    if(!result->_waitForResponse())
+    {
+        try
+        {
+            result->_throwUserException();
+        }
+        catch(const ::Ice::UserException& ex)
+        {
+            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
+        }
+    }
+    ::Ice::InputStream* istr = result->_startReadParams();
+    istr->read(iceP_resp);
+    result->_endReadParams();
 }
 
-IceAsync::Gateway::AMD_DeviceControl_CloseAlarmReq::AMD_DeviceControl_CloseAlarmReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_CloseAlarmReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_RestorConfigReq::AMD_DeviceControl_RestorConfigReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_RestorConfigReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_RebootReq::AMD_DeviceControl_RebootReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_closeVodStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_closeVodStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_callid);
+        ostr->write(iceP_id);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_closeVodStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_RebootReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_closeVodStream(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    _end(result, iceC_Media_Stream_closeVodStream_name);
 }
 
-IceAsync::Gateway::AMD_DeviceControl_RemoteControlReq::AMD_DeviceControl_RemoteControlReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::Ice::AsyncResultPtr
+IceProxy::Media::Stream::_iceI_begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_RemoteControlReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_MsgStartVioceReq::AMD_DeviceControl_MsgStartVioceReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Media_Stream_controlVodStream_name, del, cookie, sync);
+    try
+    {
+        result->prepare(iceC_Media_Stream_controlVodStream_name, ::Ice::Normal, context);
+        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
+        ostr->write(iceP_cmd);
+        ostr->write(iceP_callid);
+        ostr->write(iceP_id);
+        result->endWriteParams();
+        result->invoke(iceC_Media_Stream_controlVodStream_name);
+    }
+    catch(const ::Ice::Exception& ex)
+    {
+        result->abort(ex);
+    }
+    return result;
 }
 
 void
-IceAsync::Gateway::AMD_DeviceControl_MsgStartVioceReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+IceProxy::Media::Stream::end_controlVodStream(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    _end(result, iceC_Media_Stream_controlVodStream_name);
 }
 
-IceAsync::Gateway::AMD_DeviceControl_MsgStopVioceReq::AMD_DeviceControl_MsgStopVioceReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
+::IceProxy::Ice::Object*
+IceProxy::Media::Stream::_newInstance() const
 {
+    return new Stream;
 }
 
-void
-IceAsync::Gateway::AMD_DeviceControl_MsgStopVioceReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
+const ::std::string&
+IceProxy::Media::Stream::ice_staticId()
 {
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_MsgStartPropertyServerReq::AMD_DeviceControl_MsgStartPropertyServerReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_MsgStartPropertyServerReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_MsgStopPropertyServerReq::AMD_DeviceControl_MsgStopPropertyServerReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_MsgStopPropertyServerReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_DeviceRefreshReq::AMD_DeviceControl_DeviceRefreshReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_DeviceRefreshReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_DeviceShareNotify::AMD_DeviceControl_DeviceShareNotify(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_DeviceShareNotify::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
-}
-
-IceAsync::Gateway::AMD_DeviceControl_GatewayRerootReq::AMD_DeviceControl_GatewayRerootReq(::IceInternal::Incoming& in) :
-    ::IceInternal::IncomingAsync(in)
-{
-}
-
-void
-IceAsync::Gateway::AMD_DeviceControl_GatewayRerootReq::ice_response(::Ice::Int iResMsglen, const ::std::string& sResMsgbuf)
-{
-    ::Ice::OutputStream* ostr = startWriteParams();
-    ostr->write(iResMsglen);
-    ostr->write(sResMsgbuf);
-    endWriteParams();
-    completed();
+    return ::Media::Stream::ice_staticId();
 }
 ::IceProxy::Ice::Object* ::IceProxy::Gateway::upCast(::IceProxy::Gateway::DeviceControl* p) { return p; }
 
@@ -2371,76 +1482,6 @@ void
         v = new ::IceProxy::Gateway::DeviceControl;
         v->_copyFrom(proxy);
     }
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_openRealStream(const ::Gateway::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_openRealStream_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_openRealStream_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_openRealStream_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_req);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_openRealStream_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_openRealStream(::Gateway::RealStreamRespParam& iceP_resp, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_openRealStream_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Gateway::OpenStreamException&)
-        {
-            throw;
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_resp);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_closeStream_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_closeStream_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_callid);
-        ostr->write(iceP_id);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_closeStream_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_closeStream(const ::Ice::AsyncResultPtr& result)
-{
-    _end(result, iceC_Gateway_DeviceControl_closeStream_name);
 }
 
 ::Ice::AsyncResultPtr
@@ -2641,17 +1682,16 @@ IceProxy::Gateway::DeviceControl::end_shutdown(const ::Ice::AsyncResultPtr& resu
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_beatHeart(const ::std::string& iceP_info, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::Gateway::DeviceControl::_iceI_begin_Timing(const ::std::string& iceP_time, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_beatHeart_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_beatHeart_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_Timing_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_Gateway_DeviceControl_beatHeart_name, ::Ice::Normal, context);
+        result->prepare(iceC_Gateway_DeviceControl_Timing_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_info);
+        ostr->write(iceP_time);
         result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_beatHeart_name);
+        result->invoke(iceC_Gateway_DeviceControl_Timing_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2661,40 +1701,22 @@ IceProxy::Gateway::DeviceControl::_iceI_begin_beatHeart(const ::std::string& ice
 }
 
 void
-IceProxy::Gateway::DeviceControl::end_beatHeart(::std::string& iceP_rinfo, const ::Ice::AsyncResultPtr& result)
+IceProxy::Gateway::DeviceControl::end_Timing(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_beatHeart_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_rinfo);
-    result->_endReadParams();
+    _end(result, iceC_Gateway_DeviceControl_Timing_name);
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_CallSipUserReq(const ::std::string& iceP_pSzSipData, ::Ice::Int iceP_iType, const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::Gateway::DeviceControl::_iceI_begin_setGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CallSipUserReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_CallSipUserReq_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_setGuard_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_Gateway_DeviceControl_CallSipUserReq_name, ::Ice::Normal, context);
+        result->prepare(iceC_Gateway_DeviceControl_setGuard_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        ostr->write(iceP_iType);
-        ostr->write(iceP_pSzIp);
-        ostr->write(iceP_iport);
+        ostr->write(iceP_id);
         result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_CallSipUserReq_name);
+        result->invoke(iceC_Gateway_DeviceControl_setGuard_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2704,38 +1726,22 @@ IceProxy::Gateway::DeviceControl::_iceI_begin_CallSipUserReq(const ::std::string
 }
 
 void
-IceProxy::Gateway::DeviceControl::end_CallSipUserReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
+IceProxy::Gateway::DeviceControl::end_setGuard(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_CallSipUserReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
+    _end(result, iceC_Gateway_DeviceControl_setGuard_name);
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_CalibrationTimeReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::Gateway::DeviceControl::_iceI_begin_resetGuard(const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CalibrationTimeReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_CalibrationTimeReq_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_resetGuard_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_Gateway_DeviceControl_CalibrationTimeReq_name, ::Ice::Normal, context);
+        result->prepare(iceC_Gateway_DeviceControl_resetGuard_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
+        ostr->write(iceP_id);
         result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_CalibrationTimeReq_name);
+        result->invoke(iceC_Gateway_DeviceControl_resetGuard_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2745,39 +1751,22 @@ IceProxy::Gateway::DeviceControl::_iceI_begin_CalibrationTimeReq(const ::std::st
 }
 
 void
-IceProxy::Gateway::DeviceControl::end_CalibrationTimeReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
+IceProxy::Gateway::DeviceControl::end_resetGuard(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_CalibrationTimeReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
+    _end(result, iceC_Gateway_DeviceControl_resetGuard_name);
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_HolderOperReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzTypeOper, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::Gateway::DeviceControl::_iceI_begin_subscribe(const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_HolderOperReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_HolderOperReq_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_subscribe_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_Gateway_DeviceControl_HolderOperReq_name, ::Ice::Normal, context);
+        result->prepare(iceC_Gateway_DeviceControl_subscribe_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        ostr->write(iceP_pSzTypeOper);
+        ostr->write(iceP_id);
         result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_HolderOperReq_name);
+        result->invoke(iceC_Gateway_DeviceControl_subscribe_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2787,38 +1776,22 @@ IceProxy::Gateway::DeviceControl::_iceI_begin_HolderOperReq(const ::std::string&
 }
 
 void
-IceProxy::Gateway::DeviceControl::end_HolderOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
+IceProxy::Gateway::DeviceControl::end_subscribe(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_HolderOperReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
+    _end(result, iceC_Gateway_DeviceControl_subscribe_name);
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_RecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
+IceProxy::Gateway::DeviceControl::_iceI_begin_reboot(const ::std::string& iceP_id, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
 {
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RecordingOperReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_RecordingOperReq_name, del, cookie, sync);
+    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_reboot_name, del, cookie, sync);
     try
     {
-        result->prepare(iceC_Gateway_DeviceControl_RecordingOperReq_name, ::Ice::Normal, context);
+        result->prepare(iceC_Gateway_DeviceControl_reboot_name, ::Ice::Normal, context);
         ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
+        ostr->write(iceP_id);
         result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_RecordingOperReq_name);
+        result->invoke(iceC_Gateway_DeviceControl_reboot_name);
     }
     catch(const ::Ice::Exception& ex)
     {
@@ -2828,854 +1801,9 @@ IceProxy::Gateway::DeviceControl::_iceI_begin_RecordingOperReq(const ::std::stri
 }
 
 void
-IceProxy::Gateway::DeviceControl::end_RecordingOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
+IceProxy::Gateway::DeviceControl::end_reboot(const ::Ice::AsyncResultPtr& result)
 {
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_RecordingOperReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_StopRecordingOperReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_StopRecordingOperReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_StopRecordingOperReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_StopRecordingOperReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_StopRecordingOperReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_StopRecordingOperReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_StopRecordingOperReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_StartVoideRecoingFile(const ::std::string& iceP_pSzIp, ::Ice::Int iceP_iport, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_StartVoideRecoingFile_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_StartVoideRecoingFile_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_StartVoideRecoingFile_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzIp);
-        ostr->write(iceP_iport);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_StartVoideRecoingFile_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_StartVoideRecoingFile(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_StartVoideRecoingFile_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_RecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_iType, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RecordingFileReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_RecordingFileReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_RecordingFileReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        ostr->write(iceP_pSzStartTime);
-        ostr->write(iceP_pSzEndTime);
-        ostr->write(iceP_iType);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_RecordingFileReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_RecordingFileReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_RecordingFileReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_LoadRecordingFile(const ::std::string& iceP_pSzSipIdVal, const ::std::string& iceP_pSzStarTime, const ::std::string& iceP_pSzEndTime, ::Ice::Int iceP_sbType, const ::std::string& iceP_pSzFilePath, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_LoadRecordingFile_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_LoadRecordingFile_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_LoadRecordingFile_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipIdVal);
-        ostr->write(iceP_pSzStarTime);
-        ostr->write(iceP_pSzEndTime);
-        ostr->write(iceP_sbType);
-        ostr->write(iceP_pSzFilePath);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_LoadRecordingFile_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_LoadRecordingFile(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_LoadRecordingFile_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_FindRecordingFileReq(const ::std::string& iceP_pSzSipData, const ::std::string& iceP_pSzStartTime, const ::std::string& iceP_pSzEndTime, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_FindRecordingFileReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_FindRecordingFileReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_FindRecordingFileReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        ostr->write(iceP_pSzStartTime);
-        ostr->write(iceP_pSzEndTime);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_FindRecordingFileReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_FindRecordingFileReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_FindRecordingFileReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_DataPlayStopOrStartReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_DataPlayStopOrStartReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_DataPlayStopOrStartReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_SetupAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_SetupAlarmReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_SetupAlarmReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_SetupAlarmReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_SetupAlarmReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_SetupAlarmReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_SetupAlarmReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_CloseAlarmReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_CloseAlarmReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_CloseAlarmReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_CloseAlarmReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_CloseAlarmReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_CloseAlarmReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_CloseAlarmReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_RestorConfigReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RestorConfigReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_RestorConfigReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_RestorConfigReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_RestorConfigReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_RestorConfigReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_RestorConfigReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_RebootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RebootReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_RebootReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_RebootReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_RebootReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_RebootReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_RebootReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_RemoteControlReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_RemoteControlReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_RemoteControlReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_RemoteControlReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_RemoteControlReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_RemoteControlReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_RemoteControlReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgStartVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStartVioceReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgStartVioceReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgStartVioceReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgStartVioceReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgStartVioceReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgStartVioceReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgStopVioceReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStopVioceReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgStopVioceReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgStopVioceReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgStopVioceReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgStopVioceReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgStopVioceReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgQueryDeviceIpcStatusReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgQueryDeviceIpcStatusReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgQueryDeviceIpcStatusReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgQueryDeviceIpcInfoReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgQueryDeviceIpcInfoReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgQueryDeviceIpcInfoReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgStartPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgStartPropertyServerReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgStartPropertyServerReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_MsgStopPropertyServerReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_MsgStopPropertyServerReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_MsgStopPropertyServerReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_DeviceRefreshReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DeviceRefreshReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_DeviceRefreshReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_DeviceRefreshReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_DeviceRefreshReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_DeviceRefreshReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_DeviceRefreshReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_DeviceShareNotify(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_DeviceShareNotify_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_DeviceShareNotify_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_DeviceShareNotify_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_DeviceShareNotify_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_DeviceShareNotify(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_DeviceShareNotify_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
-}
-
-::Ice::AsyncResultPtr
-IceProxy::Gateway::DeviceControl::_iceI_begin_GatewayRerootReq(const ::std::string& iceP_pSzSipData, const ::Ice::Context& context, const ::IceInternal::CallbackBasePtr& del, const ::Ice::LocalObjectPtr& cookie, bool sync)
-{
-    _checkTwowayOnly(iceC_Gateway_DeviceControl_GatewayRerootReq_name, sync);
-    ::IceInternal::OutgoingAsyncPtr result = new ::IceInternal::CallbackOutgoing(this, iceC_Gateway_DeviceControl_GatewayRerootReq_name, del, cookie, sync);
-    try
-    {
-        result->prepare(iceC_Gateway_DeviceControl_GatewayRerootReq_name, ::Ice::Normal, context);
-        ::Ice::OutputStream* ostr = result->startWriteParams(::Ice::DefaultFormat);
-        ostr->write(iceP_pSzSipData);
-        result->endWriteParams();
-        result->invoke(iceC_Gateway_DeviceControl_GatewayRerootReq_name);
-    }
-    catch(const ::Ice::Exception& ex)
-    {
-        result->abort(ex);
-    }
-    return result;
-}
-
-void
-IceProxy::Gateway::DeviceControl::end_GatewayRerootReq(::Ice::Int& iceP_iResMsglen, ::std::string& iceP_sResMsgbuf, const ::Ice::AsyncResultPtr& result)
-{
-    ::Ice::AsyncResult::_check(result, this, iceC_Gateway_DeviceControl_GatewayRerootReq_name);
-    if(!result->_waitForResponse())
-    {
-        try
-        {
-            result->_throwUserException();
-        }
-        catch(const ::Ice::UserException& ex)
-        {
-            throw ::Ice::UnknownUserException(__FILE__, __LINE__, ex.ice_id());
-        }
-    }
-    ::Ice::InputStream* istr = result->_startReadParams();
-    istr->read(iceP_iResMsglen);
-    istr->read(iceP_sResMsgbuf);
-    result->_endReadParams();
+    _end(result, iceC_Gateway_DeviceControl_reboot_name);
 }
 
 ::IceProxy::Ice::Object*
@@ -3688,6 +1816,265 @@ const ::std::string&
 IceProxy::Gateway::DeviceControl::ice_staticId()
 {
     return ::Gateway::DeviceControl::ice_staticId();
+}
+
+Media::Stream::~Stream()
+{
+}
+
+::Ice::Object* Media::upCast(::Media::Stream* p) { return p; }
+
+
+namespace
+{
+const ::std::string iceC_Media_Stream_ids[2] =
+{
+    "::Ice::Object",
+    "::Media::Stream"
+};
+
+}
+
+bool
+Media::Stream::ice_isA(const ::std::string& s, const ::Ice::Current&) const
+{
+    return ::std::binary_search(iceC_Media_Stream_ids, iceC_Media_Stream_ids + 2, s);
+}
+
+::std::vector< ::std::string>
+Media::Stream::ice_ids(const ::Ice::Current&) const
+{
+    return ::std::vector< ::std::string>(&iceC_Media_Stream_ids[0], &iceC_Media_Stream_ids[2]);
+}
+
+const ::std::string&
+Media::Stream::ice_id(const ::Ice::Current&) const
+{
+    return ice_staticId();
+}
+
+const ::std::string&
+Media::Stream::ice_staticId()
+{
+#ifdef ICE_HAS_THREAD_SAFE_LOCAL_STATIC
+    static const ::std::string typeId = "::Media::Stream";
+    return typeId;
+#else
+    return iceC_Media_Stream_ids[1];
+#endif
+}
+
+bool
+Media::Stream::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Media::RealStreamReqParam iceP_ctg;
+    istr->read(iceP_ctg);
+    inS.endReadParams();
+    this->openRealStream_async(new IceAsync::Media::AMD_Stream_openRealStream(inS), iceP_ctg, current);
+    return false;
+}
+
+bool
+Media::Stream::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->read(iceP_callid);
+    istr->read(iceP_id);
+    inS.endReadParams();
+    this->closeStream_async(new IceAsync::Media::AMD_Stream_closeStream(inS), iceP_callid, iceP_id, current);
+    return false;
+}
+
+bool
+Media::Stream::_iceD_getStreamStatic(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_id;
+    istr->read(iceP_id);
+    inS.endReadParams();
+    ::Media::StreamStatic iceP_static;
+    this->getStreamStatic(iceP_id, iceP_static, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_static);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_getRecordFiles(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_startTime;
+    ::std::string iceP_endtime;
+    istr->read(iceP_startTime);
+    istr->read(iceP_endtime);
+    inS.endReadParams();
+    this->getRecordFiles(iceP_startTime, iceP_endtime, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_openVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::Media::RealStreamReqParam iceP_req;
+    istr->read(iceP_req);
+    inS.endReadParams();
+    ::Media::RealStreamRespParam iceP_resp;
+    this->openVodStream(iceP_req, iceP_resp, current);
+    ::Ice::OutputStream* ostr = inS.startWriteParams();
+    ostr->write(iceP_resp);
+    inS.endWriteParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_closeVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->read(iceP_callid);
+    istr->read(iceP_id);
+    inS.endReadParams();
+    this->closeVodStream(iceP_callid, iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+bool
+Media::Stream::_iceD_controlVodStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+{
+    _iceCheckMode(::Ice::Normal, current.mode);
+    ::Ice::InputStream* istr = inS.startReadParams();
+    ::std::string iceP_cmd;
+    ::std::string iceP_callid;
+    ::std::string iceP_id;
+    istr->read(iceP_cmd);
+    istr->read(iceP_callid);
+    istr->read(iceP_id);
+    inS.endReadParams();
+    this->controlVodStream(iceP_cmd, iceP_callid, iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
+}
+
+namespace
+{
+const ::std::string iceC_Media_Stream_all[] =
+{
+    "closeStream",
+    "closeVodStream",
+    "controlVodStream",
+    "getRecordFiles",
+    "getStreamStatic",
+    "ice_id",
+    "ice_ids",
+    "ice_isA",
+    "ice_ping",
+    "openRealStream",
+    "openVodStream"
+};
+
+}
+
+bool
+Media::Stream::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
+{
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Media_Stream_all, iceC_Media_Stream_all + 11, current.operation);
+    if(r.first == r.second)
+    {
+        throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
+    }
+
+    switch(r.first - iceC_Media_Stream_all)
+    {
+        case 0:
+        {
+            return _iceD_closeStream(in, current);
+        }
+        case 1:
+        {
+            return _iceD_closeVodStream(in, current);
+        }
+        case 2:
+        {
+            return _iceD_controlVodStream(in, current);
+        }
+        case 3:
+        {
+            return _iceD_getRecordFiles(in, current);
+        }
+        case 4:
+        {
+            return _iceD_getStreamStatic(in, current);
+        }
+        case 5:
+        {
+            return _iceD_ice_id(in, current);
+        }
+        case 6:
+        {
+            return _iceD_ice_ids(in, current);
+        }
+        case 7:
+        {
+            return _iceD_ice_isA(in, current);
+        }
+        case 8:
+        {
+            return _iceD_ice_ping(in, current);
+        }
+        case 9:
+        {
+            return _iceD_openRealStream(in, current);
+        }
+        case 10:
+        {
+            return _iceD_openVodStream(in, current);
+        }
+        default:
+        {
+            assert(false);
+            throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
+        }
+    }
+}
+
+void
+Media::Stream::_iceWriteImpl(::Ice::OutputStream* ostr) const
+{
+    ostr->startSlice(ice_staticId(), -1, true);
+    Ice::StreamWriter< ::Media::Stream, ::Ice::OutputStream>::write(ostr, *this);
+    ostr->endSlice();
+}
+
+void
+Media::Stream::_iceReadImpl(::Ice::InputStream* istr)
+{
+    istr->startSlice();
+    Ice::StreamReader< ::Media::Stream, ::Ice::InputStream>::read(istr, *this);
+    istr->endSlice();
+}
+
+void
+Media::_icePatchObjectPtr(StreamPtr& handle, const ::Ice::ObjectPtr& v)
+{
+    handle = ::Media::StreamPtr::dynamicCast(v);
+    if(v && !handle)
+    {
+        IceInternal::Ex::throwUOE(::Media::Stream::ice_staticId(), v);
+    }
 }
 
 Gateway::DeviceControl::~DeviceControl()
@@ -3734,32 +2121,6 @@ Gateway::DeviceControl::ice_staticId()
 #else
     return iceC_Gateway_DeviceControl_ids[0];
 #endif
-}
-
-bool
-Gateway::DeviceControl::_iceD_openRealStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::Gateway::RealStreamReqParam iceP_req;
-    istr->read(iceP_req);
-    inS.endReadParams();
-    this->openRealStream_async(new IceAsync::Gateway::AMD_DeviceControl_openRealStream(inS), iceP_req, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_closeStream(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_callid;
-    ::std::string iceP_id;
-    istr->read(iceP_callid);
-    istr->read(iceP_id);
-    inS.endReadParams();
-    this->closeStream_async(new IceAsync::Gateway::AMD_DeviceControl_closeStream(inS), iceP_callid, iceP_id, current);
-    return false;
 }
 
 bool
@@ -3828,363 +2189,75 @@ Gateway::DeviceControl::_iceD_shutdown(::IceInternal::Incoming& inS, const ::Ice
 }
 
 bool
-Gateway::DeviceControl::_iceD_beatHeart(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_Timing(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_info;
-    istr->read(iceP_info);
+    ::std::string iceP_time;
+    istr->read(iceP_time);
     inS.endReadParams();
-    this->beatHeart_async(new IceAsync::Gateway::AMD_DeviceControl_beatHeart(inS), iceP_info, current);
-    return false;
+    this->Timing(iceP_time, current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_CallSipUserReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_setGuard(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::Ice::Int iceP_iType;
-    ::std::string iceP_pSzIp;
-    ::Ice::Int iceP_iport;
-    istr->read(iceP_pSzSipData);
-    istr->read(iceP_iType);
-    istr->read(iceP_pSzIp);
-    istr->read(iceP_iport);
+    ::std::string iceP_id;
+    istr->read(iceP_id);
     inS.endReadParams();
-    this->CallSipUserReq_async(new IceAsync::Gateway::AMD_DeviceControl_CallSipUserReq(inS), iceP_pSzSipData, iceP_iType, iceP_pSzIp, iceP_iport, current);
-    return false;
+    this->setGuard(iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_CalibrationTimeReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_resetGuard(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
+    ::std::string iceP_id;
+    istr->read(iceP_id);
     inS.endReadParams();
-    this->CalibrationTimeReq_async(new IceAsync::Gateway::AMD_DeviceControl_CalibrationTimeReq(inS), iceP_pSzSipData, current);
-    return false;
+    this->resetGuard(iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_HolderOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_subscribe(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzTypeOper;
-    istr->read(iceP_pSzSipData);
-    istr->read(iceP_pSzTypeOper);
+    ::std::string iceP_id;
+    istr->read(iceP_id);
     inS.endReadParams();
-    this->HolderOperReq_async(new IceAsync::Gateway::AMD_DeviceControl_HolderOperReq(inS), iceP_pSzSipData, iceP_pSzTypeOper, current);
-    return false;
+    this->subscribe(iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 bool
-Gateway::DeviceControl::_iceD_RecordingOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
+Gateway::DeviceControl::_iceD_reboot(::IceInternal::Incoming& inS, const ::Ice::Current& current)
 {
     _iceCheckMode(::Ice::Normal, current.mode);
     ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
+    ::std::string iceP_id;
+    istr->read(iceP_id);
     inS.endReadParams();
-    this->RecordingOperReq_async(new IceAsync::Gateway::AMD_DeviceControl_RecordingOperReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_StopRecordingOperReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->StopRecordingOperReq_async(new IceAsync::Gateway::AMD_DeviceControl_StopRecordingOperReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_StartVoideRecoingFile(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzIp;
-    ::Ice::Int iceP_iport;
-    istr->read(iceP_pSzIp);
-    istr->read(iceP_iport);
-    inS.endReadParams();
-    this->StartVoideRecoingFile_async(new IceAsync::Gateway::AMD_DeviceControl_StartVoideRecoingFile(inS), iceP_pSzIp, iceP_iport, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RecordingFileReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzStartTime;
-    ::std::string iceP_pSzEndTime;
-    ::Ice::Int iceP_iType;
-    istr->read(iceP_pSzSipData);
-    istr->read(iceP_pSzStartTime);
-    istr->read(iceP_pSzEndTime);
-    istr->read(iceP_iType);
-    inS.endReadParams();
-    this->RecordingFileReq_async(new IceAsync::Gateway::AMD_DeviceControl_RecordingFileReq(inS), iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, iceP_iType, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_LoadRecordingFile(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipIdVal;
-    ::std::string iceP_pSzStarTime;
-    ::std::string iceP_pSzEndTime;
-    ::Ice::Int iceP_sbType;
-    ::std::string iceP_pSzFilePath;
-    istr->read(iceP_pSzSipIdVal);
-    istr->read(iceP_pSzStarTime);
-    istr->read(iceP_pSzEndTime);
-    istr->read(iceP_sbType);
-    istr->read(iceP_pSzFilePath);
-    inS.endReadParams();
-    this->LoadRecordingFile_async(new IceAsync::Gateway::AMD_DeviceControl_LoadRecordingFile(inS), iceP_pSzSipIdVal, iceP_pSzStarTime, iceP_pSzEndTime, iceP_sbType, iceP_pSzFilePath, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_FindRecordingFileReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    ::std::string iceP_pSzStartTime;
-    ::std::string iceP_pSzEndTime;
-    istr->read(iceP_pSzSipData);
-    istr->read(iceP_pSzStartTime);
-    istr->read(iceP_pSzEndTime);
-    inS.endReadParams();
-    this->FindRecordingFileReq_async(new IceAsync::Gateway::AMD_DeviceControl_FindRecordingFileReq(inS), iceP_pSzSipData, iceP_pSzStartTime, iceP_pSzEndTime, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DataPlayStopOrStartReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->DataPlayStopOrStartReq_async(new IceAsync::Gateway::AMD_DeviceControl_DataPlayStopOrStartReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_SetupAlarmReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->SetupAlarmReq_async(new IceAsync::Gateway::AMD_DeviceControl_SetupAlarmReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_CloseAlarmReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->CloseAlarmReq_async(new IceAsync::Gateway::AMD_DeviceControl_CloseAlarmReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RestorConfigReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->RestorConfigReq_async(new IceAsync::Gateway::AMD_DeviceControl_RestorConfigReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RebootReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->RebootReq_async(new IceAsync::Gateway::AMD_DeviceControl_RebootReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_RemoteControlReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->RemoteControlReq_async(new IceAsync::Gateway::AMD_DeviceControl_RemoteControlReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStartVioceReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgStartVioceReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgStartVioceReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStopVioceReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgStopVioceReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgStopVioceReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgQueryDeviceIpcStatusReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgQueryDeviceIpcStatusReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcStatusReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgQueryDeviceIpcInfoReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgQueryDeviceIpcInfoReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgQueryDeviceIpcInfoReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStartPropertyServerReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgStartPropertyServerReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgStartPropertyServerReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_MsgStopPropertyServerReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->MsgStopPropertyServerReq_async(new IceAsync::Gateway::AMD_DeviceControl_MsgStopPropertyServerReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DeviceRefreshReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->DeviceRefreshReq_async(new IceAsync::Gateway::AMD_DeviceControl_DeviceRefreshReq(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_DeviceShareNotify(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->DeviceShareNotify_async(new IceAsync::Gateway::AMD_DeviceControl_DeviceShareNotify(inS), iceP_pSzSipData, current);
-    return false;
-}
-
-bool
-Gateway::DeviceControl::_iceD_GatewayRerootReq(::IceInternal::Incoming& inS, const ::Ice::Current& current)
-{
-    _iceCheckMode(::Ice::Normal, current.mode);
-    ::Ice::InputStream* istr = inS.startReadParams();
-    ::std::string iceP_pSzSipData;
-    istr->read(iceP_pSzSipData);
-    inS.endReadParams();
-    this->GatewayRerootReq_async(new IceAsync::Gateway::AMD_DeviceControl_GatewayRerootReq(inS), iceP_pSzSipData, current);
-    return false;
+    this->reboot(iceP_id, current);
+    inS.writeEmptyParams();
+    return true;
 }
 
 namespace
 {
 const ::std::string iceC_Gateway_DeviceControl_all[] =
 {
-    "CalibrationTimeReq",
-    "CallSipUserReq",
-    "CloseAlarmReq",
-    "DataPlayStopOrStartReq",
-    "DeviceRefreshReq",
-    "DeviceShareNotify",
-    "FindRecordingFileReq",
-    "GatewayRerootReq",
-    "HolderOperReq",
-    "LoadRecordingFile",
-    "MsgQueryDeviceIpcInfoReq",
-    "MsgQueryDeviceIpcStatusReq",
-    "MsgStartPropertyServerReq",
-    "MsgStartVioceReq",
-    "MsgStopPropertyServerReq",
-    "MsgStopVioceReq",
-    "RebootReq",
-    "RecordingFileReq",
-    "RecordingOperReq",
-    "RemoteControlReq",
-    "RestorConfigReq",
-    "SetupAlarmReq",
-    "StartVoideRecoingFile",
-    "StopRecordingOperReq",
-    "beatHeart",
-    "closeStream",
+    "Timing",
     "getDeviceInfo",
     "getDeviceStatus",
     "ice_id",
@@ -4192,9 +2265,12 @@ const ::std::string iceC_Gateway_DeviceControl_all[] =
     "ice_isA",
     "ice_ping",
     "login",
-    "openRealStream",
     "ptzControl",
-    "shutdown"
+    "reboot",
+    "resetGuard",
+    "setGuard",
+    "shutdown",
+    "subscribe"
 };
 
 }
@@ -4202,7 +2278,7 @@ const ::std::string iceC_Gateway_DeviceControl_all[] =
 bool
 Gateway::DeviceControl::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::Current& current)
 {
-    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Gateway_DeviceControl_all, iceC_Gateway_DeviceControl_all + 36, current.operation);
+    ::std::pair<const ::std::string*, const ::std::string*> r = ::std::equal_range(iceC_Gateway_DeviceControl_all, iceC_Gateway_DeviceControl_all + 14, current.operation);
     if(r.first == r.second)
     {
         throw ::Ice::OperationNotExistException(__FILE__, __LINE__, current.id, current.facet, current.operation);
@@ -4212,147 +2288,59 @@ Gateway::DeviceControl::_iceDispatch(::IceInternal::Incoming& in, const ::Ice::C
     {
         case 0:
         {
-            return _iceD_CalibrationTimeReq(in, current);
+            return _iceD_Timing(in, current);
         }
         case 1:
         {
-            return _iceD_CallSipUserReq(in, current);
+            return _iceD_getDeviceInfo(in, current);
         }
         case 2:
         {
-            return _iceD_CloseAlarmReq(in, current);
+            return _iceD_getDeviceStatus(in, current);
         }
         case 3:
         {
-            return _iceD_DataPlayStopOrStartReq(in, current);
+            return _iceD_ice_id(in, current);
         }
         case 4:
         {
-            return _iceD_DeviceRefreshReq(in, current);
+            return _iceD_ice_ids(in, current);
         }
         case 5:
         {
-            return _iceD_DeviceShareNotify(in, current);
+            return _iceD_ice_isA(in, current);
         }
         case 6:
         {
-            return _iceD_FindRecordingFileReq(in, current);
+            return _iceD_ice_ping(in, current);
         }
         case 7:
         {
-            return _iceD_GatewayRerootReq(in, current);
+            return _iceD_login(in, current);
         }
         case 8:
         {
-            return _iceD_HolderOperReq(in, current);
+            return _iceD_ptzControl(in, current);
         }
         case 9:
         {
-            return _iceD_LoadRecordingFile(in, current);
+            return _iceD_reboot(in, current);
         }
         case 10:
         {
-            return _iceD_MsgQueryDeviceIpcInfoReq(in, current);
+            return _iceD_resetGuard(in, current);
         }
         case 11:
         {
-            return _iceD_MsgQueryDeviceIpcStatusReq(in, current);
+            return _iceD_setGuard(in, current);
         }
         case 12:
         {
-            return _iceD_MsgStartPropertyServerReq(in, current);
+            return _iceD_shutdown(in, current);
         }
         case 13:
         {
-            return _iceD_MsgStartVioceReq(in, current);
-        }
-        case 14:
-        {
-            return _iceD_MsgStopPropertyServerReq(in, current);
-        }
-        case 15:
-        {
-            return _iceD_MsgStopVioceReq(in, current);
-        }
-        case 16:
-        {
-            return _iceD_RebootReq(in, current);
-        }
-        case 17:
-        {
-            return _iceD_RecordingFileReq(in, current);
-        }
-        case 18:
-        {
-            return _iceD_RecordingOperReq(in, current);
-        }
-        case 19:
-        {
-            return _iceD_RemoteControlReq(in, current);
-        }
-        case 20:
-        {
-            return _iceD_RestorConfigReq(in, current);
-        }
-        case 21:
-        {
-            return _iceD_SetupAlarmReq(in, current);
-        }
-        case 22:
-        {
-            return _iceD_StartVoideRecoingFile(in, current);
-        }
-        case 23:
-        {
-            return _iceD_StopRecordingOperReq(in, current);
-        }
-        case 24:
-        {
-            return _iceD_beatHeart(in, current);
-        }
-        case 25:
-        {
-            return _iceD_closeStream(in, current);
-        }
-        case 26:
-        {
-            return _iceD_getDeviceInfo(in, current);
-        }
-        case 27:
-        {
-            return _iceD_getDeviceStatus(in, current);
-        }
-        case 28:
-        {
-            return _iceD_ice_id(in, current);
-        }
-        case 29:
-        {
-            return _iceD_ice_ids(in, current);
-        }
-        case 30:
-        {
-            return _iceD_ice_isA(in, current);
-        }
-        case 31:
-        {
-            return _iceD_ice_ping(in, current);
-        }
-        case 32:
-        {
-            return _iceD_login(in, current);
-        }
-        case 33:
-        {
-            return _iceD_openRealStream(in, current);
-        }
-        case 34:
-        {
-            return _iceD_ptzControl(in, current);
-        }
-        case 35:
-        {
-            return _iceD_shutdown(in, current);
+            return _iceD_subscribe(in, current);
         }
         default:
         {
@@ -4386,6 +2374,10 @@ Gateway::_icePatchObjectPtr(DeviceControlPtr& handle, const ::Ice::ObjectPtr& v)
     {
         IceInternal::Ex::throwUOE(::Gateway::DeviceControl::ice_staticId(), v);
     }
+}
+
+namespace Ice
+{
 }
 
 namespace Ice

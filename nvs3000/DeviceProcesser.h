@@ -1,39 +1,57 @@
 #pragma once
 //#include "WorkorQueue.h"
 //#include "AbstractOperation.h"
-#include "Catalog.h"
+//#include "Catalog.h"
 //#include "ControlParam.h"
-#include "utility.h"
+//#include "utility.h"
 #include <functional>
+
+#if defined(_MSC_VER)
+//  Microsoft 
+#define EXPORT __declspec(dllexport)
+#define IMPORT __declspec(dllimport)
+#elif defined(__GNUC__)
+//  GCC
+#define EXPORT __attribute__((visibility("default")))
+#define IMPORT
+#else
+//  do nothing and hope for the best?
+#define EXPORT
+#define IMPORT
+#pragma warning Unknown dynamic link import/export semantics.
+#endif
+
+
+namespace dt
+{
+	struct DeviceStatus
+	{
+		std::string id;
+		int status;
+	};
+	
+};
 
 class CamaraController
 {
 public:
-	CamaraController()  /*queue_()*/ {};
-	virtual ~CamaraController() {};
-	//using DataProcFunc = std::function<void(/*std::shared_ptr<Device> device,*/std::string id, unsigned long dwDataType, unsigned char *pBuffer, unsigned long dwBufSize)>;
-	//using ResponseFunc = std::function<void(std::string, int)>;
+	CamaraController(){}
+	virtual ~CamaraController() {}
 
-	//virtual bool Login(std::shared_ptr<Device> device) { return false; };
-	//virtual void run() {};
-	//virtual void addOperation(std::shared_ptr<AbstractOperation> op) {};
-	//virtual void addLogin(std::shared_ptr<Device> device) {};
-	//virtual void addPtzControl(std::shared_ptr<Device> device, std::string ptzcmd, std::function<void(std::string, int )> func) {};
-	//virtual void addStreamOperation(std::shared_ptr<Device> device, ResponseFunc response, DataProcFunc dataProc) {}
-	//virtual void addStreamOperation(std::shared_ptr<Device> device ) {}
+	//virtual bool Login(std::shared_ptr<CCatalog> ctg) { return false; };
+	virtual bool Login(std::string id, std::string ip, int port, std::string user, std::string pwd) { return false; };
 
-
-	virtual bool Login(std::shared_ptr<CCatalog> ctg) { return false; };
-	//virtual void Login(std::shared_ptr<CCatalog> ctg, std::function<void(bool)> cb) {  };
 	virtual bool isLogin() const { return false; } 
-	virtual void ptzControl(std::shared_ptr<CCatalog> ctg, std::string cmd) {  };
-	//virtual void getDeviceStatusAsync(std::shared_ptr<CCatalog> ctg, std::function<void(int)> cb) {  };
-	virtual void getDeviceStatus(std::shared_ptr<CCatalog> ctg, dt::DeviceStatus &st) {};
-	virtual bool openRealStream(const dt::OpenRealStream& param) = 0;
-	virtual bool closeRealStream(const std::string& id) = 0;
-	virtual void setDataCallback(std::function<void(char *, uint32_t)> cb) = 0;
-	//virtual void getDeviceStatus(QueryStatusReq req, dt::DeviceStatus &st)
 
+	virtual void ptzControl(std::string id, std::string cmd) {  };
+
+	virtual void getDeviceStatus(std::string id, dt::DeviceStatus &st) {};
+
+	//virtual bool openRealStream(const dt::OpenRealStream& param) = 0;
+	virtual bool openRealStream(std::string id, std::string ip, int port, std::string user,
+		std::string pwd, std::function<void(char *, uint32_t)> datacb_) = 0;
+
+	virtual bool closeRealStream(const std::string& id) = 0;
 protected:
 	//ThreadsafeQueue queue_;
 

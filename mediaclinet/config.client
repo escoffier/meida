@@ -2,7 +2,8 @@
 # The client reads this property to create the reference to the
 # "hello" object in the server.
 #
-Stream.Proxy=stream:tcp -h 192.168.254.233 -p 10001
+#Stream.Proxy=Stream:tcp -h 192.168.21.225 -p 10003
+Ice.Default.Locator=MediaGrid/Locator:default -h 192.168.21.225 -p 4061
 
 #
 # Warn about connection exceptions

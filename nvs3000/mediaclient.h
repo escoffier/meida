@@ -1,32 +1,9 @@
 #pragma once
-#include "stream.h"
+//#include "stream.h"
 #include "Gateway.h"
 #include "utility.h"
-#include"glog\logging.h"
+#include"glog/logging.h"
 using namespace std;
-
-//class Callback : public IceUtil::Shared
-//{
-//public:
-//	Callback(const Gateway::AMD_Operation_openRealStreamPtr& ptr):
-//		openRealStreamPtr_(ptr)
-//	{}
-//	void response(const Media::RealStreamRespParam& info)
-//	{
-//		Gateway::RealStreamRespParam param;
-//		param.sourceip = info.sourceip;
-//		param.sourceport = info.sourceport;
-//		openRealStreamPtr_->ice_response(param);
-//	}
-//
-//	void exception(const Ice::Exception& ex)
-//	{
-//		cerr << "sayHello AMI call failed:\n" << ex << endl;
-//	}
-//	Gateway::AMD_Operation_openRealStreamPtr openRealStreamPtr_;
-//};
-//typedef IceUtil::Handle<Callback> CallbackPtr;
-
 
 class MediaClient
 {
@@ -43,26 +20,27 @@ public:
 						string destip,
 						int destport,
 						int ssrc,
-		                std::function<void(const::Gateway::RealStreamRespParam&)> cb,
+		                std::function<void(const::Media::RealStreamRespParam&)> cb,
 		                std::function<void(::std::exception_ptr)> ecb);
 
 	void openRealStream(
 		dt::OpenRealStream param,
-		std::function<void(const::Gateway::RealStreamRespParam&)> cb,
+		std::function<void(const::Media::RealStreamRespParam&)> cb,
 		std::function<void(::std::exception_ptr)> ecb);
+
+	void openRealStream(dt::OpenRealStream param);
 	 
 	void closeStream(std::string callid, string id);
 
 	template<typename FunctionType> void emplacecb(FunctionType f)
 	{
 		std::packaged_task<void()> task(std::move(f));
-		//std::future<result_type> res(task.get_future());
-		//cbmaps.push(std::move(task));
 	}
+	
 	void response(Media::RealStreamRespParam resp)
 	{
 		LOG(INFO) << "Open stream: " << resp.id <<"-----"<< resp.callid << "successfully from media";
-		Gateway::RealStreamRespParam param;
+		Media::RealStreamRespParam param;
 		param.id = resp.id;
 		param.callid = resp.callid;
 		param.sourceip = resp.sourceip;
@@ -74,8 +52,7 @@ public:
 		}
 	}
 
-	void emplacecallback(std::function<void(const::Gateway::RealStreamRespParam&)>  respcb, std::function<void(::std::exception_ptr)> excb);
-	//std::function<void(::std::exception_ptr)> ex
+	void emplacecallback(std::function<void(const::Media::RealStreamRespParam&)>  respcb, std::function<void(::std::exception_ptr)> excb);
 	void exception(string callid,std::exception_ptr ex)
 	{
 		auto  search = realcallbacks_.find(callid);
@@ -87,7 +64,7 @@ public:
 			}
 			catch (const Media::OpenStreamException & me)
 			{
-				Gateway::OpenStreamException dte;
+				Media::OpenStreamException dte;
 				dte.reason = me.reason;
 				search->second.excb_(make_exception_ptr(dte));
 			}
@@ -98,7 +75,7 @@ public:
 
 	struct callback
 	{
-		std::function<void(const::Gateway::RealStreamRespParam&)>  respcb_;
+		std::function<void(const::Media::RealStreamRespParam&)>  respcb_;
 		std::function<void(::std::exception_ptr)> excb_;
     };
 private:
@@ -106,8 +83,8 @@ private:
 	std::shared_ptr< Media::StreamPrx> stream_;
 	
 	//std::map<string, function_wrapper> cbmaps;
-	//¼ÇÂ¼ºô½ÐµÄÒì²½»Øµ÷º¯Êý<call id, callback>
-	std::map<string, std::function<void(const::Gateway::RealStreamRespParam&)> > realcbmaps;
+	//ï¿½ï¿½Â¼ï¿½ï¿½Ðµï¿½ï¿½ì²½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½<call id, callback>
+	std::map<string, std::function<void(const::Media::RealStreamRespParam&)> > realcbmaps;
 
 	std::map<string, callback > realcallbacks_;
 };

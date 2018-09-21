@@ -1,5 +1,5 @@
 #include "RTPSender.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 #include "PSBuffer.h"
 
 static void checkerror(int rtperr)
@@ -43,7 +43,7 @@ RTPSender::RTPSender():
 	transParams_->SetRTPSendBuffer(65535); // default: 32768
 	transParams_->SetPortbase(16000);
 	uint32_t localip;
-	localip = inet_addr("192.168.254.233");
+	localip = inet_addr("192.168.21.221");
 	localip = ntohl(localip);
 
 	transParams_->SetBindIP(localip);

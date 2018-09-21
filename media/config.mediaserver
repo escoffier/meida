@@ -3,7 +3,7 @@
 # "Hello". The following line sets the endpoints for this
 # adapter.
 #
-Stream.Endpoints=tcp -h 192.168.254.233 -p 10003
+Stream.Endpoints=tcp -h 192.168.21.221 -p 10003
 
 #
 # Warn about connection exceptions
@@ -18,7 +18,7 @@ Ice.Warn.Connections=1
 # 2 = like 1, but more detailed
 # 3 = like 2, but also trace data transfer
 #
-#Ice.Trace.Network=1
+Ice.Trace.Network=2
 
 #
 # Protocol Tracing
