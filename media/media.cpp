@@ -1,20 +1,19 @@
-// media.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+// media.cpp : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¨Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµã¡£
 //
 
-#include "stdafx.h"
 #include <Ice/Ice.h>
 #include "streamI.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 class MediaServer : public Ice::Application
 {
-public:
+  public:
 	MediaServer();
 	~MediaServer();
-	virtual int run(int, char*[]);
+	virtual int run(int, char *[]);
 	virtual void interruptCallback(int);
-private:
 
+  private:
 };
 
 MediaServer::MediaServer()
@@ -36,25 +35,25 @@ int MediaServer::run(int argc, char *[])
 	{
 
 #ifdef STANDALONE
-	Ice::Identity id = Ice::stringToIdentity("stream");
+		Ice::Identity id = Ice::stringToIdentity("stream");
 #else
-	Ice::PropertiesPtr properties = communicator()->getProperties();
-	Ice::Identity id = communicator()->stringToIdentity(properties->getProperty("Identity"));
+		Ice::PropertiesPtr properties = communicator()->getProperties();
+		LOG(INFO) << "Property is : " <<properties->getProperty("Identity") <<std::endl;
+		Ice::Identity id = Ice::stringToIdentity(properties->getProperty("Identity"));
 #endif // !STANDALONE
 
 		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("Stream");
-	
-		//auto stream = std::make_shared<StreamI>;
+
 		adapter->add(std::make_shared<StreamI>(), id);
 		adapter->activate();
 	}
-	catch (const Ice::Exception& e)
+	catch (const Ice::Exception &e)
 	{
 		//initiated_ = false;
 		LOG(ERROR) << e.what();
 		return EXIT_SUCCESS;
 	}
-	catch (const std::exception& e)
+	catch (const std::exception &e)
 	{
 		LOG(ERROR) << e.what();
 		return EXIT_SUCCESS;
@@ -68,7 +67,7 @@ void MediaServer::interruptCallback(int)
 {
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	google::InitGoogleLogging(argv[0]);
 	FLAGS_log_dir = "./log";
@@ -81,8 +80,5 @@ int main(int argc, char* argv[])
 	int status = app.main(argc, argv);
 #endif // STANDALONE
 
-	
 	return status;
-    //return 0;
 }
-

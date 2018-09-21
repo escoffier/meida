@@ -1,10 +1,12 @@
+#ifdef WINDOWS
 #include <winsock2.h>
 #include<windows.h>
+#endif
 #include "streamI.h"
 //#define WIN32_LEAN_AND_MEAN
 #include "mediastream.h"
 #include "utility.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 StreamI::StreamI()
 	//:sm_(new StreamManager())
@@ -28,6 +30,11 @@ void StreamI::closeStreamAsync(::std::string callid, ::std::string id, ::std::fu
 	
 	StreamManager::getInstance()->closeStream(id, callid);
 	cb();
+}
+
+void StreamI::getStreamStatic(::std::string id, ::Media::StreamStatic & stat, const::Ice::Current &)
+{
+	StreamManager::getInstance()->getStreamStatic(id, stat);
 }
 
 //void StreamI::openRealStream_async(const Media::AMD_Stream_openRealStreamPtr &cb, const Media::RealStream & ctg, const Ice::Current &)

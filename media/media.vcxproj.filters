@@ -28,19 +28,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="generated\stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="streamI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="WorkorQueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="mediastream.h">
@@ -55,11 +46,23 @@
     <ClInclude Include="PSBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="RTPSender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="threadsafequeue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pub\DeviceProcesser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pub\utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="media.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -75,18 +78,27 @@
     <ClCompile Include="zmd5.c">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <IceBuilder Include="stream.ice">
-      <Filter>Slice Files</Filter>
-    </IceBuilder>
+    <ClCompile Include="PSBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RTPSender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="application.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.grid" />
-    <None Include="config.server" />
     <None Include="packages.config" />
+    <None Include="config.mediaserver" />
+  </ItemGroup>
+  <ItemGroup>
+    <SliceCompile Include="stream.ice">
+      <Filter>Slice Files</Filter>
+    </SliceCompile>
   </ItemGroup>
 </Project>

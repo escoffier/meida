@@ -1,8 +1,11 @@
+#ifdef WINDOWS
 #include <winsock2.h>
 #include<windows.h>
+#endif
 #include "mediastream.h"
 #include "zmd5.h"
 #include <functional>
+#include "ThreadPool.h"
 #define WIN32_LEAN_AND_MEAN
 //#include <winsock2.h>
 //#include <windows.h>    
@@ -12,7 +15,7 @@
 //#include "jrtplib3\rtpipv4address.h"
 //#include "jrtplib3\rtpsessionparams.h"
 //#include "jrtplib3\rtperrors.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 FILE * streamfile = fopen("stream106", "wb");
 
@@ -32,6 +35,8 @@ MediaStream::MediaStream(const std::string & id, const std::string & name, const
 	id_(id),name_(name), pwd_(pwd),ip_(ip),port_(port),destIp_(destIp), 
 	destPort_(destPort), iceCB_(iceCB), ecb_(ecb),isOpen_(false), isLogin_(false), buffer_(std::make_shared<PSBuffer>()), controller_(con)
 {
+	ThreadPool<PSBuffer>* pool = ThreadPool<PSBuffer>::getInstance();
+	pool->push_buffer(id_, buffer_);
 }
 
 MediaStream::MediaStream(const std::string & id)
@@ -44,7 +49,8 @@ void MediaStream::addDestHost(const std::string & destIp, int destPort)
 
 }
 
-std::string MediaStream::addsubStream(const std::string &callid, const std::string & destIp, int destPort, int ssrc, int pt, jrtplib::RTPTransmitter* transmitter)
+std::string MediaStream::addsubStream(const std::string &callid, const std::string & destIp, int destPort, 
+	                                  int ssrc, int pt/*, jrtplib::RTPTransmitter* transmitter*/)
 {
 	std::lock_guard<std::mutex> lockGuard(mutex_);
 	auto search = subStreams_.find(callid);
@@ -52,7 +58,7 @@ std::string MediaStream::addsubStream(const std::string &callid, const std::stri
 	{
 		//subStreams_.emplace(std::pair<std::string, subStream>(md5str, ss));
 		LOG(INFO) << "add substream : " << destIp << " - " << destPort << std::endl;
-		subStream ss(destIp, destPort, "192.168.254.233", 1999, ssrc, transmitter);
+		subStream ss(destIp, destPort, "192.168.21.121", 1999, ssrc/*, transmitter_*/);
 
 	/*	PSBuffer::Destination dest;
 		dest.destip_ = ss.destipn_;
@@ -60,7 +66,7 @@ std::string MediaStream::addsubStream(const std::string &callid, const std::stri
 		dest.ssrc_ = ss.ssrc_;
 		dest.pt_ = ss.pt_;
 		dest.createRTPSession(dest.ssrc_, transmitter);*/
-		buffer_->addDestination(callid, ss.destipn_, destPort, ssrc, pt, transmitter);
+		buffer_->addDestination(callid, ss.destipn_, destPort, ssrc, pt/*, transmitter*/);
 
 		subStreams_.emplace(callid, std::move(ss));
 	}
@@ -96,9 +102,15 @@ void MediaStream::processData(char * data, uint32_t len)
 		LOG(WARNING) << "discard data";
 		return;
 	}
+
 	memcpy(node->data_, data, len);
 	node->length_ = len;
 	buffer_->push(node);
+}
+
+void MediaStream::getNodeInfo(int & b, int & f)
+{
+	buffer_->getNodeInfo(b, f);
 }
 
 RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, 
@@ -117,16 +129,18 @@ RealSteam::~RealSteam()
 bool RealSteam::openStream(const std::string & callid)
 {
     //从摄像机获取视频流
-	dt::OpenRealStream param;
-	param.id = id_;
-	param.ip = ip_;
-	param.port = port_;
-	param.name = name_;
-	param.pwd = pwd_;
+	//dt::OpenRealStream param;
+	//param.id = id_;
+	//param.ip = ip_;
+	//param.port = port_;
+	//param.name = name_;
+	//param.pwd = pwd_;
+	//param.cb = [=](char *data, uint32_t len) { processData(data, len); };
 
-	if (controller_->openRealStream(param))
+	if (controller_->openRealStream(id_, ip_, port_, name_, pwd_,
+		      [=](char *data, uint32_t len) { processData(data, len); }))
 	{
-		controller_->setDataCallback([=](char *data, uint32_t len) { processData(data, len); });
+		//controller_->setDataCallback([=](char *data, uint32_t len) { processData(data, len); });
 		Media::RealStreamRespParam resp;
 		//respinfo.callid = callid;
 		//uint32_t ip = transParams.GetBindIP();
@@ -183,6 +197,7 @@ void RealSteam::closeStream()
 	{
 		LOG(INFO) << "Close stream: " << id_;
 	}
+
 }
 
 VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, 
@@ -211,6 +226,7 @@ void VodSteam::closeStream()
 }
 
 StreamManager * StreamManager::instance_ = nullptr;
+template<>  ThreadPool<PSBuffer> * ThreadPool<PSBuffer>::instance_ = nullptr;
 
 StreamManager * StreamManager::getInstance()
 {
@@ -223,7 +239,7 @@ StreamManager * StreamManager::getInstance()
 }
 
 StreamManager::StreamManager() :
-	streams_(), msgthread_(), locker_(),rtpSender_(new RTPSender), plugins_( new SDKPlugins)
+	streams_(), msgthread_(), locker_(),/*rtpSender_(new RTPSender),*/ plugins_( new SDKPlugins)
 {
 	NET_DVR_Init();
 };
@@ -264,7 +280,8 @@ void StreamManager::addStream(const std::string & id, const std::string &callid,
 	//}
 }
 
-void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> excb)
+void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+	                          std::function<void(::std::exception_ptr)> excb)
 {
 	std::lock_guard<std::mutex> lockGuard(locker_);
 
@@ -292,10 +309,15 @@ void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<v
 			controller = search->second;
 		}
 
-		std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(param.id, param.name, param.pwd, param.ip, param.port, param.destip, param.destport, iceCB, excb, controller);
+		std::shared_ptr<MediaStream> ms 
+			= std::make_shared<RealSteam>(param.id, param.name, param.pwd, param.ip, 
+				param.port, param.destip, param.destport, iceCB, excb, controller);
 
-		ms->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt, rtpSender_->getRTPTransmitter());
-		rtpSender_->addBuffer(param.id, ms->getBuffer());
+		ms->addsubStream(param.callid, param.destip, param.destport, 
+			             param.ssrc, param.pt/*, rtpSender_->getRTPTransmitter()*/);
+
+		//rtpSender_->addBuffer(param.id, ms->getBuffer());
+
 		streams_.emplace(param.id, ms);
 
 		msgthread_.submit([=]() {
@@ -304,7 +326,7 @@ void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<v
 	}
 	else
 	{
-		search->second->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt, rtpSender_->getRTPTransmitter());
+		search->second->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt/*, rtpSender_->getRTPTransmitter()*/);
 
 		Media::RealStreamRespParam resp;
 		resp.id = param.id;
@@ -332,7 +354,8 @@ bool StreamManager::openStream( std::string id,  std::string  callid, std::funct
 		if (!search->second->openStream(callid))
 		{
 			LOG(ERROR) << "Cann't open stream: " << id << std::endl;
-			rtpSender_->removeBuffer(id);
+			//rtpSender_->removeBuffer(id);
+			ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
 			streams_.erase(id);
 
 			Media::OpenStreamException ex;
@@ -369,14 +392,30 @@ void StreamManager::closeStream(std::string id, std::string callid)
 			//如果当前的摄像机只有一路视频流，将此摄像机从streams_摘除
 			//std::shared_ptr<MediaStream> stream(search->second);
 			search->second->closeStream();
-
-			rtpSender_->removeBuffer(id);
+			ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
+			//rtpSender_->removeBuffer(id);
 			streams_.erase(search);
 		}
 		//else
 		//{
 		//	search->second->removesubStream(callid);
 		//}	
+	}
+	return;
+}
+
+void StreamManager::getStreamStatic(std::string id, ::Media::StreamStatic & stat)
+{
+	std::lock_guard<std::mutex> lockGuard(locker_);
+	auto search = streams_.find(id);
+	if (search == streams_.end())
+	{
+		LOG(ERROR) << "(getStreamStatic)Cann't find stream: " << id << std::endl;
+		return;
+	}
+	else
+	{
+		search->second->getNodeInfo(stat.busynode, stat.freenode);
 	}
 	return;
 }

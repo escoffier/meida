@@ -8,6 +8,7 @@
 #define MPROMGRAM_STREAM_MAP_START_CODE 0x00 00 01 BC
 #define MPES_START_CODE_PREFIX 0x00 00 01
 
+//MPEG - 2 Program Stream pack header
 struct ps_header {
 	uint8_t pack_start_code[4];  //'0x00 00 01 BA
 
@@ -41,6 +42,7 @@ struct ps_header {
 	uint8_t reserved : 5;
 };  //14
 
+//system header
 struct sh_header
 {
 	uint8_t   system_header_start_code[4]; //32 0x00 00 01 BB
@@ -61,6 +63,7 @@ struct sh_header
 	uint8_t   reserved[6];
 }; //18
 
+
 struct psm_header {
 	uint8_t promgram_stream_map_start_code[4]; //0x00 00 01 BC
 
@@ -75,7 +78,7 @@ struct psm_header {
 
 	uint8_t program_stream_info_length[2];
 	uint8_t elementary_stream_map_length[2];
-	uint8_t stream_type;
+	uint8_t stream_type;      //  H.264: 0x1B
 	uint8_t elementary_stream_id;
 	uint8_t elementary_stream_info_length[2];
 	uint8_t CRC_32[4];

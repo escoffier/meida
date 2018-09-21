@@ -1,9 +1,9 @@
 #include "ProcesserManager.h"
 #include "DeviceProcesser.h"
 #include <Gateway.h>
-#include "ControlParam.h"
+//#include "ControlParam.h"
 #include "Catalog.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 ControllerManager* ControllerManager::instance_ = nullptr;
 
@@ -39,29 +39,16 @@ void ControllerManager::add(const std::string & name, std::shared_ptr<CamaraCont
 	controllers_.emplace(std::make_pair(name, p));
 }
 
-void ControllerManager::openRealStream(const dt::OpenRealStream & params, std::function<void(const::Gateway::RealStreamRespParam&)> cb, std::function<void(::std::exception_ptr)> excb)
+void ControllerManager::openRealStream(const dt::OpenRealStream & params, std::function<void(const::Media::RealStreamRespParam&)> cb, std::function<void(::std::exception_ptr)> excb)
 {
-	//std::shared_ptr<CCatalog> ctg = CatalogManager::getInstance()->find(params.id);
-	//if (!ctg)
-	//{
-	//	Gateway::OpenStreamException e;
-	//	e.reason = "camara does not exist!";
-	//	excb(std::make_exception_ptr(e));
-	//	return;
-	//}
-	//int port = atoi(ctg->GetPort().c_str());
-	//dt::OpenRealStream streamParam;
-	//streamParam.id = params.id;
-	//streamParam.ip = ctg->GetIp();
-	//streamParam.port = port;
-	//streamParam.name = ctg->GetName();
-	//streamParam.pwd = ctg->GetPassword();
-	//streamParam.destip = params.destip;
-	//streamParam.destport = params.destport;
-	//streamParam.ssrc = params.ssrc;
-
 	mediaClient_->openRealStream(params, cb, excb);
 	//mediaClient_->openRealStream(params.id, ctg->GetIp(), port,ctg->GetName(),ctg->GetPassword(), params.destip, params.destport, params.ssrc, cb, ecb);
+}
+
+void ControllerManager::openRealStream(const dt::OpenRealStream & params)
+{
+	//mediaClient_->openRealStream(params, cb, excb);
+	mediaClient_->openRealStream(params);
 }
 
 void ControllerManager::closeStream(std::string callid, string id)
@@ -101,8 +88,8 @@ void ControllerManager::ptzControl(const std::string & id, const string & cmd, s
 		controller = search->second;
 	}
 
-	msgThread_.submit([=]() {controller->ptzControl(ctg, cmd); });
-	//·þÎñ¶ËÊÇÒì²½µ÷ÓÃ£¬±ØÐëµ÷ÓÃ»Øµ÷º¯Êý
+	msgThread_.submit([=]() {controller->ptzControl(ctg->GetID(), cmd); });
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì²½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»Øµï¿½ï¿½ï¿½ï¿½ï¿½
 	cb();
 }
 
@@ -125,24 +112,9 @@ void ControllerManager::getDeviceStatusAsync(std::string id, ::std::function<voi
 		return;
 	}
 
-/*	controller->Login(ctg, [=](bool login) {
-		Gateway::DeviceStatus status;
-		status.id = ctg->GetID();
-		if (login)
-		{
-			status.status = 0;
-			
-		}
-		else
-		{
-			status.status = 1;
-		}
-		cb(status);
-	})*/;
-
 	msgThread_.submit([=]() { 
 		dt::DeviceStatus st;
-		controller->getDeviceStatus(ctg, st);
+		controller->getDeviceStatus(ctg->GetID(), st);
 		Gateway::DeviceStatus s;
 		s.id = id;
 		s.status = st.status;
@@ -161,7 +133,7 @@ void ControllerManager::getDeviceStatusAsync(QueryStatusReq req, std::function<v
 			resp.sn_ = req.sn_;
 			resp.manufacturer_ = "";
 			resp.status_ = false;
-			//ÆäËû²ÎÊý
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			cb(resp);
 		});
 		return;
@@ -176,7 +148,7 @@ void ControllerManager::getDeviceStatusAsync(QueryStatusReq req, std::function<v
 			resp.sn_ = req.sn_;
 			resp.manufacturer_ = ctg->GetManufacturer();
 			resp.status_ = false;
-			//ÆäËû²ÎÊý
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			cb(resp);
 		});
 		return;
@@ -184,13 +156,13 @@ void ControllerManager::getDeviceStatusAsync(QueryStatusReq req, std::function<v
 
 	msgThread_.submit([=]() {
 		dt::DeviceStatus st;
-		controller->getDeviceStatus(ctg, st);
+		controller->getDeviceStatus(ctg->GetID(), st);
 		QueryStatusResp resp;
 		resp.id_ = req.id_;
 		resp.sn_ = req.sn_;
 		resp.manufacturer_ = ctg->GetManufacturer();
 		resp.status_ = !!st.status;
-		//ÆäËû²ÎÊý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 		cb(resp);
 	});
@@ -223,7 +195,6 @@ std::shared_ptr<CamaraController> ControllerManager::loadPlugin(const std::strin
 
 	controllers_.emplace(std::make_pair(name, controller));
 	LOG(INFO) << "load plugin : "<< name<<".dll";
-	//add("hik", controller);
 
 	return controller;
 }

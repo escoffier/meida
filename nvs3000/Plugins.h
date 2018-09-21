@@ -2,6 +2,8 @@
 #include <string>
 #ifdef WINDOWS
 #include <Windows.h>
+#else
+#include <dlfcn.h>
 #endif
 
 class SDKPlugins
@@ -54,14 +56,14 @@ public:
 		}
 	}
 
-	void* GetFuncAddr(char* funcName)
+	void* GetFuncAddr(const char* funcName)
 	{
 		void* func = 0;
 		if (plxhandle) {
 #ifdef WINDOWS
 			func = GetProcAddress((HINSTANCE)plxhandle, funcName);
 #else
-			func = dlsym(libhandle, funcName);
+			func = dlsym(plxhandle, funcName);
 #endif
 		}
 		return func;

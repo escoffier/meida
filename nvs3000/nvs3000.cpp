@@ -1,14 +1,14 @@
-// nvs3000.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+// nvs3000.cpp : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¨Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµã¡£
 //
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <Ice/Ice.h>
 #include "HelloI.h"
 #include "WorkQueue.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 //#include "HikDeviceProcesser.h"
-#include "LoginOperatoin.h"
-#include "CallInfo.h"
+//#include "LoginOperatoin.h"
+//#include "CallInfo.h"
 #include "OperationServer.h"
 #include <future>
 #include "ProcesserManager.h"
@@ -74,7 +74,7 @@ public:
 #ifdef WINDOWS
 			func = GetProcAddress((HINSTANCE)plxhandle, funcName);
 #else
-			func = dlsym(libhandle, funcName);
+			func = dlsym(plxhandle, funcName);
 #endif
 		}
 		return func;
@@ -82,23 +82,23 @@ public:
 	}
 };
 
-void datareceive(std::string id, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize)
-{
+// void datareceive(std::string id, int dwDataType, ch
+// {
 
-}
+// }
 class AsyncServer : public Ice::Application
 {
 public:
 
 	virtual int run(int, char*[]);
 	virtual void interruptCallback(int);
-};
+};																																																																																																																																																																												
 
 void printresponse(std::string id, int error)
 {
 	LOG(INFO) << id << " : " << error;
 }
-void dataProcess(std::string id, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize)
+void dataProcess(std::string id, int dwDataType, char *pBuffer, int dwBufSize)
 {
 	//LOG(INFO) <<"dataProcess: "<< id <<" - "<< dwDataType << " - " << dwBufSize;
 }
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 	FLAGS_log_dir = "./log";
 	FLAGS_stderrthreshold = 0;
 	int status = 0;
-	std::multimap<std::string, CallInfo> callinfos_;
+	//std::multimap<std::string, CallInfo> callinfos_;
 	//std::shared_ptr<DeviceProcesser> processor = std::make_shared<HikDeviceProcesser>();
 #if 0
 
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<CCatalog> ctg = std::make_shared<CCatalog>();
 	ctg->SetID("60000000001310001430");
-	ctg->SetIp("192.168.254.106");
+	ctg->SetIp("192.168.21.236");
 	ctg->Setport("8000");
 	ctg->SetPassword("dtnvs3000");
 	ctg->SetName("admin");
@@ -239,7 +239,9 @@ int AsyncServer::run(int argc, char*[])
 	{
 		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("DeviceControl");
 
-		adapter->add(std::make_shared<CamaraOperation>(), Ice::stringToIdentity("DeviceControl"));
+		adapter->add(std::make_shared<CamaraControl>(), Ice::stringToIdentity("DeviceControl"));
+
+		adapter->add(std::make_shared<StreamI>(), Ice::stringToIdentity("Stream"));
 
 		adapter->activate();
 

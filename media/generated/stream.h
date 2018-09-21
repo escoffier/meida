@@ -86,6 +86,33 @@ public:
 
 static RequestCanceledException _iceS_RequestCanceledException_init;
 
+class OpenStreamException : public ::Ice::UserExceptionHelper<OpenStreamException, ::Ice::UserException>
+{
+public:
+
+    virtual ~OpenStreamException();
+
+    OpenStreamException(const OpenStreamException&) = default;
+
+    OpenStreamException() = default;
+
+    OpenStreamException(const ::std::string& iceP_callid, const ::std::string& iceP_reason) :
+        callid(::std::move(iceP_callid)),
+        reason(::std::move(iceP_reason))
+    {
+    }
+
+    std::tuple<const ::std::string&, const ::std::string&> ice_tuple() const
+    {
+        return std::tie(callid, reason);
+    }
+
+    static const ::std::string& ice_staticId();
+
+    ::std::string callid;
+    ::std::string reason;
+};
+
 struct RealStreamRespParam
 {
     ::std::string id;
@@ -110,11 +137,23 @@ struct RealStreamReqParam
     ::std::string destip;
     int destport;
     int ssrc;
+    int pt;
     ::std::string sdk;
 
-    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const int&, const ::std::string&, const ::std::string&, const ::std::string&, const int&, const int&, const ::std::string&> ice_tuple() const
+    std::tuple<const ::std::string&, const ::std::string&, const ::std::string&, const int&, const ::std::string&, const ::std::string&, const ::std::string&, const int&, const int&, const int&, const ::std::string&> ice_tuple() const
     {
-        return std::tie(id, callid, ip, port, name, pwd, destip, destport, ssrc, sdk);
+        return std::tie(id, callid, ip, port, name, pwd, destip, destport, ssrc, pt, sdk);
+    }
+};
+
+struct StreamStatic
+{
+    int freenode;
+    int busynode;
+
+    std::tuple<const int&, const int&> ice_tuple() const
+    {
+        return std::tie(freenode, busynode);
     }
 };
 
@@ -144,6 +183,24 @@ public:
 
     virtual void openRealStreamAsync(::Media::RealStreamReqParam, ::std::function<void(const ::Media::RealStreamRespParam&)>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
     bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeStreamAsync(::std::string, ::std::string, ::std::function<void()>, ::std::function<void(::std::exception_ptr)>, const ::Ice::Current&) = 0;
+    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getStreamStatic(::std::string, ::Media::StreamStatic&, const ::Ice::Current&) = 0;
+    bool _iceD_getStreamStatic(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getRecordFiles(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_getRecordFiles(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void openVodStream(::Media::RealStreamReqParam, ::Media::RealStreamRespParam&, const ::Ice::Current&) = 0;
+    bool _iceD_openVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeVodStream(::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_closeVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void controlVodStream(::std::string, ::std::string, ::std::string, const ::Ice::Current&) = 0;
+    bool _iceD_controlVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
 };
@@ -181,6 +238,150 @@ public:
 
     void _iceI_openRealStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>&, const ::Media::RealStreamReqParam&, const ::Ice::Context&);
 
+    void closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    closeStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                     ::std::function<void()> response,
+                     ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                     ::std::function<void(bool)> sent = nullptr,
+                     const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_closeStream, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_closeStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void getStreamStatic(const ::std::string& iceP_id, ::Media::StreamStatic& iceP_static, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        iceP_static = _makePromiseOutgoing<::Media::StreamStatic>(true, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getStreamStaticAsync(const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::Media::StreamStatic>>().get_future())
+    {
+        return _makePromiseOutgoing<::Media::StreamStatic, P>(false, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    getStreamStaticAsync(const ::std::string& iceP_id,
+                         ::std::function<void(::Media::StreamStatic)> response,
+                         ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                         ::std::function<void(bool)> sent = nullptr,
+                         const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::Media::StreamStatic>(response, ex, sent, this, &Media::StreamPrx::_iceI_getStreamStatic, iceP_id, context);
+    }
+
+    void _iceI_getStreamStatic(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::StreamStatic>>&, const ::std::string&, const ::Ice::Context&);
+
+    void getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto getRecordFilesAsync(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context);
+    }
+
+    ::std::function<void()>
+    getRecordFilesAsync(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime,
+                        ::std::function<void()> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_getRecordFiles, iceP_startTime, iceP_endtime, context);
+    }
+
+    void _iceI_getRecordFiles(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void openVodStream(const ::Media::RealStreamReqParam& iceP_req, ::Media::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        iceP_resp = _makePromiseOutgoing<::Media::RealStreamRespParam>(true, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto openVodStreamAsync(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<::Media::RealStreamRespParam>>().get_future())
+    {
+        return _makePromiseOutgoing<::Media::RealStreamRespParam, P>(false, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context);
+    }
+
+    ::std::function<void()>
+    openVodStreamAsync(const ::Media::RealStreamReqParam& iceP_req,
+                       ::std::function<void(::Media::RealStreamRespParam)> response,
+                       ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                       ::std::function<void(bool)> sent = nullptr,
+                       const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<::Media::RealStreamRespParam>(response, ex, sent, this, &Media::StreamPrx::_iceI_openVodStream, iceP_req, context);
+    }
+
+    void _iceI_openVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::Media::RealStreamRespParam>>&, const ::Media::RealStreamReqParam&, const ::Ice::Context&);
+
+    void closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto closeVodStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    closeVodStreamAsync(const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                        ::std::function<void()> response,
+                        ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                        ::std::function<void(bool)> sent = nullptr,
+                        const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_closeVodStream, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_closeVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
+    void controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        _makePromiseOutgoing<void>(true, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context).get();
+    }
+
+    template<template<typename> class P = ::std::promise>
+    auto controlVodStreamAsync(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = Ice::noExplicitContext)
+        -> decltype(::std::declval<P<void>>().get_future())
+    {
+        return _makePromiseOutgoing<void, P>(false, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context);
+    }
+
+    ::std::function<void()>
+    controlVodStreamAsync(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id,
+                          ::std::function<void()> response,
+                          ::std::function<void(::std::exception_ptr)> ex = nullptr,
+                          ::std::function<void(bool)> sent = nullptr,
+                          const ::Ice::Context& context = Ice::noExplicitContext)
+    {
+        return _makeLamdaOutgoing<void>(response, ex, sent, this, &Media::StreamPrx::_iceI_controlVodStream, iceP_cmd, iceP_callid, iceP_id, context);
+    }
+
+    void _iceI_controlVodStream(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&);
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -195,6 +396,15 @@ protected:
 
 namespace Ice
 {
+
+template<typename S>
+struct StreamReader<::Media::OpenStreamException, S>
+{
+    static void read(S* istr, ::Media::OpenStreamException& v)
+    {
+        istr->readAll(v.callid, v.reason);
+    }
+};
 
 template<>
 struct StreamableTraits<::Media::RealStreamRespParam>
@@ -217,7 +427,7 @@ template<>
 struct StreamableTraits<::Media::RealStreamReqParam>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 19;
+    static const int minWireSize = 23;
     static const bool fixedLength = false;
 };
 
@@ -226,7 +436,24 @@ struct StreamReader<::Media::RealStreamReqParam, S>
 {
     static void read(S* istr, ::Media::RealStreamReqParam& v)
     {
-        istr->readAll(v.id, v.callid, v.ip, v.port, v.name, v.pwd, v.destip, v.destport, v.ssrc, v.sdk);
+        istr->readAll(v.id, v.callid, v.ip, v.port, v.name, v.pwd, v.destip, v.destport, v.ssrc, v.pt, v.sdk);
+    }
+};
+
+template<>
+struct StreamableTraits<::Media::StreamStatic>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 8;
+    static const bool fixedLength = true;
+};
+
+template<typename S>
+struct StreamReader<::Media::StreamStatic, S>
+{
+    static void read(S* istr, ::Media::StreamStatic& v)
+    {
+        istr->readAll(v.freenode, v.busynode);
     }
 };
 
@@ -289,6 +516,27 @@ protected:
 };
 
 static RequestCanceledException _iceS_RequestCanceledException_init;
+
+class OpenStreamException : public ::Ice::UserException
+{
+public:
+
+    OpenStreamException() {}
+    OpenStreamException(const ::std::string&, const ::std::string&);
+    virtual ~OpenStreamException() throw();
+
+    virtual ::std::string ice_id() const;
+    virtual OpenStreamException* ice_clone() const;
+    virtual void ice_throw() const;
+
+    ::std::string callid;
+    ::std::string reason;
+
+protected:
+
+    virtual void _writeImpl(::Ice::OutputStream*) const;
+    virtual void _readImpl(::Ice::InputStream*);
+};
 
 struct RealStreamRespParam
 {
@@ -392,6 +640,7 @@ struct RealStreamReqParam
     ::std::string destip;
     ::Ice::Int destport;
     ::Ice::Int ssrc;
+    ::Ice::Int pt;
     ::std::string sdk;
 
     bool operator==(const RealStreamReqParam& rhs_) const
@@ -433,6 +682,10 @@ struct RealStreamReqParam
             return false;
         }
         if(ssrc != rhs_.ssrc)
+        {
+            return false;
+        }
+        if(pt != rhs_.pt)
         {
             return false;
         }
@@ -521,6 +774,14 @@ struct RealStreamReqParam
         {
             return false;
         }
+        if(pt < rhs_.pt)
+        {
+            return true;
+        }
+        else if(rhs_.pt < pt)
+        {
+            return false;
+        }
         if(sdk < rhs_.sdk)
         {
             return true;
@@ -550,6 +811,71 @@ struct RealStreamReqParam
     }
 };
 
+struct StreamStatic
+{
+    ::Ice::Int freenode;
+    ::Ice::Int busynode;
+
+    bool operator==(const StreamStatic& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return true;
+        }
+        if(freenode != rhs_.freenode)
+        {
+            return false;
+        }
+        if(busynode != rhs_.busynode)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool operator<(const StreamStatic& rhs_) const
+    {
+        if(this == &rhs_)
+        {
+            return false;
+        }
+        if(freenode < rhs_.freenode)
+        {
+            return true;
+        }
+        else if(rhs_.freenode < freenode)
+        {
+            return false;
+        }
+        if(busynode < rhs_.busynode)
+        {
+            return true;
+        }
+        else if(rhs_.busynode < busynode)
+        {
+            return false;
+        }
+        return false;
+    }
+
+    bool operator!=(const StreamStatic& rhs_) const
+    {
+        return !operator==(rhs_);
+    }
+    bool operator<=(const StreamStatic& rhs_) const
+    {
+        return operator<(rhs_) || operator==(rhs_);
+    }
+    bool operator>(const StreamStatic& rhs_) const
+    {
+        return !operator<(rhs_) && !operator==(rhs_);
+    }
+    bool operator>=(const StreamStatic& rhs_) const
+    {
+        return !operator<(rhs_);
+    }
+};
+
 }
 
 namespace Media
@@ -565,6 +891,17 @@ public:
 };
 
 typedef ::IceUtil::Handle< ::Media::AMD_Stream_openRealStream> AMD_Stream_openRealStreamPtr;
+
+class AMD_Stream_closeStream : public virtual ::Ice::AMDCallback
+{
+public:
+
+    virtual ~AMD_Stream_closeStream();
+
+    virtual void ice_response() = 0;
+};
+
+typedef ::IceUtil::Handle< ::Media::AMD_Stream_closeStream> AMD_Stream_closeStreamPtr;
 
 }
 
@@ -583,6 +920,15 @@ public:
     virtual void ice_response(const ::Media::RealStreamRespParam&);
 };
 
+class AMD_Stream_closeStream : public ::Media::AMD_Stream_closeStream, public ::IceInternal::IncomingAsync
+{
+public:
+
+    AMD_Stream_closeStream(::IceInternal::Incoming&);
+
+    virtual void ice_response();
+};
+
 }
 
 }
@@ -592,6 +938,24 @@ namespace Media
 
 class Callback_Stream_openRealStream_Base : public virtual ::IceInternal::CallbackBase { };
 typedef ::IceUtil::Handle< Callback_Stream_openRealStream_Base> Callback_Stream_openRealStreamPtr;
+
+class Callback_Stream_closeStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_closeStream_Base> Callback_Stream_closeStreamPtr;
+
+class Callback_Stream_getStreamStatic_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_getStreamStatic_Base> Callback_Stream_getStreamStaticPtr;
+
+class Callback_Stream_getRecordFiles_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_getRecordFiles_Base> Callback_Stream_getRecordFilesPtr;
+
+class Callback_Stream_openVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_openVodStream_Base> Callback_Stream_openVodStreamPtr;
+
+class Callback_Stream_closeVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_closeVodStream_Base> Callback_Stream_closeVodStreamPtr;
+
+class Callback_Stream_controlVodStream_Base : public virtual ::IceInternal::CallbackBase { };
+typedef ::IceUtil::Handle< Callback_Stream_controlVodStream_Base> Callback_Stream_controlVodStreamPtr;
 
 }
 
@@ -643,6 +1007,234 @@ private:
 
 public:
 
+    void closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_closeStream(_iceI_begin_closeStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_closeStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_closeStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    void end_closeStream(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_closeStream(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void getStreamStatic(const ::std::string& iceP_id, ::Media::StreamStatic& iceP_static, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_getStreamStatic(iceP_static, _iceI_begin_getStreamStatic(iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Media::Callback_Stream_getStreamStaticPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getStreamStatic(const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_getStreamStaticPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getStreamStatic(iceP_id, context, del, cookie);
+    }
+
+    void end_getStreamStatic(::Media::StreamStatic& iceP_static, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getStreamStatic(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_getRecordFiles(_iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Media::Callback_Stream_getRecordFilesPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_getRecordFiles(const ::std::string& iceP_startTime, const ::std::string& iceP_endtime, const ::Ice::Context& context, const ::Media::Callback_Stream_getRecordFilesPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_getRecordFiles(iceP_startTime, iceP_endtime, context, del, cookie);
+    }
+
+    void end_getRecordFiles(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_getRecordFiles(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void openVodStream(const ::Media::RealStreamReqParam& iceP_req, ::Media::RealStreamRespParam& iceP_resp, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_openVodStream(iceP_resp, _iceI_begin_openVodStream(iceP_req, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Media::Callback_Stream_openVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_openVodStream(const ::Media::RealStreamReqParam& iceP_req, const ::Ice::Context& context, const ::Media::Callback_Stream_openVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_openVodStream(iceP_req, context, del, cookie);
+    }
+
+    void end_openVodStream(::Media::RealStreamRespParam& iceP_resp, const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_openVodStream(const ::Media::RealStreamReqParam&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_closeVodStream(_iceI_begin_closeVodStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_closeVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_closeVodStream(const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_closeVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_closeVodStream(iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    void end_closeVodStream(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_closeVodStream(const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
+    void controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        end_controlVodStream(_iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0, true));
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context = ::Ice::noExplicitContext)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, ::IceInternal::dummyCallback, 0);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Media::Callback_Stream_controlVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, ::Ice::noExplicitContext, del, cookie);
+    }
+
+    ::Ice::AsyncResultPtr begin_controlVodStream(const ::std::string& iceP_cmd, const ::std::string& iceP_callid, const ::std::string& iceP_id, const ::Ice::Context& context, const ::Media::Callback_Stream_controlVodStreamPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
+    {
+        return _iceI_begin_controlVodStream(iceP_cmd, iceP_callid, iceP_id, context, del, cookie);
+    }
+
+    void end_controlVodStream(const ::Ice::AsyncResultPtr&);
+
+private:
+
+    ::Ice::AsyncResultPtr _iceI_begin_controlVodStream(const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
+
+public:
+
     static const ::std::string& ice_staticId();
 
 protected:
@@ -675,6 +1267,24 @@ public:
     virtual void openRealStream_async(const ::Media::AMD_Stream_openRealStreamPtr&, const ::Media::RealStreamReqParam&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
     bool _iceD_openRealStream(::IceInternal::Incoming&, const ::Ice::Current&);
 
+    virtual void closeStream_async(const ::Media::AMD_Stream_closeStreamPtr&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_closeStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getStreamStatic(const ::std::string&, ::Media::StreamStatic&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getStreamStatic(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void getRecordFiles(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_getRecordFiles(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void openVodStream(const ::Media::RealStreamReqParam&, ::Media::RealStreamRespParam&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_openVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void closeVodStream(const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_closeVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
+    virtual void controlVodStream(const ::std::string&, const ::std::string&, const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
+    bool _iceD_controlVodStream(::IceInternal::Incoming&, const ::Ice::Current&);
+
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
 
 protected:
@@ -702,6 +1312,32 @@ template<>
 struct StreamableTraits< ::Media::RequestCanceledException>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryUserException;
+};
+
+template<>
+struct StreamableTraits< ::Media::OpenStreamException>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryUserException;
+};
+
+template<typename S>
+struct StreamWriter< ::Media::OpenStreamException, S>
+{
+    static void write(S* ostr, const ::Media::OpenStreamException& v)
+    {
+        ostr->write(v.callid);
+        ostr->write(v.reason);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::Media::OpenStreamException, S>
+{
+    static void read(S* istr, ::Media::OpenStreamException& v)
+    {
+        istr->read(v.callid);
+        istr->read(v.reason);
+    }
 };
 
 template<>
@@ -740,7 +1376,7 @@ template<>
 struct StreamableTraits< ::Media::RealStreamReqParam>
 {
     static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 19;
+    static const int minWireSize = 23;
     static const bool fixedLength = false;
 };
 
@@ -758,6 +1394,7 @@ struct StreamWriter< ::Media::RealStreamReqParam, S>
         ostr->write(v.destip);
         ostr->write(v.destport);
         ostr->write(v.ssrc);
+        ostr->write(v.pt);
         ostr->write(v.sdk);
     }
 };
@@ -776,7 +1413,36 @@ struct StreamReader< ::Media::RealStreamReqParam, S>
         istr->read(v.destip);
         istr->read(v.destport);
         istr->read(v.ssrc);
+        istr->read(v.pt);
         istr->read(v.sdk);
+    }
+};
+
+template<>
+struct StreamableTraits< ::Media::StreamStatic>
+{
+    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+    static const int minWireSize = 8;
+    static const bool fixedLength = true;
+};
+
+template<typename S>
+struct StreamWriter< ::Media::StreamStatic, S>
+{
+    static void write(S* ostr, const ::Media::StreamStatic& v)
+    {
+        ostr->write(v.freenode);
+        ostr->write(v.busynode);
+    }
+};
+
+template<typename S>
+struct StreamReader< ::Media::StreamStatic, S>
+{
+    static void read(S* istr, ::Media::StreamStatic& v)
+    {
+        istr->read(v.freenode);
+        istr->read(v.busynode);
     }
 };
 
@@ -887,6 +1553,542 @@ template<class T, typename CT> Callback_Stream_openRealStreamPtr
 newCallback_Stream_openRealStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
 {
     return new Callback_Stream_openRealStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_closeStream : public Callback_Stream_closeStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_closeStream : public Callback_Stream_closeStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_closeStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeStreamPtr
+newCallback_Stream_closeStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_getStreamStatic : public Callback_Stream_getStreamStatic_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::Media::StreamStatic&);
+
+    CallbackNC_Stream_getStreamStatic(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::StreamStatic iceP_static;
+        try
+        {
+            proxy->end_getStreamStatic(iceP_static, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_static);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::StreamStatic&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getStreamStatic<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(T* instance, void (T::*cb)(const ::Media::StreamStatic&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getStreamStatic<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_getStreamStatic : public Callback_Stream_getStreamStatic_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::Media::StreamStatic&, const CT&);
+
+    Callback_Stream_getStreamStatic(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::StreamStatic iceP_static;
+        try
+        {
+            proxy->end_getStreamStatic(iceP_static, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_static, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::StreamStatic&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getStreamStatic<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getStreamStaticPtr
+newCallback_Stream_getStreamStatic(T* instance, void (T::*cb)(const ::Media::StreamStatic&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getStreamStatic<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_getRecordFiles : public Callback_Stream_getRecordFiles_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_getRecordFiles(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_getRecordFiles<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_getRecordFiles : public Callback_Stream_getRecordFiles_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_getRecordFiles(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_getRecordFilesPtr
+newCallback_Stream_getRecordFiles(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_getRecordFiles<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_openVodStream : public Callback_Stream_openVodStream_Base, public ::IceInternal::TwowayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&);
+
+    CallbackNC_Stream_openVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_resp;
+        try
+        {
+            proxy->end_openVodStream(iceP_resp, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::CallbackNC<T>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_resp);
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_openVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_openVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_openVodStream : public Callback_Stream_openVodStream_Base, public ::IceInternal::TwowayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const ::Media::RealStreamRespParam&, const CT&);
+
+    Callback_Stream_openVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
+    {
+    }
+
+    virtual void completed(const ::Ice::AsyncResultPtr& result) const
+    {
+        ::Media::StreamPrx proxy = ::Media::StreamPrx::uncheckedCast(result->getProxy());
+        ::Media::RealStreamRespParam iceP_resp;
+        try
+        {
+            proxy->end_openVodStream(iceP_resp, result);
+        }
+        catch(const ::Ice::Exception& ex)
+        {
+            ::IceInternal::Callback<T, CT>::exception(result, ex);
+            return;
+        }
+        if(_response)
+        {
+            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_resp, CT::dynamicCast(result->getCookie()));
+        }
+    }
+
+private:
+
+    Response _response;
+};
+
+template<class T, typename CT> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_openVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_openVodStreamPtr
+newCallback_Stream_openVodStream(T* instance, void (T::*cb)(const ::Media::RealStreamRespParam&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_openVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_closeVodStream : public Callback_Stream_closeVodStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_closeVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_closeVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_closeVodStream : public Callback_Stream_closeVodStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_closeVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeVodStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_closeVodStreamPtr
+newCallback_Stream_closeVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_closeVodStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T>
+class CallbackNC_Stream_controlVodStream : public Callback_Stream_controlVodStream_Base, public ::IceInternal::OnewayCallbackNC<T>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception&);
+    typedef void (T::*Sent)(bool);
+    typedef void (T::*Response)();
+
+    CallbackNC_Stream_controlVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, cb, excb, sentcb);
+}
+
+template<class T> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
+{
+    return new CallbackNC_Stream_controlVodStream<T>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT>
+class Callback_Stream_controlVodStream : public Callback_Stream_controlVodStream_Base, public ::IceInternal::OnewayCallback<T, CT>
+{
+public:
+
+    typedef IceUtil::Handle<T> TPtr;
+
+    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
+    typedef void (T::*Sent)(bool , const CT&);
+    typedef void (T::*Response)(const CT&);
+
+    Callback_Stream_controlVodStream(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
+        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
+    {
+    }
+};
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, 0, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, cb, excb, sentcb);
+}
+
+template<class T, typename CT> Callback_Stream_controlVodStreamPtr
+newCallback_Stream_controlVodStream(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
+{
+    return new Callback_Stream_controlVodStream<T, CT>(instance, 0, excb, sentcb);
 }
 
 }

@@ -129,7 +129,8 @@ public:
 	std::shared_ptr<CamaraController> get(const std::string & name);
 	void add(const std::string & name, std::shared_ptr<CamaraController> p);
 	//for ICE call, ice请求使用异步调用
-	void openRealStream(const dt::OpenRealStream & params, std::function<void(const::Gateway::RealStreamRespParam&)> cb, std::function<void(::std::exception_ptr)> e);
+	void openRealStream(const dt::OpenRealStream & params, std::function<void(const::Media::RealStreamRespParam&)> cb, std::function<void(::std::exception_ptr)> e);
+	void openRealStream(const dt::OpenRealStream & params);
 	void closeStream(std::string callid, string id);
 	void ptzControl(const std::string &id, const string &cmd, std::function<void()> cb, std::function<void(::std::exception_ptr)> excb);
 

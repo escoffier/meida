@@ -3,7 +3,11 @@
 # "Hello". The following line sets the endpoints for this
 # adapter.
 #
-Hello.Endpoints=tcp -h localhost -p 10001
+DeviceControl.Endpoints=tcp -h 192.168.21.121 -p 10010
+
+
+#Stream.Proxy=stream:tcp -h 192.168.254.233 -p 10003
+
 
 #
 # Warn about connection exceptions
@@ -18,7 +22,7 @@ Ice.Warn.Connections=1
 # 2 = like 1, but more detailed
 # 3 = like 2, but also trace data transfer
 #
-#Ice.Trace.Network=1
+Ice.Trace.Network=2
 
 #
 # Protocol Tracing
@@ -26,7 +30,7 @@ Ice.Warn.Connections=1
 # 0 = no protocol tracing
 # 1 = trace protocol messages
 #
-#Ice.Trace.Protocol=1
+Ice.Trace.Protocol=1
 
 #Active Connection Management (ACM)
 Ice.ACM.Close=1      # CloseOnIdle

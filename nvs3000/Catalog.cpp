@@ -3,7 +3,7 @@
 //include <BaseTsd.h>
 //#include <WinNT.h>
 //#include "HCNetSDK.h"
-#include "glog\logging.h"
+#include "glog/logging.h"
 
 //Device::Device(const Device & other)
 //{
@@ -11,7 +11,7 @@
 //
 //Device & Device::operator=(const Device & other)
 //{
-//	// TODO: ÔÚ´Ë´¦²åÈë return Óï¾ä
+//	// TODO: ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ return ï¿½ï¿½ï¿½
 //	return *this;
 //}
 //
@@ -21,7 +21,7 @@
 //
 //Device & Device::operator=(Device && other)
 //{
-//	// TODO: ÔÚ´Ë´¦²åÈë return Óï¾ä
+//	// TODO: ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ return ï¿½ï¿½ï¿½
 //	return *this;
 //}
 //
@@ -480,7 +480,7 @@ void CCatalog::SetPlatformID(const std::string &platformid)
 const std::string & CCatalog::GetSdkName() const
 {
 	return m_sdkname_;
-	// TODO: ÔÚ´Ë´¦²åÈë return Óï¾ä
+	// TODO: ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ return ï¿½ï¿½ï¿½
 }
 void CCatalog::SetSdkName(const std::string & sdkname)
 {
