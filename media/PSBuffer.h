@@ -11,6 +11,7 @@
 //#include "jrtplib3\rtpipv4address.h"
 //#include "jrtplib3\rtpsessionparams.h"
 #include "threadsafequeue.h"
+#include "packetsender.h"
 #ifdef _DEBUG
 #include<fstream>
 #endif // _DEBUG
@@ -100,12 +101,19 @@ public:
 	void removeDestination(const std::string &callid) ;
 
 	void processData();
+	void processData1();
 
 	void getNodeInfo(int &b, int &f);
+
+	void addSender(const std::string& callid, std::shared_ptr<PaketSender> sender);
+	void removeSender(const std::string& callid);
+
 public:
 	static void checkerror(int rtperr);
 
 private:
+    using PktSender = std::shared_ptr<PaketSender>;
+
 	threadsafe_queue<BufferNode> freeChain_;
 	threadsafe_queue<BufferNode> busyChain_;
 	std::map<std::string, Destination> dests_;
@@ -116,6 +124,8 @@ private:
 	std::mutex destsmutex_;
 	jrtplib::RTPUDPv4TransmissionParams * transParams_;
 	jrtplib::RTPTransmitter* transmitter_;
+
+    std::map<std::string, PktSender> senders_;
 #ifdef _DEBUG
 	std::ofstream file;
 #endif // _DEBUG

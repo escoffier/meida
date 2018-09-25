@@ -59,7 +59,7 @@ std::shared_ptr<PSBuffer::BufferNode> PSBuffer::getFreeNode()
 	std::shared_ptr<PSBuffer::BufferNode> node = freeChain_.try_pop();
 	if (!node)
 	{
-		//¿ÕÏÐ¶ÓÁÐÎª¿Õ£¬ÐèÒª´´½¨ÐÂµÄ½Úµã
+		//ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ÂµÄ½Úµï¿½
 		LOG(INFO) << "too much datas";
 		//node = std::make_shared<BufferNode>();
 	}
@@ -75,7 +75,7 @@ std::shared_ptr<PSBuffer::BufferNode> PSBuffer::getFreeNode()
 
 	//if (freeChain_.empty())
 	//{
-	//	//¿ÕÏÐ¶ÓÁÐÎª¿Õ£¬ÐèÒª´´½¨ÐÂµÄ½Úµã
+	//	//ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ÂµÄ½Úµï¿½
 	//    node = std::make_shared<BufferNode>();	
 	//}
 	//else
@@ -195,7 +195,7 @@ PSBuffer::Destination & PSBuffer::Destination::operator=(Destination && other)
 	pt_ = other.pt_; 
 	rtpsession_ = std::move(other.rtpsession_);
 	return *this;
-	// TODO: ÔÚ´Ë´¦²åÈë return Óï¾ä
+	// TODO: ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ return ï¿½ï¿½ï¿½
 }
 
 int PSBuffer::Destination::createRTPSession(uint32_t ssrc, jrtplib::RTPTransmitter * transmitter)
@@ -222,4 +222,26 @@ int PSBuffer::Destination::createRTPSession(uint32_t ssrc, jrtplib::RTPTransmitt
 	PSBuffer::checkerror(rtpret);
 
 	return rtpret;
+}
+
+void PSBuffer::addSender(const std::string& callid, std::shared_ptr<PaketSender> sender)
+{
+	std::lock_guard<std::mutex> lk(destsmutex_);
+	senders_.emplace(callid, sender);
+}
+
+void PSBuffer::removeSender(conststd::string& callid)
+{
+	std::lock_guard<std::mutex> lk(destsmutex_);
+	senders_.erase(callid)
+}
+
+
+void PSBuffer::processData1()
+{
+	std::lock_guard<std::mutex> lk(destsmutex_);
+	for(auto & sender : senders_)
+	{
+		//sender.send()
+	}
 }
