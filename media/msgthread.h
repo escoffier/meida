@@ -10,18 +10,21 @@ public:
 	function_wrapper(F&& f) :
 		impl(new impl_type<F>(std::move(f)))
 	{}
+
 	void operator()() { impl->call(); }
 	function_wrapper() = default;
+
 	function_wrapper(function_wrapper&& other) :
 		impl(std::move(other.impl))
 	{}
+
 	function_wrapper& operator=(function_wrapper&& other)
 	{
 		impl = std::move(other.impl);
 		return *this;
 	}
+
 	function_wrapper(const function_wrapper&) = delete;
-	//function_wrapper(function_wrapper&) = delete;
 	function_wrapper& operator=(const function_wrapper&) = delete;
 
 private:
@@ -91,6 +94,16 @@ public:
 			result_type;
 		std::packaged_task<result_type()> task(std::move(f));
 		std::future<result_type> res(task.get_future());
+		queue_.push(std::move(task));
+		return res;
+	}
+
+	template<typename F, typename...Args>
+	auto submit1(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
+	{
+		std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
+		std::packaged_task<decltype(f(args...))()> task(std::move(func));
+		auto res(task.get_future());
 		queue_.push(std::move(task));
 		return res;
 	}

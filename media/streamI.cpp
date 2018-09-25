@@ -18,10 +18,14 @@ StreamI::~StreamI()
 {
 }
 
-void StreamI::openRealStreamAsync(::Media::RealStreamReqParam param, ::std::function<void(const::Media::RealStreamRespParam&)> cb, ::std::function<void(::std::exception_ptr)> ecb, const::Ice::Current &)
+void StreamI::openRealStreamAsync(::Media::RealStreamReqParam param, ::std::function<void(bool returnValue, const::Media::RealStreamRespParam&)> cb, ::std::function<void(::std::exception_ptr)> ecb, const::Ice::Current &)
 {
 	LOG(INFO) << param.callid;
-	StreamManager::getInstance()->addStream(param, cb, ecb);
+
+	dt::OpenRealStreamParam reqparam;
+	reqparam.id = param.id;
+	
+	StreamManager::getInstance()->addStream(reqparam, cb);
 	//sm_->addStream(param.id, param.callid,param.name, param.pwd, param.ip, param.port, param.destip,  param.destport, param.ssrc, cb, ecb);
 }
 

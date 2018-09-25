@@ -6,27 +6,33 @@
 #include <stream.h>
 //#include "WorkorQueue.h"
 #include "msgthread.h"
-#include "jrtplib3/rtpsession.h"
-#include "jrtplib3/rtpudpv4transmitter.h"
-#include "jrtplib3/rtpipv4address.h"
-#include "jrtplib3/rtpsessionparams.h"
-#include "PSBuffer.h"
+// #include "jrtplib3/rtpsession.h"
+// #include "jrtplib3/rtpudpv4transmitter.h"
+// #include "jrtplib3/rtpipv4address.h"
+// #include "jrtplib3/rtpsessionparams.h"
+//#include "PSBuffer.h"
+#include "buffer.h"
 #include "RTPSender.h"
 #include "DeviceProcesser.h"
 #include "plugins.h"
+#include "utility.h"
+#include "threadpool.h"
+
 class MediaStream
 {
 public:
 	//using RTPTransmitterPtr = std::shared_ptr<jrtplib::RTPTransmitter> ;
 
-	MediaStream(const std::string &id, const std::string &name, const std::string &pwd, 
-		        const std::string &ip, int port, const std::string &destIp, int destPort,
-		        std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
-		        std::function<void(::std::exception_ptr)> ecb, std::shared_ptr<CamaraController> con);
-	MediaStream(const std::string &id);
+	// MediaStream(const std::string &id, const std::string &name, const std::string &pwd, 
+	// 	        const std::string &ip, int port, const std::string &destIp, int destPort,
+	// 	        std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+	// 	        std::function<void(::std::exception_ptr)> ecb, std::shared_ptr<CamaraController> con);
+
+	MediaStream(dt::OpenRealStreamParam & req, std::function<void(bool, const::Media::RealStreamRespParam&)> iceCB, 
+	            /*std::function<void(::std::exception_ptr)> ecb,*/ std::shared_ptr<CamaraController> con);
+
 	virtual ~MediaStream()
 	{
-
 		std::cout<< "MediaStream destroy";
 	}
 
@@ -40,9 +46,10 @@ public:
 	virtual void closeStream() = 0;
 	size_t subStreamCount() const;
 	bool needClose();
-	std::shared_ptr<PSBuffer> getBuffer() { return buffer_; };
+	//std::shared_ptr<PSBuffer> getBuffer() { return buffer_; };
 	void processData(char *data, uint32_t len);
 	void getNodeInfo(int &b, int &f);
+
 protected:
 	std::string id_;
 	std::string name_;   //camara login name
@@ -113,19 +120,22 @@ protected:
 	bool isOpen_;
 	bool isLogin_;
 	std::mutex mutex_;
-	std::shared_ptr<PSBuffer> buffer_;
+	std::shared_ptr<Buffer> buffer_;
+	std::shared_ptr<ThreadPool> avThreadPool;
 	std::shared_ptr<CamaraController> controller_;
-	//std::shared_ptr<RTPSender> rtpSender_;
 };
 
 
 class RealSteam : public MediaStream
 {
 public:
-	RealSteam(const std::string &id, const std::string &name, const std::string &pwd,
-		      const std::string &ip, int port, const std::string &destIp_, int destPort,
-		      std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
-		      std::shared_ptr<CamaraController> con);
+	// RealSteam(const std::string &id, const std::string &name, const std::string &pwd,
+	// 	      const std::string &ip, int port, const std::string &destIp_, int destPort,
+	// 	      std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+	// 	      std::shared_ptr<CamaraController> con);
+	RealSteam(dt::OpenRealStreamParam & req ,//const std::string &id, const std::string &destIp_, int destPort,
+	 	      std::function<void(bool returnValue, const::Media::RealStreamRespParam&)> iceCB, //std::function<void(::std::exception_ptr)> ecb,
+	 	      std::shared_ptr<CamaraController> con);
 	//RealSteam();
 	~RealSteam();
 
@@ -141,11 +151,14 @@ private:
 class VodSteam : public MediaStream
 {
 public:
-	VodSteam(const std::string &id, const std::string &name, const std::string &pwd,
-		     const std::string &ip, int port, const std::string &destIp, int destPort,
-		     std::function<void(const::Media::RealStreamRespParam&)> iceCB,
-		     std::function<void(::std::exception_ptr)> ecb,const std::string &startTime,
-		     const std::string &endTime, std::shared_ptr<CamaraController> con);
+	// VodSteam(const std::string &id, const std::string &name, const std::string &pwd,
+	// 	     const std::string &ip, int port, const std::string &destIp, int destPort,
+	// 	     std::function<void(const::Media::RealStreamRespParam&)> iceCB,
+	// 	     std::function<void(::std::exception_ptr)> ecb,const std::string &startTime,
+	// 	     const std::string &endTime, std::shared_ptr<CamaraController> con);
+	VodSteam(dt::OpenRealStreamParam & req , 
+	 	      std::function<void(bool returnValue, const::Media::RealStreamRespParam&)> iceCB,
+	 	      std::shared_ptr<CamaraController> con);
 	~VodSteam();
 
 	virtual bool openStream(const std::string &callid);
@@ -161,7 +174,7 @@ private:
 
 
 
-// Á÷¶ÔÏó¹ÜÀíÆ÷
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 class StreamManager
 {
 public:
@@ -180,15 +193,14 @@ public:
 	}
 	std::shared_ptr<MediaStream> getStream(const std::string &id);
 
-	void addStream(const std::string &id, const std::string &callid, const std::string &name, const std::string &pwd,
-		const std::string &ip, int port, const std::string &destIp_, int destPort, int ssrc,
-		std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
-		std::function<void(::std::exception_ptr)> ecb);
-	void addStream(::Media::RealStreamReqParam param, 
-		           std::function<void(const::Media::RealStreamRespParam&)> iceCB,
-		            std::function<void(::std::exception_ptr)> ecb);
+	// void addStream(const std::string &id, const std::string &callid, const std::string &name, const std::string &pwd,
+	// 	const std::string &ip, int port, const std::string &destIp_, int destPort, int ssrc,
+	// 	std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
+	// 	std::function<void(::std::exception_ptr)> ecb);
+	void addStream(dt::OpenRealStreamParam &param, 
+		           std::function<void(bool, const::Media::RealStreamRespParam&)> iceCB);
 
-	bool openStream( std::string id,  std::string callid, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb);
+	//bool openStream( std::string id,  std::string callid, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb);
 	void closeStream(std::string callid, std::string id);
 	void getStreamStatic(std::string id, ::Media::StreamStatic& stat);
 
@@ -207,6 +219,7 @@ private:
 	//std::unique_ptr<RTPSender> rtpSender_;
 	std::map<std::string, std::shared_ptr<CamaraController> > controllers_;
 	std::unique_ptr<SDKPlugins> plugins_;
+    std::shared_ptr<ThreadPool> avThreadPool_;
 
 	static StreamManager * instance_;
 };

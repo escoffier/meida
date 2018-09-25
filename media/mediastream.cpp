@@ -1,23 +1,17 @@
 #ifdef WINDOWS
 #include <winsock2.h>
-#include<windows.h>
+#include <windows.h>
 #endif
 #include "mediastream.h"
 #include "zmd5.h"
 #include <functional>
-#include "ThreadPool.h"
+#include "threadpool.h"
 #define WIN32_LEAN_AND_MEAN
-//#include <winsock2.h>
-//#include <windows.h>    
 #include "HCNetSDK.h"
-//#include "jrtplib3\rtpsession.h"
-//#include "jrtplib3\rtpudpv4transmitter.h"
-//#include "jrtplib3\rtpipv4address.h"
-//#include "jrtplib3\rtpsessionparams.h"
-//#include "jrtplib3\rtperrors.h"
 #include "glog/logging.h"
+#include "RTPSender.h"
 
-FILE * streamfile = fopen("stream106", "wb");
+FILE *streamfile = fopen("stream106", "wb");
 
 void checkerror(int rtperr)
 {
@@ -28,29 +22,27 @@ void checkerror(int rtperr)
 	}
 }
 
-MediaStream::MediaStream(const std::string & id, const std::string & name, const std::string & pwd, 
-	                     const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                     std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
-	                     std::shared_ptr<CamaraController> con):
-	id_(id),name_(name), pwd_(pwd),ip_(ip),port_(port),destIp_(destIp), 
-	destPort_(destPort), iceCB_(iceCB), ecb_(ecb),isOpen_(false), isLogin_(false), buffer_(std::make_shared<PSBuffer>()), controller_(con)
+// MediaStream::MediaStream(const std::string &id, const std::string &name, const std::string &pwd,
+// 						 const std::string &ip, int port, const std::string &destIp, int destPort,
+// 						 std::function<void(const ::Media::RealStreamRespParam &)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+// 						 std::shared_ptr<CamaraController> con) : id_(id), name_(name), pwd_(pwd), ip_(ip), port_(port), destIp_(destIp),
+// 																  destPort_(destPort), iceCB_(iceCB), ecb_(ecb), isOpen_(false), isLogin_(false), buffer_(std::make_shared<Buffer>()), controller_(con)
+// {
+// 	//ThreadPool<PSBuffer>* pool = ThreadPool<PSBuffer>::getInstance();
+// 	//pool->push_buffer(id_, buffer_);
+// }
+
+MediaStream::MediaStream(dt::OpenRealStreamParam &req, std::function<void(bool, const ::Media::RealStreamRespParam &)> iceCB,
+						 /*std::function<void(::std::exception_ptr)> ecb,*/ std::shared_ptr<CamaraController> con)
 {
-	ThreadPool<PSBuffer>* pool = ThreadPool<PSBuffer>::getInstance();
-	pool->push_buffer(id_, buffer_);
 }
 
-MediaStream::MediaStream(const std::string & id)
+void MediaStream::addDestHost(const std::string &destIp, int destPort)
 {
 }
 
-void MediaStream::addDestHost(const std::string & destIp, int destPort)
-{
-
-
-}
-
-std::string MediaStream::addsubStream(const std::string &callid, const std::string & destIp, int destPort, 
-	                                  int ssrc, int pt/*, jrtplib::RTPTransmitter* transmitter*/)
+std::string MediaStream::addsubStream(const std::string &callid, const std::string &destIp, int destPort,
+									  int ssrc, int pt /*, jrtplib::RTPTransmitter* transmitter*/)
 {
 	std::lock_guard<std::mutex> lockGuard(mutex_);
 	auto search = subStreams_.find(callid);
@@ -58,28 +50,28 @@ std::string MediaStream::addsubStream(const std::string &callid, const std::stri
 	{
 		//subStreams_.emplace(std::pair<std::string, subStream>(md5str, ss));
 		LOG(INFO) << "add substream : " << destIp << " - " << destPort << std::endl;
-		subStream ss(destIp, destPort, "192.168.21.121", 1999, ssrc/*, transmitter_*/);
+		subStream ss(destIp, destPort, "192.168.21.121", 1999, ssrc /*, transmitter_*/);
 
-	/*	PSBuffer::Destination dest;
-		dest.destip_ = ss.destipn_;
-		dest.destport_ = ss.destPort_;
-		dest.ssrc_ = ss.ssrc_;
-		dest.pt_ = ss.pt_;
-		dest.createRTPSession(dest.ssrc_, transmitter);*/
-		buffer_->addDestination(callid, ss.destipn_, destPort, ssrc, pt/*, transmitter*/);
+		std::shared_ptr<PaketSender> sender = std::make_shared<RTPSender>(destIp, destPort);
+		sender->setParam("ssrc", "1111");
+		sender->init();
+		buffer_->addSender(callid, sender);
+
+		//buffer_->addDestination(callid, ss.destipn_, destPort, ssrc, pt/*, transmitter*/);
 
 		subStreams_.emplace(callid, std::move(ss));
 	}
 	return callid;
 }
 
-void MediaStream::removesubStream(const std::string & callid)
+void MediaStream::removesubStream(const std::string &callid)
 {
 	{
 		std::lock_guard<std::mutex> lockGuard(mutex_);
 		subStreams_.erase(callid);
 	}
-	buffer_->removeDestination(callid);
+	//buffer_->removeDestination(callid);
+	buffer_->removeSender(callid);
 }
 
 size_t MediaStream::subStreamCount() const
@@ -94,30 +86,29 @@ bool MediaStream::needClose()
 	return subStreams_.empty();
 }
 
-void MediaStream::processData(char * data, uint32_t len)
+void MediaStream::processData(char *data, uint32_t len)
 {
-	std::shared_ptr<PSBuffer::BufferNode> node = buffer_->getFreeNode();
-	if (!node)
-	{
-		LOG(WARNING) << "discard data";
-		return;
-	}
+	LOG(WARNING) << "discard data";
+	// std::shared_ptr<PSBuffer::BufferNode> node = buffer_->getFreeNode();
+	// if (!node)
+	// {
+	// 	LOG(WARNING) << "discard data";
+	// 	return;
+	// }
 
-	memcpy(node->data_, data, len);
-	node->length_ = len;
-	buffer_->push(node);
+	// memcpy(node->data_, data, len);
+	// node->length_ = len;
+	// buffer_->push(node);
 }
 
-void MediaStream::getNodeInfo(int & b, int & f)
+void MediaStream::getNodeInfo(int &b, int &f)
 {
-	buffer_->getNodeInfo(b, f);
+	//buffer_->getNodeInfo(b, f);
 }
 
-RealSteam::RealSteam(const std::string & id, const std::string & name, const std::string & pwd, 
-	                 const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                 std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
-	                 std::shared_ptr<CamaraController> con):
-	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb, con)
+RealSteam::RealSteam(dt::OpenRealStreamParam &req,
+					 std::function<void(bool, const ::Media::RealStreamRespParam &)> iceCB,
+					 std::shared_ptr<CamaraController> con) : MediaStream(req, iceCB, con)
 {
 }
 
@@ -125,22 +116,13 @@ RealSteam::~RealSteam()
 {
 }
 
-
-bool RealSteam::openStream(const std::string & callid)
+bool RealSteam::openStream(const std::string &callid)
 {
-    //´ÓÉãÏñ»ú»ñÈ¡ÊÓÆµÁ÷
-	//dt::OpenRealStream param;
-	//param.id = id_;
-	//param.ip = ip_;
-	//param.port = port_;
-	//param.name = name_;
-	//param.pwd = pwd_;
-	//param.cb = [=](char *data, uint32_t len) { processData(data, len); };
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Æµï¿½ï¿½
 
 	if (controller_->openRealStream(id_, ip_, port_, name_, pwd_,
-		      [=](char *data, uint32_t len) { processData(data, len); }))
+									[=](char *data, uint32_t len) { processData(data, len); }))
 	{
-		//controller_->setDataCallback([=](char *data, uint32_t len) { processData(data, len); });
 		Media::RealStreamRespParam resp;
 		//respinfo.callid = callid;
 		//uint32_t ip = transParams.GetBindIP();
@@ -158,10 +140,10 @@ bool RealSteam::openStream(const std::string & callid)
 	{
 		//ecb_();
 		return false;
-	}	
+	}
 }
 
-void RealSteam::closeStream(const std::string & callid)
+void RealSteam::closeStream(const std::string &callid)
 {
 	//std::lock_guard<std::mutex> lockGuard(mutex_);
 	//auto search = subStreams_.find(callid);
@@ -178,13 +160,12 @@ void RealSteam::closeStream(const std::string & callid)
 	//		{
 	//			LOG(INFO) << "Close stream: " << callid;
 	//		}
-	//		
+	//
 	//	}
 	//	subStreams_.erase(search);
 	//}
 
 	return;
-
 }
 
 void RealSteam::closeStream()
@@ -197,14 +178,15 @@ void RealSteam::closeStream()
 	{
 		LOG(INFO) << "Close stream: " << id_;
 	}
-
 }
 
-VodSteam::VodSteam(const std::string & id, const std::string & name, const std::string & pwd, 
-	               const std::string & ip, int port, const std::string & destIp, int destPort, 
-	               std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> ecb,
-	               const std::string & startTime, const std::string & endTime, std::shared_ptr<CamaraController> con):
-	MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb, con), startTime_(startTime), endTime_(endTime)
+// VodSteam::VodSteam(const std::string &id, const std::string &name, const std::string &pwd,
+// 				   const std::string &ip, int port, const std::string &destIp, int destPort,
+// 				   std::function<void(const ::Media::RealStreamRespParam &)> iceCB, std::function<void(::std::exception_ptr)> ecb,
+// 				   const std::string &startTime, const std::string &endTime, std::shared_ptr<CamaraController> con) : MediaStream(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb, con), startTime_(startTime), endTime_(endTime)
+VodSteam::VodSteam(dt::OpenRealStreamParam &req,
+				   std::function<void(bool returnValue, const ::Media::RealStreamRespParam &)> iceCB,
+				   std::shared_ptr<CamaraController> con) : MediaStream(req, iceCB, con)
 {
 }
 
@@ -217,7 +199,7 @@ bool VodSteam::openStream(const std::string &callid)
 	return false;
 }
 
-void VodSteam::closeStream(const std::string & callid)
+void VodSteam::closeStream(const std::string &callid)
 {
 }
 
@@ -225,10 +207,10 @@ void VodSteam::closeStream()
 {
 }
 
-StreamManager * StreamManager::instance_ = nullptr;
-template<>  ThreadPool<PSBuffer> * ThreadPool<PSBuffer>::instance_ = nullptr;
+StreamManager *StreamManager::instance_ = nullptr;
+//template<>  ThreadPool<PSBuffer> * ThreadPool<PSBuffer>::instance_ = nullptr;
 
-StreamManager * StreamManager::getInstance()
+StreamManager *StreamManager::getInstance()
 {
 	if (instance_ == nullptr)
 	{
@@ -238,13 +220,13 @@ StreamManager * StreamManager::getInstance()
 	return instance_;
 }
 
-StreamManager::StreamManager() :
-	streams_(), msgthread_(), locker_(),/*rtpSender_(new RTPSender),*/ plugins_( new SDKPlugins)
+StreamManager::StreamManager() : streams_(), msgthread_(), locker_(), /*rtpSender_(new RTPSender),*/ plugins_(new SDKPlugins),
+								 avThreadPool_(std::make_shared<ThreadPool>(4))
 {
 	NET_DVR_Init();
 };
 
-std::shared_ptr<MediaStream> StreamManager::getStream(const std::string & id)
+std::shared_ptr<MediaStream> StreamManager::getStream(const std::string &id)
 {
 	auto search = streams_.find(id);
 	if (search != streams_.end())
@@ -254,42 +236,42 @@ std::shared_ptr<MediaStream> StreamManager::getStream(const std::string & id)
 	return nullptr;
 }
 
-void StreamManager::addStream(const std::string & id, const std::string &callid, const std::string & name, const std::string & pwd,
-	                          const std::string & ip, int port, const std::string & destIp, int destPort, 
-	                          int ssrc, const std::function<void(const::Media::RealStreamRespParam&)> iceCB,
-	                          std::function<void(::std::exception_ptr)> ecb)
-{
-	//std::lock_guard<std::mutex> lockGuard(locker_);
+// void StreamManager::addStream(Media::RealStreamReqParam &param,
+// 							  const std::function<void(bool, const ::Media::RealStreamRespParam &)> iceCB,
+// 							  std::function<void(::std::exception_ptr)> ecb)
+// {
+// 	//std::lock_guard<std::mutex> lockGuard(locker_);
 
-	//auto search = streams_.find(id);
-	//if (search == streams_.end())
-	//{
-	//	std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb);
+// 	//auto search = streams_.find(id);
+// 	//if (search == streams_.end())
+// 	//{
+// 	//	std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(id, name, pwd, ip, port, destIp, destPort, iceCB, ecb);
 
-	//    ms->addsubStream(destIp, destPort, ssrc, transmitter_);
-	//	streams_.emplace(id, ms);
-	//	
-	//	msgthread_.submit([=]() {
-	//		openStream(id, callid);
-	//	});
-	//}
-	//else
-	//{
-	//	//search->second->addDestHost(destIp, destPort);
-	//	search->second->addsubStream(destIp, destPort, ssrc, transmitter_);
-	//}
-}
+// 	//    ms->addsubStream(destIp, destPort, ssrc, transmitter_);
+// 	//	streams_.emplace(id, ms);
+// 	//
+// 	//	msgthread_.submit([=]() {
+// 	//		openStream(id, callid);
+// 	//	});
+// 	//}
+// 	//else
+// 	//{
+// 	//	//search->second->addDestHost(destIp, destPort);
+// 	//	search->second->addsubStream(destIp, destPort, ssrc, transmitter_);
+// 	//}
+// }
 
-void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<void(const::Media::RealStreamRespParam&)> iceCB, 
-	                          std::function<void(::std::exception_ptr)> excb)
+void StreamManager::addStream(dt::OpenRealStreamParam &param, std::function<void(bool, const ::Media::RealStreamRespParam &)> iceCB)
 {
 	std::lock_guard<std::mutex> lockGuard(locker_);
 
 	std::shared_ptr<CamaraController> controller;
+	Media::RealStreamRespParam resp;
+
 	auto search = streams_.find(param.id);
 	if (search == streams_.end())
 	{
-		auto search = controllers_.find("hkdevice");	
+		auto search = controllers_.find("hkdevice");
 
 		if (search == controllers_.end())
 		{
@@ -297,10 +279,12 @@ void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<v
 			if (!controller)
 			{
 				LOG(ERROR) << "load plugin failed";
-				Media::OpenStreamException ex;
-				ex.reason = "load plugin failed";
-				ex.callid = param.callid;
-				excb(make_exception_ptr(ex));
+				// Media::OpenStreamException ex;
+				// ex.reason = "load plugin failed";
+				// ex.callid = param.callid;
+				
+				iceCB(false, resp);
+				//excb(make_exception_ptr(ex));
 				return;
 			}
 		}
@@ -309,70 +293,90 @@ void StreamManager::addStream(::Media::RealStreamReqParam param, std::function<v
 			controller = search->second;
 		}
 
-		std::shared_ptr<MediaStream> ms 
-			= std::make_shared<RealSteam>(param.id, param.name, param.pwd, param.ip, 
-				param.port, param.destip, param.destport, iceCB, excb, controller);
+		std::shared_ptr<MediaStream> ms = std::make_shared<RealSteam>(param, iceCB, controller);
 
-		ms->addsubStream(param.callid, param.destip, param.destport, 
-			             param.ssrc, param.pt/*, rtpSender_->getRTPTransmitter()*/);
+		ms->addsubStream(param.callid, param.destip, param.destport,
+						 param.ssrc, param.pt);
 
-		//rtpSender_->addBuffer(param.id, ms->getBuffer());
+		std::shared_ptr<Buffer> buf = std::make_shared<Buffer>();
+		std::shared_ptr<PaketSender> sender = std::make_shared<RTPSender>(param.destip, param.destport);
+		buf->addSender(param.callid, sender);
+
+		avThreadPool_->attachBuffer(param.id, buf);
 
 		streams_.emplace(param.id, ms);
 
+		//msgthread_.submit([=]() {
+		//openStream(param.id, param.callid, iceCB, excb);
 		msgthread_.submit([=]() {
-			openStream(param.id, param.callid, iceCB, excb);
+			//Media::RealStreamRespParam resp;
+			if (!ms->openStream(param.callid))
+			{
+				LOG(ERROR) << "Cann't find stream: " << param.id << std::endl;
+				iceCB(false, resp);
+				return false;
+			}
 		});
 	}
 	else
 	{
-		search->second->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt/*, rtpSender_->getRTPTransmitter()*/);
-
-		Media::RealStreamRespParam resp;
+		std::shared_ptr<PaketSender> sender = std::make_shared<RTPSender>(param.destip, param.destport);
+		//Media::RealStreamRespParam resp;
 		resp.id = param.id;
 		resp.callid = param.callid;
 		resp.sourceip = "192.168.254.233";
 		resp.sourceport = "18000";
-		iceCB(resp);
-	}
-}
 
-bool StreamManager::openStream( std::string id,  std::string  callid, std::function<void(const::Media::RealStreamRespParam&)> iceCB, std::function<void(::std::exception_ptr)> excb)
-{
-	std::lock_guard<std::mutex> lockGuard(locker_);
-	auto search = streams_.find(id);
-	if (search == streams_.end())
-	{
-		LOG(ERROR) << "Cann't find stream: " << id << std::endl;
-		Media::OpenStreamException ex;
-		ex.reason = "Cann't find stream";
-		excb(std::make_exception_ptr(ex));
-		return false;
-	}
-	else
-	{
-		if (!search->second->openStream(callid))
+        auto buf = avThreadPool_->getBuffer(param.id);
+		if(buf != nullptr)
 		{
-			LOG(ERROR) << "Cann't open stream: " << id << std::endl;
-			//rtpSender_->removeBuffer(id);
-			ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
-			streams_.erase(id);
-
-			Media::OpenStreamException ex;
-			ex.reason = "Cann't open stream";
-			excb(std::make_exception_ptr(ex));
-
-			return false;
+			buf->addSender(param.callid, sender);
+			search->second->addsubStream(param.callid, param.destip, param.destport, param.ssrc, param.pt);
+			iceCB(true, resp);
+		}
+		else
+		{
+			iceCB(false, resp);
 		}
 	}
-	Media::RealStreamRespParam resp;
-	resp.id = id;
-	resp.callid = callid;
-	resp.sourceip = "192.168.254.233";
-	resp.sourceport = "18000";
-	iceCB(resp);
-	return true;
 }
+
+// bool StreamManager::openStream(std::string id, std::string callid, std::function<void(const ::Media::RealStreamRespParam &)> iceCB, std::function<void(::std::exception_ptr)> excb)
+// {
+// 	std::lock_guard<std::mutex> lockGuard(locker_);
+// 	auto search = streams_.find(id);
+// 	if (search == streams_.end())
+// 	{
+// 		LOG(ERROR) << "Cann't find stream: " << id << std::endl;
+// 		Media::OpenStreamException ex;
+// 		ex.reason = "Cann't find stream";
+// 		excb(std::make_exception_ptr(ex));
+// 		return false;
+// 	}
+// 	else
+// 	{
+// 		if (!search->second->openStream(callid))
+// 		{
+// 			LOG(ERROR) << "Cann't open stream: " << id << std::endl;
+
+// 			//ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
+// 			streams_.erase(id);
+
+// 			Media::OpenStreamException ex;
+// 			ex.reason = "Cann't open stream";
+// 			excb(std::make_exception_ptr(ex));
+
+// 			return false;
+// 		}
+// 	}
+// 	Media::RealStreamRespParam resp;
+// 	resp.id = id;
+// 	resp.callid = callid;
+// 	resp.sourceip = "192.168.254.233";
+// 	resp.sourceport = "18000";
+// 	iceCB(resp);
+// 	return true;
+// }
 
 void StreamManager::closeStream(std::string id, std::string callid)
 {
@@ -384,27 +388,29 @@ void StreamManager::closeStream(std::string id, std::string callid)
 		return;
 	}
 	else
-	{	
+	{
 		search->second->removesubStream(callid);
+		
+        auto buf = avThreadPool_->getBuffer(param.id);
+		if(buf != nullptr)
+		{
+            buf->removeSender(callid);
+		}
 
 		if (search->second->needClose())
 		{
-			//Èç¹ûµ±Ç°µÄÉãÏñ»úÖ»ÓÐÒ»Â·ÊÓÆµÁ÷£¬½«´ËÉãÏñ»ú´Óstreams_Õª³ý
-			//std::shared_ptr<MediaStream> stream(search->second);
+			//ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Ò»Â·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½streams_Õªï¿½ï¿½
 			search->second->closeStream();
-			ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
+			avThreadPool_->removeBuffer(param.id);
+			//ThreadPool<PSBuffer>::getInstance()->remove_buffer(id);
 			//rtpSender_->removeBuffer(id);
 			streams_.erase(search);
 		}
-		//else
-		//{
-		//	search->second->removesubStream(callid);
-		//}	
 	}
 	return;
 }
 
-void StreamManager::getStreamStatic(std::string id, ::Media::StreamStatic & stat)
+void StreamManager::getStreamStatic(std::string id, ::Media::StreamStatic &stat)
 {
 	std::lock_guard<std::mutex> lockGuard(locker_);
 	auto search = streams_.find(id);
@@ -420,9 +426,9 @@ void StreamManager::getStreamStatic(std::string id, ::Media::StreamStatic & stat
 	return;
 }
 
-typedef CamaraController* (*CREATE_PTR)();
+typedef CamaraController *(*CREATE_PTR)();
 
-std::shared_ptr<CamaraController> StreamManager::loadPlugin(const std::string & name)
+std::shared_ptr<CamaraController> StreamManager::loadPlugin(const std::string &name)
 {
 	if (!plugins_->Load("./", name.c_str()))
 	{
@@ -450,7 +456,7 @@ std::shared_ptr<CamaraController> StreamManager::loadPlugin(const std::string & 
 	return controller;
 }
 
-std::shared_ptr<CamaraController> StreamManager::getController(const std::string & name)
+std::shared_ptr<CamaraController> StreamManager::getController(const std::string &name)
 {
 	auto search = controllers_.find(name);
 	std::shared_ptr<CamaraController> controller;
@@ -464,7 +470,8 @@ std::shared_ptr<CamaraController> StreamManager::getController(const std::string
 			//Gateway::DeviceControlException ex;
 			//ex.reason = "load plugin failed";
 			//excb(make_exception_ptr(ex));
-			return std::shared_ptr<CamaraController>();;
+			return std::shared_ptr<CamaraController>();
+			;
 		}
 	}
 	else
@@ -475,21 +482,21 @@ std::shared_ptr<CamaraController> StreamManager::getController(const std::string
 	return controller;
 }
 
-std::string StreamManager::buildCallId(const std::string & ip, int port)
+std::string StreamManager::buildCallId(const std::string &ip, int port)
 {
-	unsigned char buff[128] = { 0 };
+	unsigned char buff[128] = {0};
 	md5_state_t mdctx;
 	md5_byte_t md_value[16];
 
-	snprintf((char*)buff, 127, "%s%d", ip.c_str(), port);
+	snprintf((char *)buff, 127, "%s%d", ip.c_str(), port);
 	md5_init(&mdctx);
-	md5_append(&mdctx, (const unsigned char*)(buff), strlen((const char*)buff));
+	md5_append(&mdctx, (const unsigned char *)(buff), strlen((const char *)buff));
 	md5_finish(&mdctx, md_value);
 
 	char md5sum[33];
 	int i;
 	int h, l;
-	for (i = 0; i<16; ++i)
+	for (i = 0; i < 16; ++i)
 	{
 		h = md_value[i] & 0xf0;
 		h >>= 4;

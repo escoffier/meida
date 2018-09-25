@@ -1,6 +1,7 @@
 #pragma once
 //#include <memory>
 #include<string>
+
 namespace dt
 {
 	struct DeviceStatus
@@ -9,16 +10,12 @@ namespace dt
 		int status;
 	};
 
-	struct OpenRealStream
+	struct OpenRealStreamParam
 	{
 		std::string id;
 		std::string callid;
 		std::string destip;
 		int destport;
-		std::string ip;
-		int port;
-		std::string name;
-		std::string pwd;
 		int pt;
 		int ssrc;
 	};
